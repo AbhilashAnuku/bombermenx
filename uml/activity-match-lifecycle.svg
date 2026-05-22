@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="-apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" role="img" aria-label="BomberMen-X Activity Diagram — Match Lifecycle">
+  <title>BomberMen-X — Activity Diagram (Match Lifecycle)</title>
+  <desc>Swimlane activity diagram of a single match from server boot through ranking, with parallel client and server lanes during the tick loop.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c0f17"/>
+      <stop offset="100%" stop-color="#11141c"/>
+    </linearGradient>
+    <marker id="arrhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .frame { fill: url(#bg); stroke: #1f2533; stroke-width: 1; }
+      .lane { fill: rgba(58,237,255,0.025); stroke: #1f2533; stroke-width: 1; }
+      .lane-server { fill: rgba(15,181,169,0.05); }
+      .lane-client { fill: rgba(255,153,51,0.05); }
+      .lane-shared { fill: rgba(255,215,0,0.04); }
+      .lane-head { fill: #e6eef8; font-size: 12px; letter-spacing: 0.18em; font-weight: 700; }
+      .lane-sub  { fill: #94a3b8; font-size: 10px; letter-spacing: 0.06em; }
+
+      .act { fill: #161a25; stroke: #3aedff; stroke-width: 1.2; }
+      .act.server { stroke: #0fb5a9; }
+      .act.client { stroke: #ff9933; }
+      .act.shared { stroke: #ffd700; }
+      .act-label { fill: #e6eef8; font-size: 11px; text-anchor: middle; }
+      .act-sub   { fill: #6b7892; font-size: 9px; text-anchor: middle; }
+
+      .deci { fill: #161a25; stroke: #ff3ad9; stroke-width: 1.4; }
+      .deci-label { fill: #ff3ad9; font-size: 10px; text-anchor: middle; letter-spacing: 0.10em; }
+      .deci-edge  { fill: #ff3ad9; font-size: 9px; text-anchor: middle; }
+
+      .start { fill: #3affb5; stroke: #3affb5; }
+      .stop  { fill: #11141c; stroke: #e6eef8; stroke-width: 1.5; }
+      .stop-inner { fill: #e6eef8; }
+
+      .flow { stroke: #94a3b8; stroke-width: 1.2; fill: none; }
+      .fork { fill: #ffd700; stroke: #ffd700; }
+      .fork-label { fill: #ffd700; font-size: 10px; letter-spacing: 0.12em; }
+      .note { fill: #6b7892; font-size: 9px; font-style: italic; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect class="frame" x="0" y="0" width="1200" height="900"/>
+
+  <!-- Title -->
+  <text x="32" y="38" fill="#e6eef8" font-size="18" font-weight="700" letter-spacing="0.04em">ACTIVITY DIAGRAM — Match Lifecycle</text>
+  <text x="32" y="58" fill="#94a3b8" font-size="11" letter-spacing="0.08em">Swimlanes: Server (left) · Shared coordination (centre) · Client (right). 60 Hz tick loop is the centre of the action.</text>
+
+  <!-- Swimlanes -->
+  <rect class="lane lane-server" x="40" y="80" width="320" height="780"/>
+  <rect class="lane lane-shared" x="360" y="80" width="320" height="780"/>
+  <rect class="lane lane-client" x="680" y="80" width="320" height="780"/>
+
+  <text class="lane-head" x="60" y="105">SERVER</text>
+  <text class="lane-sub"  x="60" y="120">bomb-server · authoritative simulation</text>
+  <text class="lane-head" x="380" y="105">SHARED</text>
+  <text class="lane-sub"  x="380" y="120">coordination &amp; gating</text>
+  <text class="lane-head" x="700" y="105">CLIENT</text>
+  <text class="lane-sub"  x="700" y="120">bomb-client · JavaFX renderer</text>
+
+  <!-- ============ START NODES ============ -->
+  <circle class="start" cx="200" cy="155" r="9"/>
+  <text class="note" x="200" y="178">server boot</text>
+
+  <circle class="start" cx="840" cy="155" r="9"/>
+  <text class="note" x="840" y="178">client launch</text>
+
+  <!-- ============ SERVER COLUMN ============ -->
+  <!-- 1. Init server -->
+  <rect class="act server" x="120" y="200" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="220">Initialise server</text>
+  <text class="act-sub"   x="200" y="234">load GameConfig, open ports</text>
+
+  <line class="flow" x1="200" y1="164" x2="200" y2="200" marker-end="url(#arrhead)"/>
+
+  <!-- 2. Register with registry -->
+  <rect class="act server" x="120" y="270" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="290">Register with registry</text>
+  <text class="act-sub"   x="200" y="304">heartbeat every 30 s</text>
+
+  <line class="flow" x1="200" y1="244" x2="200" y2="270" marker-end="url(#arrhead)"/>
+
+  <!-- 3. Wait for clients -->
+  <rect class="act server" x="120" y="340" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="360">Open lobby</text>
+  <text class="act-sub"   x="200" y="374">accept WebSocket conns</text>
+
+  <line class="flow" x1="200" y1="314" x2="200" y2="340" marker-end="url(#arrhead)"/>
+
+  <!-- ============ CLIENT COLUMN ============ -->
+  <!-- 1. Query registry -->
+  <rect class="act client" x="760" y="200" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="220">Query registry</text>
+  <text class="act-sub"   x="840" y="234">list available servers</text>
+
+  <line class="flow" x1="840" y1="164" x2="840" y2="200" marker-end="url(#arrhead)"/>
+
+  <!-- 2. Pick server -->
+  <rect class="act client" x="760" y="270" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="290">Select server</text>
+  <text class="act-sub"   x="840" y="304">enter username</text>
+
+  <line class="flow" x1="840" y1="244" x2="840" y2="270" marker-end="url(#arrhead)"/>
+
+  <!-- 3. Connect -->
+  <rect class="act client" x="760" y="340" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="360">Connect (HELLO)</text>
+  <text class="act-sub"   x="840" y="374">WebSocket · age class</text>
+
+  <line class="flow" x1="840" y1="314" x2="840" y2="340" marker-end="url(#arrhead)"/>
+
+  <!-- ============ SHARED — gating ============ -->
+  <!-- Decision: enough players? -->
+  <polygon class="deci" points="520,400 580,440 520,480 460,440"/>
+  <text class="deci-label" x="520" y="438">enough players?</text>
+  <text class="deci-label" x="520" y="450">(≥ 2, ≤ 4)</text>
+
+  <line class="flow" x1="200" y1="384" x2="200" y2="430" stroke-dasharray="2 3"/>
+  <line class="flow" x1="200" y1="430" x2="460" y2="440" marker-end="url(#arrhead)"/>
+  <line class="flow" x1="840" y1="384" x2="840" y2="430" stroke-dasharray="2 3"/>
+  <line class="flow" x1="840" y1="430" x2="580" y2="440" marker-end="url(#arrhead)"/>
+
+  <text class="deci-edge" x="430" y="495">no → wait</text>
+  <line class="flow" x1="500" y1="475" x2="200" y2="600" marker-end="url(#arrhead)"/>
+
+  <!-- ============ SHARED — start match ============ -->
+  <rect class="act shared" x="440" y="510" width="160" height="44" rx="8"/>
+  <text class="act-label" x="520" y="530">Initialise arena</text>
+  <text class="act-sub"   x="520" y="544">tiles · spawn points · pickups</text>
+
+  <line class="flow" x1="520" y1="480" x2="520" y2="510" marker-end="url(#arrhead)"/>
+  <text class="deci-edge" x="600" y="498">yes</text>
+
+  <!-- Fork bar -->
+  <rect class="fork" x="380" y="585" width="280" height="6" rx="2"/>
+  <text class="fork-label" x="540" y="580">FORK · parallel tick loop</text>
+
+  <line class="flow" x1="520" y1="554" x2="520" y2="585" marker-end="url(#arrhead)"/>
+
+  <!-- ============ TICK LOOP — server side ============ -->
+  <rect class="act server" x="120" y="620" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="640">Receive inputs</text>
+  <text class="act-sub"   x="200" y="654">drain per-player queue</text>
+  <line class="flow" x1="430" y1="591" x2="280" y2="640" marker-end="url(#arrhead)"/>
+
+  <rect class="act server" x="120" y="690" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="710">Advance simulation</text>
+  <text class="act-sub"   x="200" y="724">60 Hz · deterministic</text>
+  <line class="flow" x1="200" y1="664" x2="200" y2="690" marker-end="url(#arrhead)"/>
+
+  <rect class="act server" x="120" y="760" width="160" height="44" rx="8"/>
+  <text class="act-label" x="200" y="780">Broadcast snapshot</text>
+  <text class="act-sub"   x="200" y="794">delta-coded</text>
+  <line class="flow" x1="200" y1="734" x2="200" y2="760" marker-end="url(#arrhead)"/>
+
+  <!-- ============ TICK LOOP — client side ============ -->
+  <rect class="act client" x="760" y="620" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="640">Sample input</text>
+  <text class="act-sub"   x="840" y="654">keyboard · gamepad</text>
+  <line class="flow" x1="650" y1="591" x2="760" y2="640" marker-end="url(#arrhead)"/>
+
+  <rect class="act client" x="760" y="690" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="710">Predict + render</text>
+  <text class="act-sub"   x="840" y="724">interpolate last 2 snaps</text>
+  <line class="flow" x1="840" y1="664" x2="840" y2="690" marker-end="url(#arrhead)"/>
+
+  <rect class="act client" x="760" y="760" width="160" height="44" rx="8"/>
+  <text class="act-label" x="840" y="780">Reconcile on diff</text>
+  <text class="act-sub"   x="840" y="794">replay buffered inputs</text>
+  <line class="flow" x1="840" y1="734" x2="840" y2="760" marker-end="url(#arrhead)"/>
+
+  <!-- Cross-lane: server → client (snapshots) -->
+  <line class="flow" x1="280" y1="782" x2="760" y2="710" stroke="#0fb5a9" stroke-dasharray="6 4" marker-end="url(#arrhead)"/>
+  <text class="note" x="520" y="740">SnapshotPacket · ~60 Hz</text>
+
+  <!-- Cross-lane: client → server (inputs) -->
+  <line class="flow" x1="760" y1="640" x2="280" y2="640" stroke="#ff9933" stroke-dasharray="6 4" marker-end="url(#arrhead)"/>
+  <text class="note" x="520" y="630">MovePacket · BombPlacePacket · seq</text>
+
+  <!-- ============ Decision: end condition? ============ -->
+  <polygon class="deci" points="520,820 600,860 520,900 440,860"/>
+  <text class="deci-label" x="520" y="855">end condition?</text>
+  <text class="deci-label" x="520" y="868">≤ 1 alive  OR  t expired</text>
+
+  <line class="flow" x1="200" y1="804" x2="440" y2="860" marker-end="url(#arrhead)"/>
+  <line class="flow" x1="840" y1="804" x2="600" y2="860" marker-end="url(#arrhead)"/>
+
+  <!-- loop back to tick if no -->
+  <line class="flow" x1="440" y1="850" x2="80" y2="850" stroke-dasharray="4 4"/>
+  <line class="flow" x1="80" y1="850" x2="80" y2="620"/>
+  <line class="flow" x1="80" y1="620" x2="120" y2="640" marker-end="url(#arrhead)"/>
+  <text class="deci-edge" x="350" y="845">no → next tick</text>
+
+  <!-- yes -> show ranking (truncate to keep diagram compact: jump up and stop on page footer) -->
+  <line class="flow" x1="600" y1="860" x2="1130" y2="860"/>
+  <line class="flow" x1="1130" y1="860" x2="1130" y2="100"/>
+  <line class="flow" x1="1130" y1="100" x2="1040" y2="100" marker-end="url(#arrhead)"/>
+  <text class="deci-edge" x="850" y="855">yes → ranking</text>
+
+  <!-- Final stop node -->
+  <circle class="stop" cx="1040" cy="100" r="11"/>
+  <circle class="stop-inner" cx="1040" cy="100" r="5"/>
+  <text class="note" x="1040" y="80">show ranking · new round?</text>
+
+  <!-- Footer legend -->
+  <text x="32" y="876" fill="#6b7892" font-size="10" letter-spacing="0.08em">Solid arrow = sequential flow · dashed arrow = network packet · gold bar = fork/join · diamond = decision · gold border activity = shared/coordination.</text>
+</svg>

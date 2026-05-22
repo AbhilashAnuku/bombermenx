@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Packet protocol — BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+<style>
+  .pp-intro {
+    background: linear-gradient(180deg, var(--panel), #0c0f17);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 22px;
+  }
+  html[data-theme="light"] .pp-intro { background: linear-gradient(180deg, #ffffff, #f4f6fb); }
+  .pp-intro h1 { margin: 0 0 6px; font-size: 22px; color: var(--cyan); border: none; padding: 0; letter-spacing: 0.04em; }
+  .pp-intro p { margin: 0 0 6px; color: var(--dim); font-size: 14px; line-height: 1.6; }
+  .pp-intro .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .pp-intro .pill {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .pp-intro .pill.json    { color: var(--cyan);  border-color: rgba(58,237,255,0.4); background: rgba(58,237,255,0.06); }
+  .pp-intro .pill.ws      { color: var(--green); border-color: rgba(58,255,181,0.4); background: rgba(58,255,181,0.06); }
+  .pp-intro .pill.auth    { color: var(--amber); border-color: rgba(255,181,58,0.4); background: rgba(255,181,58,0.06); }
+  .pp-intro .pill.version { color: var(--pink);  border-color: rgba(255,58,217,0.4); background: rgba(255,58,217,0.06); }
+
+  .pp-block { margin: 24px 0; }
+  .pp-block h2 {
+    font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--pink); border-bottom: 1px solid var(--line); padding-bottom: 6px;
+    margin: 0 0 14px;
+  }
+  .pp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+  }
+  .pkt {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    transition: transform 220ms cubic-bezier(.21,.61,.35,1), border-color 220ms cubic-bezier(.21,.61,.35,1);
+  }
+  html[data-theme="light"] .pkt { background: #ffffff; }
+  .pkt:hover { transform: translateY(-3px); border-color: var(--cyan); }
+  .pkt .head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .pkt .head .name { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+  .pkt .head .dir  {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px; border: 1px solid var(--line);
+  }
+  .pkt .head .dir.c2s { color: var(--cyan);  border-color: rgba(58,237,255,0.4); }
+  .pkt .head .dir.s2c { color: var(--amber); border-color: rgba(255,181,58,0.4); }
+  .pkt .head .dir.bi  { color: var(--pink);  border-color: rgba(255,58,217,0.4); }
+  .pkt .why { color: var(--dim); font-size: 12px; line-height: 1.5; margin: 0 0 10px; }
+  .pkt pre  {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 11.5px;
+    line-height: 1.45;
+    overflow-x: auto;
+  }
+  html[data-theme="light"] .pkt pre { background: #f4f6fb; }
+  .pkt .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pkt .meta span {
+    font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px;
+    border: 1px solid var(--line); color: var(--dim);
+  }
+  .pkt .meta .valid  { color: var(--green); border-color: rgba(58,255,181,0.35); }
+  .pkt .meta .replay { color: var(--amber); border-color: rgba(255,181,58,0.35); }
+  .pkt .meta .auth   { color: var(--pink);  border-color: rgba(255,58,217,0.35); }
+  .pkt .meta .rate   { color: var(--cyan);  border-color: rgba(58,237,255,0.35); }
+
+  .pp-prose p   { color: var(--dim); font-size: 14px; line-height: 1.65; margin: 0 0 12px; }
+  .pp-prose ul  { color: var(--dim); font-size: 14px; line-height: 1.7;  margin: 0 0 12px 22px; padding: 0; }
+  .pp-prose strong { color: var(--ink); }
+
+  table.pp-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  table.pp-table th, table.pp-table td {
+    padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top;
+  }
+  table.pp-table th { background: rgba(58,237,255,0.06); color: var(--cyan); font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; }
+  html[data-theme="light"] table.pp-table th { background: #eef1f7; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Architecture</span>
+    <span class="sep">/</span>
+    <span class="title">Packet protocol</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">v1 · frozen W6</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="pp-intro" data-reveal>
+    <h1>Packet protocol &mdash; BomberMen-X wire format.</h1>
+    <p>The protocol carries every interaction between the JavaFX client and the Netty server. It is JSON-over-WebSocket today; the same envelope shape will be re-serialised to a binary form (Kryo or Protobuf) in a later sprint without changing the message types. All nine packet types share a single <code>Envelope</code> wrapper so framing, sequencing, and version negotiation stay in one place.</p>
+    <p>The brief from Prof. Becker mandates one constraint above all others: <strong>cross-group interoperability</strong>. Any practicum group&apos;s server must accept any other group&apos;s client. That is why every message on this page is a published contract, not an implementation detail.</p>
+    <div class="pills">
+      <span class="pill json">JSON over WebSocket</span>
+      <span class="pill ws">framed by WS</span>
+      <span class="pill auth">HMAC option in v2</span>
+      <span class="pill version">version-negotiated</span>
+    </div>
+  </section>
+
+  <section class="pp-block pp-prose" data-reveal>
+    <h2>Envelope</h2>
+    <p>Every message on the wire is wrapped in a small envelope. The envelope carries the version, the message type, a monotonic sequence number from the sender, and the payload as a typed object. Client-side sequence numbers let the server reject out-of-order moves; server-side sequence numbers let the client deduplicate snapshot retransmits.</p>
+<pre>{
+  "v":   1,                 // protocol version (uint8). bumped on breaking change.
+  "t":   "MOVE",            // MessageType enum tag (UPPER_SNAKE).
+  "seq": 1287,              // monotonic sequence number from the sender (uint32).
+  "ts":  1716392452100,     // sender's epoch-millis (uint64). server uses for RTT only.
+  "p":   { ...payload... }  // typed payload — schema differs per type.
+}</pre>
+    <p>Validation rules apply to every envelope: <code>v</code> must equal the negotiated version (mismatch &rarr; <code>DISCONNECT</code>); <code>t</code> must be a known <code>MessageType</code>; <code>seq</code> must be strictly greater than the last accepted <code>seq</code> from the same connection; <code>ts</code> must be within &plusmn;30 s of server clock or the message is dropped silently.</p>
+  </section>
+
+  <section class="pp-block" data-reveal>
+    <h2>Message catalogue (9 types)</h2>
+    <div class="pp-grid">
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">PlayerJoinPacket</span>
+          <span class="dir c2s">C → S</span>
+        </div>
+        <p class="why">First frame after the WebSocket upgrade. Carries the player&apos;s display name, age class, and protocol version. The server replies with a <code>LobbyPacket</code> describing the current lobby state, or a <code>DisconnectPacket</code> if validation fails.</p>
+<pre>{ "t":"JOIN", "p":{
+    "name":  "vayu_putra",
+    "age":   "ADULT" | "CHILD",
+    "vmin":  1,           // lowest acceptable protocol version
+    "vmax":  1            // highest acceptable protocol version
+}}</pre>
+        <div class="meta">
+          <span class="valid">name 3–16 chars</span>
+          <span class="auth">opt token</span>
+          <span class="rate">1 / connection</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">MovePacket</span>
+          <span class="dir c2s">C → S</span>
+        </div>
+        <p class="why">Direction the player wants to move on the next tick. Re-sent each input frame even when held — keeps the wire stateless and idempotent so a dropped packet costs at most one tick of latency.</p>
+<pre>{ "t":"MOVE", "p":{
+    "dir":  "N" | "S" | "E" | "W" | "NONE",
+    "tick": 4271          // client's local tick guess; used for reconciliation
+}}</pre>
+        <div class="meta">
+          <span class="valid">dir ∈ enum</span>
+          <span class="rate">≤ 60 Hz</span>
+          <span class="replay">strict seq</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">BombPlacePacket</span>
+          <span class="dir c2s">C → S</span>
+        </div>
+        <p class="why">Request to drop a bomb on the current cell. Server validates that the player has at least one bomb in their pool and that the cell is unoccupied. Rejected silently — the next <code>SnapshotPacket</code> tells the truth.</p>
+<pre>{ "t":"BOMB_PLACE", "p":{
+    "tick": 4271,
+    "x":     6,            // server still re-derives from player.x
+    "y":     8
+}}</pre>
+        <div class="meta">
+          <span class="valid">pool ≥ 1</span>
+          <span class="valid">cell empty</span>
+          <span class="rate">≤ 4 / s</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">ExplosionPacket</span>
+          <span class="dir s2c">S → C</span>
+        </div>
+        <p class="why">Emitted on the tick a bomb detonates. Carries every tile in the cross-shaped blast plus IDs of any entities eliminated. Clients use this to drive particles, camera shake, and sound — pure cosmetic; the authoritative state already arrived in the next snapshot.</p>
+<pre>{ "t":"EXPLOSION", "p":{
+    "id":     8101,
+    "tiles":  [[6,8],[5,8],[7,8],[6,7],[6,9]],
+    "killed": ["p_42","p_17"],
+    "tick":   4275
+}}</pre>
+        <div class="meta">
+          <span class="rate">on event</span>
+          <span class="replay">idempotent by id</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">MatchStatePacket</span>
+          <span class="dir s2c">S → C</span>
+        </div>
+        <p class="why">Lifecycle frame: WAITING → STARTING → ACTIVE → ENDED. Clients drive scene transitions off this; nothing else opens or closes a match. Carries the active arena and the player roster.</p>
+<pre>{ "t":"MATCH_STATE", "p":{
+    "state":  "ACTIVE",
+    "match":  "m_2025_05_22_07",
+    "arena":  "vayu_temple",
+    "roster": ["p_42","p_17","p_03"],
+    "endsAt": 1716393052100
+}}</pre>
+        <div class="meta">
+          <span class="rate">on transition</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">LobbyPacket</span>
+          <span class="dir s2c">S → C</span>
+        </div>
+        <p class="why">Server&apos;s view of the lobby — list of seated players, the chosen arena variant, the countdown until match start. Re-sent on any seat change.</p>
+<pre>{ "t":"LOBBY", "p":{
+    "seats": [
+      { "id":"p_42", "name":"vayu_putra", "ready": true },
+      { "id":"p_17", "name":"agni_sena",  "ready": false }
+    ],
+    "variant": "A+B",
+    "secondsToStart": 14
+}}</pre>
+        <div class="meta">
+          <span class="rate">on change</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">SyncPacket</span>
+          <span class="dir s2c">S → C</span>
+        </div>
+        <p class="why">The authoritative snapshot. ~60 Hz, delta-coded against the last acknowledged snapshot when bandwidth budget tightens. The client&apos;s reconciliation step replays buffered inputs on top of this frame whenever its prediction diverges from the truth.</p>
+<pre>{ "t":"SYNC", "p":{
+    "tick":      4271,
+    "players":   [{ "id":"p_42", "x":6, "y":8, "hp":1, "bombs":2, "power":3 }],
+    "bombs":     [{ "id":7100, "x":6, "y":8, "fuse":52 }],
+    "pickups":   [{ "id":9900, "x":2, "y":4, "kind":"RADIUS" }],
+    "tiles":     "...rle-encoded delta..."
+}}</pre>
+        <div class="meta">
+          <span class="rate">≈ 60 Hz</span>
+          <span class="replay">delta-coded</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">HeartbeatPacket</span>
+          <span class="dir bi">C ↔ S</span>
+        </div>
+        <p class="why">Liveness ping. Each side sends one every 5 s; failure to receive any frame for 30 s triggers the brief&apos;s &ldquo;detonate the laggard&rdquo; rule on the server, and a reconnect-with-resume attempt on the client.</p>
+<pre>{ "t":"HEARTBEAT", "p":{
+    "rttHint": 42        // last observed one-way RTT in ms (optional)
+}}</pre>
+        <div class="meta">
+          <span class="rate">0.2 Hz</span>
+        </div>
+      </article>
+
+      <article class="pkt">
+        <div class="head">
+          <span class="name">DisconnectPacket</span>
+          <span class="dir bi">C ↔ S</span>
+        </div>
+        <p class="why">Clean teardown frame. Carries a reason code so log lines and reconnect logic stay distinct from accidental TCP resets. Acknowledging this frame is optional; the WebSocket close immediately follows.</p>
+<pre>{ "t":"DISCONNECT", "p":{
+    "reason": "VERSION_MISMATCH" | "KICKED" | "QUIT" | "DETONATED" | "AFK"
+}}</pre>
+        <div class="meta">
+          <span class="valid">reason ∈ enum</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="pp-block pp-prose" data-reveal>
+    <h2>Serialization</h2>
+    <p>v1 uses <strong>JSON over text WebSocket frames</strong>. This was a deliberate W3 decision so that the protocol is debuggable from a browser dev-tools panel and so that cross-group interop with other practicum groups doesn&apos;t fight over binary layouts on day one.</p>
+    <p>v2 will introduce <strong>Kryo</strong> as an optional binary mode, negotiated in the JOIN handshake via <code>vmin</code> / <code>vmax</code>. JSON stays as the lowest common denominator. The envelope shape does not change between v1 and v2 — only the bytes-on-wire encoding does.</p>
+  </section>
+
+  <section class="pp-block pp-prose" data-reveal>
+    <h2>Latency &amp; synchronisation strategy</h2>
+    <p>Three techniques apply, in this order:</p>
+    <ul>
+      <li><strong>Server authority.</strong> The server runs the only canonical simulation. Clients send inputs, the server resolves them, and the server&apos;s snapshot is the only source of truth.</li>
+      <li><strong>Client prediction.</strong> The client applies its own input locally as if it were already acknowledged. The buffered inputs (last ~30 frames) are kept until the corresponding snapshot arrives.</li>
+      <li><strong>Reconciliation on diff.</strong> When the next snapshot arrives, the client compares the predicted state against the authoritative one. If they match, the input buffer is trimmed. If they don&apos;t, the local state is reset to the snapshot and the buffered inputs are replayed on top, frame by frame.</li>
+    </ul>
+    <p>Between snapshots, the renderer <strong>interpolates</strong> linearly between the two most recently received snapshots so motion is smooth even when the network drops a frame. The interpolation buffer is intentionally ~100 ms behind the authoritative tick — a one-frame jitter cushion that&apos;s small enough not to feel laggy on a same-region server.</p>
+  </section>
+
+  <section class="pp-block pp-prose" data-reveal>
+    <h2>Anti-desync</h2>
+    <table class="pp-table">
+      <thead><tr><th>Risk</th><th>Mitigation</th><th>Where it lives</th></tr></thead>
+      <tbody>
+        <tr><td>Out-of-order or duplicate <code>MOVE</code> frames</td><td>Strict monotonic <code>seq</code> per connection. Reject and drop.</td><td><code>GameServerHandler.onMove</code></td></tr>
+        <tr><td>Client predicts an illegal move (wall, pickup race)</td><td>Server overrides on the next snapshot; client reconciliation replays buffered inputs minus the rejected one.</td><td><code>ReconciliationEngine</code></td></tr>
+        <tr><td>Snapshot loss</td><td>Each snapshot carries the previous tick&apos;s authoritative state for the last N=4 ticks. Client can rebuild from any snapshot in that window.</td><td><code>Snapshotter</code></td></tr>
+        <tr><td>Client clock drift</td><td>Server reads <code>ts</code> only for RTT; never for simulation. Simulation tick advances on the server&apos;s monotonic clock.</td><td><code>MatchSession.tick</code></td></tr>
+        <tr><td>Adversarial timestamps</td><td>Reject envelopes with <code>ts</code> outside &plusmn;30 s of server clock.</td><td><code>EnvelopeValidator</code></td></tr>
+        <tr><td>Cross-group version drift</td><td><code>JOIN</code> handshake negotiates <code>v</code>. Mismatch &rarr; <code>DISCONNECT { reason: VERSION_MISMATCH }</code>.</td><td><code>HandshakeService</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>Owned by JC · reviewed by AA and SK. Frozen as part of the Week 6 cross-group interop deliverable.</div>
+  <div class="src">v1 lives at <code>com.bombermenx.core.net.Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>.</div>
+</footer>
+</body>
+</html>

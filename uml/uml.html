@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BomberMen-X — UML Diagrams</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  :root {
+    --bg: #08090d;
+    --panel: #11141c;
+    --line: #1f2533;
+    --cyan: #3aedff;
+    --magenta: #ff3ad9;
+    --amber: #ffb53a;
+    --green: #3affb5;
+    --text: #e6eef8;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+  }
+  header {
+    padding: 36px 48px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 1100px;
+  }
+  nav {
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  nav a {
+    color: var(--cyan);
+    text-decoration: none;
+    margin-right: 18px;
+  }
+  nav a:hover { text-decoration: underline; }
+  main {
+    padding: 32px 48px 64px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .rule {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--cyan);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+  }
+  .rule h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .rule p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 1100px;
+  }
+  article {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 32px;
+  }
+  article h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: var(--text);
+  }
+  article .tag {
+    display: inline-block;
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+  }
+  .tag.server { color: var(--magenta); border-color: var(--magenta); }
+  .tag.client { color: var(--green); border-color: var(--green); }
+  .tag.pkg { color: var(--amber); border-color: var(--amber); }
+  article p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 1100px;
+    margin: 0 0 14px;
+  }
+  code {
+    font-family: "Menlo", "Consolas", monospace;
+    color: var(--cyan);
+    font-size: 13px;
+  }
+  article img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  footer {
+    padding: 18px 48px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>UML Diagrams</h1>
+  <p>Class diagrams for each of the three BomberMen-X modules, plus the package-layer diagram showing the dependency rule that keeps client and server independent.</p>
+</header>
+
+<nav>
+  <a href="../index.html">&lt; back to deliverables index</a>
+  <a href="../diagrams/diagrams.html">architecture &amp; sequence</a>
+  <a href="../diagrams/architecture.html">architecture page</a>
+  <a href="print-each.html">print / export each diagram →</a>
+</nav>
+
+<main>
+
+  <div class="rule">
+    <h2>Layering rule</h2>
+    <p>
+      <strong>bomb-core</strong> is the shared library — both bomb-client and bomb-server compile against it.
+      bomb-client and bomb-server <strong>never</strong> depend on each other. They only meet at runtime, across
+      the WebSocket wire, exchanging the JSON envelopes defined in <code>com.bombermenx.core.net</code>. Inside
+      core, the inner game model (geom, world, entity) has no knowledge of the outer wire layer (net, net.dto);
+      the <code>Snapshotter</code> is the bridge that turns simulation state into DTOs.
+    </p>
+  </div>
+
+  <article>
+    <span class="tag">core</span>
+    <h2>bomb-core — Class Diagram</h2>
+    <p>
+      The simulation classes around <code>GameWorld</code>, the tile/arena model, the entity classes
+      (<code>Player</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>), and the wire
+      types (<code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>). Filled diamonds mark
+      composition — <code>GameWorld</code> owns the lifecycle of its entities — while open arrows show plain
+      associations.
+    </p>
+    <img src="class-diagram-core.svg" alt="UML class diagram for bomb-core"/>
+  </article>
+
+  <article>
+    <span class="tag server">server</span>
+    <h2>bomb-server — Class Diagram</h2>
+    <p>
+      <code>BombServerApplication</code> is the composition root: it builds the <code>WebSocketServer</code>,
+      the <code>SessionRegistry</code>, the <code>MatchManager</code>, the <code>AuthRegistry</code>,
+      the <code>LobbyService</code>, and the moderation/chat stack. <code>GameServerHandler</code> is where
+      envelopes coming off Netty are routed to those services. The magenta triangle from
+      <code>DevAuthProvider</code> and <code>GoogleAuthProvider</code> indicates they implement the
+      <code>AuthProvider</code> interface.
+    </p>
+    <img src="class-diagram-server.svg" alt="UML class diagram for bomb-server"/>
+  </article>
+
+  <article>
+    <span class="tag client">client</span>
+    <h2>bomb-client — Class Diagram</h2>
+    <p>
+      The JavaFX side. <code>ClientLauncher</code> bootstraps the <code>AgeGate</code> and the
+      <code>SceneRouter</code>, which then swaps between <code>MainMenuView</code>, <code>LobbyView</code>,
+      <code>RankingsView</code>, and the in-game <code>ArenaView</code> + <code>HudOverlay</code>.
+      <code>ArenaView</code> drives the render pipeline (<code>ArenaRenderer</code> with
+      <code>ParticleSystem</code>, <code>CameraShake</code>, <code>PostFx</code>) and pulls input through
+      <code>GamepadPoller</code>, sending feedback via <code>HapticsService</code>. <code>GameClient</code> is the
+      single WebSocket adapter that every scene shares.
+    </p>
+    <img src="class-diagram-client.svg" alt="UML class diagram for bomb-client"/>
+  </article>
+
+  <article>
+    <span class="tag pkg">packages</span>
+    <h2>Package Diagram</h2>
+    <p>
+      Three columns — one per Gradle module — with the dependency edges between them. Both runtime modules
+      depend on bomb-core; the dashed line between client and server shows the explicit
+      non-dependency that the layering rule enforces. Inside bomb-core the sub-packages are stacked from net
+      and net.dto at the top down through sim, entity, world, geom and input, with <code>GameConfig</code> at
+      the root.
+    </p>
+    <img src="package-diagram.svg" alt="Package diagram showing module dependencies"/>
+  </article>
+
+</main>
+
+<footer>
+  capstone team: AA · SK · JC — UML gallery
+</footer>
+</body>
+</html>

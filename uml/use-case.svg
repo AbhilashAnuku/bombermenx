@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" font-family="-apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" role="img" aria-label="BomberMan-X Use Case Diagram">
+  <title>BomberMan-X — Use Case Diagram</title>
+  <desc>Five actors (Player, AI Bot, Game Master, Match Server, Registry) interacting with the BomberMan-X system across five lifecycle groups: discovery, lobby, in-match, post-match, cross-cutting.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c0f17"/>
+      <stop offset="100%" stop-color="#11141c"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .frame    { fill: url(#bg); stroke: #1f2533; stroke-width: 1; }
+      .sysframe { fill: none; stroke: #3aedff; stroke-width: 1.6; stroke-dasharray: 6 4; }
+      .syslabel { fill: #3aedff; font-size: 12px; letter-spacing: 0.20em; }
+      .actorLine { stroke: #e6eef8; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+      .actorHead { fill: none; stroke: #e6eef8; stroke-width: 1.6; }
+      .actorName { fill: #e6eef8; font-size: 12.5px; font-weight: 700; text-anchor: middle; letter-spacing: 0.03em; }
+      .actorSub  { fill: #94a3b8; font-size: 10px;   text-anchor: middle; letter-spacing: 0.05em; }
+      .uc          { fill: #161a25; stroke: #3aedff; stroke-width: 1.2; }
+      .uc.core     { stroke: #ffd700; }
+      .uc.safety   { stroke: #ff5a1f; }
+      .ucLabel     { fill: #e6eef8; font-size: 11.5px; text-anchor: middle; font-weight: 600; }
+      .ucLabelSub  { fill: #6b7892; font-size: 9.5px;  text-anchor: middle; letter-spacing: 0.06em; }
+      .groupLabel  { fill: #ff3ad9; font-size: 10.5px; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700; }
+      .assoc   { stroke: #94a3b8; stroke-width: 1;   fill: none; }
+      .extend  { stroke: #94a3b8; stroke-width: 1;   fill: none; stroke-dasharray: 6 4; }
+      .stereo  { fill: #cbd5e1; font-size: 10px; text-anchor: middle; font-style: italic; }
+      .title    { fill: #e6eef8; font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
+      .subtitle { fill: #94a3b8; font-size: 11px;  letter-spacing: 0.06em; }
+      .footer   { fill: #6b7892; font-size: 10px;  letter-spacing: 0.06em; }
+      .legendStroke    { fill: none; stroke-width: 1.4; }
+      .legendStroke.s1 { stroke: #3aedff; }
+      .legendStroke.s2 { stroke: #ffd700; }
+      .legendStroke.s3 { stroke: #ff5a1f; }
+      .legendStroke.s4 { stroke: #94a3b8; }
+      .legendStroke.s5 { stroke: #94a3b8; stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+
+  <rect class="frame" x="0" y="0" width="1200" height="820"/>
+
+  <text class="title"    x="32" y="40">USE CASE DIAGRAM &mdash; BomberMan-X</text>
+  <text class="subtitle" x="32" y="60">Five actors, one system boundary, five lifecycle groups (discovery, lobby, in-match, post-match, cross-cutting).</text>
+
+  <rect class="sysframe" x="240" y="90" width="720" height="650" rx="8"/>
+  <text class="syslabel" x="262" y="112">BOMBERMAN-X SYSTEM</text>
+
+  <!-- ACTORS LEFT -->
+  <g transform="translate(110,210)">
+    <circle class="actorHead" cx="0" cy="-24" r="11"/>
+    <line   class="actorLine" x1="0"   y1="-13" x2="0"   y2="14"/>
+    <line   class="actorLine" x1="-12" y1="-2"  x2="12"  y2="-2"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="-11" y2="30"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="11"  y2="30"/>
+    <text class="actorName" x="0" y="50">Player</text>
+    <text class="actorSub"  x="0" y="64">human · 2–4 per match</text>
+  </g>
+
+  <g transform="translate(110,395)">
+    <circle class="actorHead" cx="0" cy="-24" r="11"/>
+    <line   class="actorLine" x1="0"   y1="-13" x2="0"   y2="14"/>
+    <line   class="actorLine" x1="-12" y1="-2"  x2="12"  y2="-2"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="-11" y2="30"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="11"  y2="30"/>
+    <text class="actorName" x="0" y="50">AI Bot</text>
+    <text class="actorSub"  x="0" y="64">non-random fallback</text>
+  </g>
+
+  <g transform="translate(110,600)">
+    <circle class="actorHead" cx="0" cy="-24" r="11"/>
+    <line   class="actorLine" x1="0"   y1="-13" x2="0"   y2="14"/>
+    <line   class="actorLine" x1="-12" y1="-2"  x2="12"  y2="-2"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="-11" y2="30"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="11"  y2="30"/>
+    <text class="actorName" x="0" y="50">Game Master</text>
+    <text class="actorSub"  x="0" y="64">configures &amp; starts</text>
+  </g>
+
+  <!-- ACTORS RIGHT -->
+  <g transform="translate(1090,300)">
+    <circle class="actorHead" cx="0" cy="-24" r="11"/>
+    <line   class="actorLine" x1="0"   y1="-13" x2="0"   y2="14"/>
+    <line   class="actorLine" x1="-12" y1="-2"  x2="12"  y2="-2"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="-11" y2="30"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="11"  y2="30"/>
+    <text class="actorName" x="0" y="50">Match Server</text>
+    <text class="actorSub"  x="0" y="64">authoritative sim</text>
+  </g>
+
+  <g transform="translate(1090,520)">
+    <circle class="actorHead" cx="0" cy="-24" r="11"/>
+    <line   class="actorLine" x1="0"   y1="-13" x2="0"   y2="14"/>
+    <line   class="actorLine" x1="-12" y1="-2"  x2="12"  y2="-2"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="-11" y2="30"/>
+    <line   class="actorLine" x1="0"   y1="14"  x2="11"  y2="30"/>
+    <text class="actorName" x="0" y="50">Registry</text>
+    <text class="actorSub"  x="0" y="64">Verwaltungsserver</text>
+  </g>
+
+  <!-- DISCOVERY -->
+  <text class="groupLabel" x="262" y="150">DISCOVERY</text>
+  <g><ellipse class="uc"      cx="370" cy="170" rx="88" ry="22"/>
+     <text class="ucLabel"    x="370" y="167">Browse servers</text>
+     <text class="ucLabelSub" x="370" y="182">via registry</text></g>
+  <g><ellipse class="uc"      cx="600" cy="170" rx="78" ry="22"/>
+     <text class="ucLabel"    x="600" y="167">Login</text>
+     <text class="ucLabelSub" x="600" y="182">username · age</text></g>
+  <g><ellipse class="uc"      cx="830" cy="170" rx="88" ry="22"/>
+     <text class="ucLabel"    x="830" y="167">Register server</text></g>
+
+  <!-- LOBBY -->
+  <text class="groupLabel" x="262" y="230">LOBBY</text>
+  <g><ellipse class="uc"      cx="370" cy="250" rx="78" ry="22"/>
+     <text class="ucLabel"    x="370" y="247">Join match</text>
+     <text class="ucLabelSub" x="370" y="262">2–4 players</text></g>
+  <g><ellipse class="uc core" cx="600" cy="250" rx="90" ry="22"/>
+     <text class="ucLabel"    x="600" y="247">Configure arena</text>
+     <text class="ucLabelSub" x="600" y="262">size · variant</text></g>
+  <g><ellipse class="uc"      cx="830" cy="250" rx="78" ry="22"/>
+     <text class="ucLabel"    x="830" y="247">Start match</text></g>
+
+  <!-- IN-MATCH player -->
+  <text class="groupLabel" x="262" y="320">IN-MATCH · PLAYER ACTIONS</text>
+  <g><ellipse class="uc core" cx="370" cy="340" rx="72" ry="22"/>
+     <text class="ucLabel"    x="370" y="344">Move N/S/E/W</text></g>
+  <g><ellipse class="uc core" cx="600" cy="340" rx="72" ry="22"/>
+     <text class="ucLabel"    x="600" y="344">Place bomb</text></g>
+  <g><ellipse class="uc"      cx="830" cy="340" rx="84" ry="22"/>
+     <text class="ucLabel"    x="830" y="344">Collect bonus</text></g>
+
+  <!-- IN-MATCH server -->
+  <text class="groupLabel" x="262" y="410">IN-MATCH · SERVER ACTIONS</text>
+  <g><ellipse class="uc"        cx="370" cy="430" rx="96" ry="22"/>
+     <text class="ucLabel"      x="370" y="427">Broadcast snapshot</text>
+     <text class="ucLabelSub"   x="370" y="442">≈60 Hz · delta-coded</text></g>
+  <g><ellipse class="uc safety" cx="600" cy="430" rx="96" ry="22"/>
+     <text class="ucLabel"      x="600" y="427">Detonate inactive</text>
+     <text class="ucLabelSub"   x="600" y="442">30 s → 3 s countdown</text></g>
+  <g><ellipse class="uc"        cx="830" cy="430" rx="84" ry="22"/>
+     <text class="ucLabel"      x="830" y="427">Resolve chains</text>
+     <text class="ucLabelSub"   x="830" y="442">bomb → bomb</text></g>
+
+  <!-- POST-MATCH -->
+  <text class="groupLabel" x="262" y="500">POST-MATCH</text>
+  <g><ellipse class="uc"      cx="370" cy="520" rx="92" ry="22"/>
+     <text class="ucLabel"    x="370" y="517">Show ranking</text>
+     <text class="ucLabelSub" x="370" y="532">steps · bombs · kills · bonus</text></g>
+  <g><ellipse class="uc"      cx="600" cy="520" rx="86" ry="22"/>
+     <text class="ucLabel"    x="600" y="517">Start new round</text>
+     <text class="ucLabelSub" x="600" y="532">re-admit prior players</text></g>
+  <g><ellipse class="uc"      cx="830" cy="520" rx="76" ry="22"/>
+     <text class="ucLabel"    x="830" y="517">Persist score</text>
+     <text class="ucLabelSub" x="830" y="532">leaderboard</text></g>
+
+  <!-- CROSS-CUTTING -->
+  <text class="groupLabel" x="262" y="600">CROSS-CUTTING</text>
+  <g><ellipse class="uc"   cx="370" cy="620" rx="72" ry="20"/>
+     <text class="ucLabel" x="370" y="624">Spectate</text></g>
+  <g><ellipse class="uc"   cx="600" cy="620" rx="84" ry="20"/>
+     <text class="ucLabel" x="600" y="624">Switch to AI</text></g>
+  <g><ellipse class="uc"   cx="830" cy="620" rx="92" ry="20"/>
+     <text class="ucLabel" x="830" y="624">Log gameplay</text></g>
+
+  <!-- ASSOCIATIONS (clean fanout, no overlap) -->
+
+  <!-- Player → Login, Browse servers, Join match, Move, Place bomb, Collect bonus, Spectate, Show ranking, Start new round -->
+  <line class="assoc" x1="135" y1="208" x2="282" y2="170"/>
+  <line class="assoc" x1="135" y1="200" x2="522" y2="166"/>
+  <line class="assoc" x1="135" y1="218" x2="292" y2="250"/>
+  <line class="assoc" x1="135" y1="225" x2="298" y2="340"/>
+  <line class="assoc" x1="135" y1="232" x2="528" y2="340"/>
+  <line class="assoc" x1="135" y1="240" x2="746" y2="340"/>
+  <line class="assoc" x1="135" y1="248" x2="298" y2="620"/>
+  <line class="assoc" x1="135" y1="252" x2="278" y2="520"/>
+  <line class="assoc" x1="135" y1="260" x2="514" y2="520"/>
+
+  <!-- AI Bot → Move, Place bomb, Collect bonus -->
+  <line class="assoc" x1="135" y1="390" x2="298" y2="340"/>
+  <line class="assoc" x1="135" y1="395" x2="528" y2="340"/>
+  <line class="assoc" x1="135" y1="400" x2="746" y2="340"/>
+  <text class="stereo" x="225" y="378">«substitutes for Player»</text>
+
+  <!-- Game Master → Configure arena, Start match, Start new round, Switch to AI, Persist score -->
+  <line class="assoc" x1="135" y1="590" x2="510" y2="252"/>
+  <line class="assoc" x1="135" y1="598" x2="752" y2="252"/>
+  <line class="assoc" x1="135" y1="610" x2="514" y2="520"/>
+  <line class="assoc" x1="135" y1="618" x2="516" y2="620"/>
+  <line class="assoc" x1="135" y1="615" x2="754" y2="520"/>
+
+  <!-- Match Server → Broadcast snapshot, Detonate inactive, Resolve chains, Log gameplay -->
+  <line class="assoc" x1="1065" y1="298" x2="466"  y2="430"/>
+  <line class="assoc" x1="1065" y1="300" x2="696"  y2="430"/>
+  <line class="assoc" x1="1065" y1="302" x2="914"  y2="430"/>
+  <line class="assoc" x1="1065" y1="306" x2="922"  y2="620"/>
+
+  <!-- Registry → Browse servers, Register server -->
+  <line class="assoc" x1="1065" y1="518" x2="458" y2="170"/>
+  <line class="assoc" x1="1065" y1="522" x2="918" y2="170"/>
+
+  <!-- «extends» / «includes» — labels placed apart so they do not overlap -->
+
+  <!-- Resolve chains «includes» Place bomb -->
+  <path class="extend" d="M 758 425 C 700 405, 660 365, 632 345" marker-end="url(#arr)"/>
+  <text class="stereo" x="710" y="395">«includes»</text>
+
+  <!-- Detonate inactive «extends» Place bomb (vertical, label to the LEFT) -->
+  <path class="extend" d="M 600 408 C 600 388, 600 372, 600 362" marker-end="url(#arr)"/>
+  <text class="stereo" x="557" y="383" text-anchor="end">«extends»</text>
+
+  <!-- Switch to AI «extends» Login (gentle long curve, label far from the other two) -->
+  <path class="extend" d="M 600 600 C 660 460, 660 300, 624 190" marker-end="url(#arr)"/>
+  <text class="stereo" x="685" y="378">«extends»</text>
+
+  <!-- LEGEND (bottom strip) -->
+  <g transform="translate(32,770)">
+    <text class="footer" x="0" y="0">LEGEND</text>
+
+    <ellipse class="legendStroke s1" cx="80"  cy="14" rx="14" ry="6"/>
+    <text class="footer" x="100" y="18">standard use case</text>
+
+    <ellipse class="legendStroke s2" cx="240" cy="14" rx="14" ry="6"/>
+    <text class="footer" x="260" y="18">core gameplay (gold)</text>
+
+    <ellipse class="legendStroke s3" cx="430" cy="14" rx="14" ry="6"/>
+    <text class="footer" x="450" y="18">safety / quality (orange)</text>
+
+    <line class="legendStroke s4" x1="620" y1="14" x2="660" y2="14"/>
+    <text class="footer" x="670" y="18">association</text>
+
+    <line class="legendStroke s5" x1="770" y1="14" x2="810" y2="14"/>
+    <text class="footer" x="820" y="18">«extends» / «includes»</text>
+  </g>
+
+  <text class="footer" x="32" y="800">Notation: ellipse = use case · stick figure = actor · dashed rectangle = system boundary · pink labels mark the five lifecycle groups.</text>
+</svg>

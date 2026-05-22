@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="umlTitle umlDesc">
+  <title id="umlTitle">UML class diagram — bomb-core</title>
+  <desc id="umlDesc">Classes of the shared bomb-core library laid out in four columns: world model, entities, simulation, and wire protocol. GameWorld is the primary entry point and aggregates Arena, Players, Bombs, Explosions and PowerUpItems.</desc>
+
+  <defs>
+    <marker id="triangle" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="none" stroke="#94a3b8" stroke-width="1.4"/>
+    </marker>
+    <marker id="diamondO" viewBox="0 0 16 14" refX="15" refY="7" markerWidth="16" markerHeight="14" orient="auto">
+      <path d="M0,7 L8,0 L16,7 L8,14 z" fill="#08090d" stroke="#94a3b8" stroke-width="1.4"/>
+    </marker>
+    <marker id="diamondF" viewBox="0 0 16 14" refX="15" refY="7" markerWidth="16" markerHeight="14" orient="auto">
+      <path d="M0,7 L8,0 L16,7 L8,14 z" fill="#94a3b8" stroke="#94a3b8" stroke-width="1.4"/>
+    </marker>
+    <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M0,0 L12,6 L0,12" fill="none" stroke="#94a3b8" stroke-width="1.4"/>
+    </marker>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0 L0 0 0 20" fill="none" stroke="#1f2533" stroke-width="0.3"/>
+    </pattern>
+    <style>
+      .lbl { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e6eef8; }
+      .cls { font-weight: 700; font-size: 14px; fill: #e6eef8; }
+      .stereo { font-size: 10px; fill: #94a3b8; font-style: italic; }
+      .member { font-family: "Consolas", "Menlo", monospace; font-size: 11px; fill: #cbd5e1; }
+      .ttl { font-weight: 700; font-size: 22px; }
+      .grp { font-weight: 700; font-size: 12px; letter-spacing: 1.5px; fill: #94a3b8; }
+      .edgelbl { font-size: 10px; fill: #94a3b8; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#08090d"/>
+  <rect width="1600" height="1100" fill="url(#grid)"/>
+
+  <text x="800" y="36" class="lbl ttl" text-anchor="middle">UML — bomb-core (shared library)</text>
+  <text x="800" y="58" class="lbl stereo" text-anchor="middle">GameWorld is the primary entry point. Solid open-triangle = inheritance, open diamond = aggregation, filled diamond = composition, plain arrow = association.</text>
+
+  <!-- Column headers -->
+  <text x="180" y="92" class="lbl grp">.geom + .world (model)</text>
+  <text x="540" y="92" class="lbl grp">.entity (game objects)</text>
+  <text x="900" y="92" class="lbl grp">.sim (simulation)</text>
+  <text x="1260" y="92" class="lbl grp">.net + .net.dto (protocol)</text>
+
+  <line x1="40" y1="100" x2="1560" y2="100" stroke="#1f2533"/>
+
+  <!-- COLUMN 1: .geom / .world -->
+  <!-- Direction enum -->
+  <g>
+    <rect x="60" y="120" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="140" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="180" y="158" class="cls" text-anchor="middle">Direction</text>
+    <line x1="60" y1="168" x2="300" y2="168" stroke="#1f2533"/>
+    <text x="72" y="186" class="member">UP, DOWN, LEFT,</text>
+    <text x="72" y="202" class="member">RIGHT, NONE</text>
+  </g>
+
+  <!-- TilePos -->
+  <g>
+    <rect x="60" y="240" width="240" height="110" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="262" class="cls" text-anchor="middle">TilePos</text>
+    <line x1="60" y1="272" x2="300" y2="272" stroke="#1f2533"/>
+    <text x="72" y="292" class="member">+ x : int</text>
+    <text x="72" y="308" class="member">+ y : int</text>
+    <line x1="60" y1="318" x2="300" y2="318" stroke="#1f2533"/>
+    <text x="72" y="336" class="member">+ neighbor(d) : TilePos</text>
+  </g>
+
+  <!-- TileType enum -->
+  <g>
+    <rect x="60" y="370" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="390" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="180" y="408" class="cls" text-anchor="middle">TileType</text>
+    <line x1="60" y1="418" x2="300" y2="418" stroke="#1f2533"/>
+    <text x="72" y="436" class="member">FLOOR, WALL,</text>
+    <text x="72" y="452" class="member">CRATE, EXIT</text>
+  </g>
+
+  <!-- PowerUpType enum -->
+  <g>
+    <rect x="60" y="490" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="510" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="180" y="528" class="cls" text-anchor="middle">PowerUpType</text>
+    <line x1="60" y1="538" x2="300" y2="538" stroke="#1f2533"/>
+    <text x="72" y="556" class="member">RANGE, SPEED,</text>
+    <text x="72" y="572" class="member">EXTRA_BOMB, KICK</text>
+  </g>
+
+  <!-- ArenaTheme enum -->
+  <g>
+    <rect x="60" y="610" width="240" height="84" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="630" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="180" y="648" class="cls" text-anchor="middle">ArenaTheme</text>
+    <line x1="60" y1="658" x2="300" y2="658" stroke="#1f2533"/>
+    <text x="72" y="678" class="member">TRON, ICE, LAVA</text>
+  </g>
+
+  <!-- Arena -->
+  <g>
+    <rect x="60" y="714" width="240" height="180" rx="4" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
+    <text x="180" y="736" class="cls" text-anchor="middle" fill="#3aedff">Arena</text>
+    <line x1="60" y1="746" x2="300" y2="746" stroke="#1f2533"/>
+    <text x="72" y="764" class="member">- width : int</text>
+    <text x="72" y="780" class="member">- height : int</text>
+    <text x="72" y="796" class="member">- tiles : TileType[][]</text>
+    <text x="72" y="812" class="member">- theme : ArenaTheme</text>
+    <line x1="60" y1="822" x2="300" y2="822" stroke="#1f2533"/>
+    <text x="72" y="840" class="member">+ get(tp) : TileType</text>
+    <text x="72" y="856" class="member">+ set(tp, t) : void</text>
+    <text x="72" y="872" class="member">+ isBlocked(tp) : boolean</text>
+    <text x="72" y="888" class="member">+ destroyCrate(tp) : void</text>
+  </g>
+
+  <!-- GameConfig -->
+  <g>
+    <rect x="60" y="920" width="240" height="120" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="180" y="942" class="cls" text-anchor="middle">GameConfig</text>
+    <line x1="60" y1="952" x2="300" y2="952" stroke="#1f2533"/>
+    <text x="72" y="970" class="member">+ TICK_HZ = 60</text>
+    <text x="72" y="986" class="member">+ FUSE_MS = 2500</text>
+    <text x="72" y="1002" class="member">+ DEFAULT_RANGE = 2</text>
+    <text x="72" y="1018" class="member">+ MAX_PLAYERS = 4</text>
+  </g>
+
+  <!-- COLUMN 2: .entity -->
+  <!-- Player -->
+  <g>
+    <rect x="420" y="120" width="260" height="190" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="550" y="142" class="cls" text-anchor="middle">Player</text>
+    <line x1="420" y1="152" x2="680" y2="152" stroke="#1f2533"/>
+    <text x="432" y="170" class="member">- id : String</text>
+    <text x="432" y="186" class="member">- pos : TilePos</text>
+    <text x="432" y="202" class="member">- facing : Direction</text>
+    <text x="432" y="218" class="member">- bombRange : int</text>
+    <text x="432" y="234" class="member">- lives : int</text>
+    <text x="432" y="250" class="member">- alive : boolean</text>
+    <line x1="420" y1="260" x2="680" y2="260" stroke="#1f2533"/>
+    <text x="432" y="278" class="member">+ move(d) : void</text>
+    <text x="432" y="294" class="member">+ kill() : void</text>
+  </g>
+
+  <!-- Bomb -->
+  <g>
+    <rect x="420" y="330" width="260" height="180" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="550" y="352" class="cls" text-anchor="middle">Bomb</text>
+    <line x1="420" y1="362" x2="680" y2="362" stroke="#1f2533"/>
+    <text x="432" y="380" class="member">- pos : TilePos</text>
+    <text x="432" y="396" class="member">- owner : String</text>
+    <text x="432" y="412" class="member">- range : int</text>
+    <text x="432" y="428" class="member">- fuseMs : int</text>
+    <line x1="420" y1="438" x2="680" y2="438" stroke="#1f2533"/>
+    <text x="432" y="456" class="member">+ tick(dt) : void</text>
+    <text x="432" y="472" class="member">+ isReady() : boolean</text>
+    <text x="432" y="488" class="member">+ detonate() : Explosion</text>
+  </g>
+
+  <!-- Explosion -->
+  <g>
+    <rect x="420" y="530" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="550" y="552" class="cls" text-anchor="middle">Explosion</text>
+    <line x1="420" y1="562" x2="680" y2="562" stroke="#1f2533"/>
+    <text x="432" y="580" class="member">- origin : TilePos</text>
+    <text x="432" y="596" class="member">- arms : List&lt;TilePos&gt;</text>
+    <text x="432" y="612" class="member">- ttlMs : int</text>
+    <line x1="420" y1="622" x2="680" y2="622" stroke="#1f2533"/>
+    <text x="432" y="640" class="member">+ tick(dt) : void</text>
+    <text x="432" y="656" class="member">+ covers(tp) : boolean</text>
+    <text x="432" y="672" class="member">+ isDone() : boolean</text>
+  </g>
+
+  <!-- PowerUpItem -->
+  <g>
+    <rect x="420" y="710" width="260" height="150" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="550" y="732" class="cls" text-anchor="middle">PowerUpItem</text>
+    <line x1="420" y1="742" x2="680" y2="742" stroke="#1f2533"/>
+    <text x="432" y="760" class="member">- pos : TilePos</text>
+    <text x="432" y="776" class="member">- type : PowerUpType</text>
+    <line x1="420" y1="786" x2="680" y2="786" stroke="#1f2533"/>
+    <text x="432" y="804" class="member">+ apply(p : Player)</text>
+    <text x="432" y="820" class="member">+ pos() : TilePos</text>
+    <text x="432" y="836" class="member">+ type() : PowerUpType</text>
+  </g>
+
+  <!-- PlayerInput -->
+  <g>
+    <rect x="420" y="880" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="550" y="902" class="cls" text-anchor="middle">PlayerInput</text>
+    <text x="550" y="918" class="lbl stereo" text-anchor="middle">.input</text>
+    <line x1="420" y1="928" x2="680" y2="928" stroke="#1f2533"/>
+    <text x="432" y="946" class="member">+ playerId : String</text>
+    <text x="432" y="962" class="member">+ dir : Direction</text>
+    <text x="432" y="978" class="member">+ plant : boolean</text>
+    <text x="432" y="994" class="member">+ detonate : boolean</text>
+    <text x="432" y="1010" class="member">+ tickSeq : long</text>
+  </g>
+
+  <!-- COLUMN 3: .sim -->
+  <!-- GameMode enum -->
+  <g>
+    <rect x="780" y="120" width="240" height="90" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="900" y="140" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="900" y="158" class="cls" text-anchor="middle">GameMode</text>
+    <line x1="780" y1="168" x2="1020" y2="168" stroke="#1f2533"/>
+    <text x="792" y="186" class="member">DEATHMATCH,</text>
+    <text x="792" y="202" class="member">TEAM, BATTLE_ROYALE</text>
+  </g>
+
+  <!-- GameState enum -->
+  <g>
+    <rect x="780" y="230" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="900" y="250" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="900" y="268" class="cls" text-anchor="middle">GameState</text>
+    <line x1="780" y1="278" x2="1020" y2="278" stroke="#1f2533"/>
+    <text x="792" y="296" class="member">LOBBY, COUNTDOWN,</text>
+    <text x="792" y="312" class="member">RUNNING, ENDED</text>
+  </g>
+
+  <!-- GameWorld (PRIMARY) -->
+  <g>
+    <rect x="780" y="350" width="260" height="280" rx="4" fill="#0c0f17" stroke="#3aedff" stroke-width="2.5"/>
+    <text x="910" y="372" class="cls" text-anchor="middle" fill="#3aedff">GameWorld</text>
+    <text x="910" y="388" class="lbl stereo" text-anchor="middle">primary entry</text>
+    <line x1="780" y1="398" x2="1040" y2="398" stroke="#1f2533"/>
+    <text x="792" y="416" class="member">- arena : Arena</text>
+    <text x="792" y="432" class="member">- players : List&lt;Player&gt;</text>
+    <text x="792" y="448" class="member">- bombs : List&lt;Bomb&gt;</text>
+    <text x="792" y="464" class="member">- booms : List&lt;Explosion&gt;</text>
+    <text x="792" y="480" class="member">- items : List&lt;PowerUpItem&gt;</text>
+    <text x="792" y="496" class="member">- mode : GameMode</text>
+    <text x="792" y="512" class="member">- state : GameState</text>
+    <line x1="780" y1="522" x2="1040" y2="522" stroke="#1f2533"/>
+    <text x="792" y="540" class="member">+ applyInput(in)</text>
+    <text x="792" y="556" class="member">+ tick(dt) : void</text>
+    <text x="792" y="572" class="member">+ spawn(p, tp)</text>
+    <text x="792" y="588" class="member">+ resolveKills() : Kill[]</text>
+    <text x="792" y="604" class="member">+ snapshot() : Snapshot</text>
+    <text x="792" y="620" class="member">+ winner() : Player</text>
+  </g>
+
+  <!-- Snapshotter -->
+  <g>
+    <rect x="780" y="660" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="910" y="682" class="cls" text-anchor="middle">Snapshotter</text>
+    <line x1="780" y1="692" x2="1040" y2="692" stroke="#1f2533"/>
+    <text x="792" y="710" class="member">- last : Snapshot</text>
+    <text x="792" y="726" class="member">- seq : long</text>
+    <line x1="780" y1="736" x2="1040" y2="736" stroke="#1f2533"/>
+    <text x="792" y="754" class="member">+ snap(w) : Snapshot</text>
+    <text x="792" y="770" class="member">+ delta(prev) : DeltaDto</text>
+    <text x="792" y="786" class="member">+ reset() : void</text>
+    <text x="792" y="802" class="member">+ seq() : long</text>
+  </g>
+
+  <!-- COLUMN 4: .net -->
+  <!-- MessageType enum -->
+  <g>
+    <rect x="1140" y="120" width="260" height="120" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="1270" y="140" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
+    <text x="1270" y="158" class="cls" text-anchor="middle">MessageType</text>
+    <line x1="1140" y1="168" x2="1400" y2="168" stroke="#1f2533"/>
+    <text x="1152" y="186" class="member">AUTH_REQ, AUTH_RESP,</text>
+    <text x="1152" y="202" class="member">INPUT, SNAPSHOT,</text>
+    <text x="1152" y="218" class="member">MATCH_START, KILL,</text>
+    <text x="1152" y="234" class="member">CHAT, ERROR</text>
+  </g>
+
+  <!-- Envelope -->
+  <g>
+    <rect x="1140" y="260" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="1270" y="282" class="cls" text-anchor="middle">Envelope</text>
+    <line x1="1140" y1="292" x2="1400" y2="292" stroke="#1f2533"/>
+    <text x="1152" y="310" class="member">+ type : MessageType</text>
+    <text x="1152" y="326" class="member">+ tick : long</text>
+    <text x="1152" y="342" class="member">+ from : String</text>
+    <text x="1152" y="358" class="member">+ payload : byte[]</text>
+    <line x1="1140" y1="368" x2="1400" y2="368" stroke="#1f2533"/>
+    <text x="1152" y="386" class="member">+ size() : int</text>
+    <text x="1152" y="402" class="member">+ payloadAs(c)</text>
+  </g>
+
+  <!-- WireCodec -->
+  <g>
+    <rect x="1140" y="440" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="1270" y="462" class="cls" text-anchor="middle">WireCodec</text>
+    <line x1="1140" y1="472" x2="1400" y2="472" stroke="#1f2533"/>
+    <text x="1152" y="490" class="member">- buffer : ByteBuffer</text>
+    <text x="1152" y="506" class="member">- pool : Pool</text>
+    <line x1="1140" y1="516" x2="1400" y2="516" stroke="#1f2533"/>
+    <text x="1152" y="534" class="member">+ encode(e) : ByteBuf</text>
+    <text x="1152" y="550" class="member">+ decode(b) : Envelope</text>
+    <text x="1152" y="566" class="member">+ encodeJson(e) : String</text>
+    <text x="1152" y="582" class="member">+ decodeJson(s)</text>
+  </g>
+
+  <!-- DTOs package -->
+  <g>
+    <rect x="1140" y="620" width="260" height="240" rx="4" fill="#11141c" stroke="#94a3b8"/>
+    <text x="1270" y="642" class="cls" text-anchor="middle">.net.dto</text>
+    <text x="1270" y="658" class="lbl stereo" text-anchor="middle">data carriers</text>
+    <line x1="1140" y1="668" x2="1400" y2="668" stroke="#1f2533"/>
+    <text x="1152" y="686" class="member">+ SnapshotDto</text>
+    <text x="1152" y="702" class="member">+ DeltaDto</text>
+    <text x="1152" y="718" class="member">+ InputDto</text>
+    <text x="1152" y="734" class="member">+ AuthReqDto / AuthRespDto</text>
+    <text x="1152" y="750" class="member">+ MatchStartDto</text>
+    <text x="1152" y="766" class="member">+ KillDto</text>
+    <text x="1152" y="782" class="member">+ ChatDto</text>
+    <text x="1152" y="798" class="member">+ ErrorDto</text>
+    <text x="1152" y="814" class="member">+ PlayerDto</text>
+    <text x="1152" y="830" class="member">+ BombDto / ExplosionDto</text>
+    <text x="1152" y="846" class="member">+ PowerUpDto</text>
+  </g>
+
+  <!-- CONNECTORS -->
+  <!-- Player aggregates TilePos (composition relationship illustrative) -->
+  <!-- GameWorld -> Arena (composition) -->
+  <path d="M 780 440 L 740 440 L 740 800 L 300 800" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
+  <text x="710" y="794" class="edgelbl">1</text>
+
+  <!-- GameWorld -> Player (aggregation) many -->
+  <path d="M 780 460 L 760 460 L 760 200 L 680 200" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondO)"/>
+  <text x="688" y="194" class="edgelbl">1..4</text>
+
+  <!-- GameWorld -> Bomb (aggregation) many -->
+  <path d="M 780 470 L 720 470 L 720 410 L 680 410" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondO)"/>
+  <text x="688" y="404" class="edgelbl">0..*</text>
+
+  <!-- GameWorld -> Explosion (aggregation) -->
+  <path d="M 780 480 L 720 480 L 720 610 L 680 610" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondO)"/>
+  <text x="688" y="604" class="edgelbl">0..*</text>
+
+  <!-- GameWorld -> PowerUpItem (aggregation) -->
+  <path d="M 780 495 L 720 495 L 720 790 L 680 790" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondO)"/>
+  <text x="688" y="784" class="edgelbl">0..*</text>
+
+  <!-- Bomb -> Explosion (association via detonate) -->
+  <path d="M 680 480 L 740 480 L 740 600 L 680 600" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <text x="744" y="540" class="edgelbl">creates</text>
+
+  <!-- Player uses TilePos (association) -->
+  <path d="M 420 190 L 320 190 L 320 280 L 300 280" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- Bomb uses TilePos -->
+  <path d="M 420 380 L 340 380 L 340 280 L 300 280" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- PowerUpItem -> PowerUpType -->
+  <path d="M 420 780 L 360 780 L 360 540 L 300 540" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- GameWorld -> Snapshotter (composition) -->
+  <path d="M 910 630 L 910 660" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
+
+  <!-- GameWorld -> GameMode and GameState (assoc) -->
+  <path d="M 910 350 L 910 330" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <path d="M 940 350 L 940 220 L 940 210" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- GameWorld -> PlayerInput (uses) -->
+  <path d="M 780 540 L 700 540 L 700 940 L 680 940" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <text x="700" y="540" class="edgelbl">uses</text>
+
+  <!-- Snapshotter -> SnapshotDto (creates) -->
+  <path d="M 1040 740 L 1090 740 L 1090 700 L 1140 700" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <text x="1080" y="694" class="edgelbl">produces</text>
+
+  <!-- WireCodec -> Envelope -->
+  <path d="M 1270 440 L 1270 420" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- Envelope -> MessageType -->
+  <path d="M 1270 260 L 1270 240" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- Arena -> TileType assoc -->
+  <path d="M 180 714 L 180 470" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- Arena -> ArenaTheme assoc -->
+  <path d="M 250 714 L 250 694" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+  <!-- Legend (bottom) -->
+  <g>
+    <rect x="40" y="1056" width="1520" height="34" rx="4" fill="#0c0f17" stroke="#1f2533"/>
+    <text x="60" y="1077" class="member">Legend:</text>
+    <line x1="120" y1="1072" x2="170" y2="1072" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#triangle)"/>
+    <text x="180" y="1077" class="member">inheritance</text>
+    <line x1="280" y1="1072" x2="330" y2="1072" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondO)"/>
+    <text x="346" y="1077" class="member">aggregation</text>
+    <line x1="460" y1="1072" x2="510" y2="1072" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
+    <text x="528" y="1077" class="member">composition</text>
+    <line x1="640" y1="1072" x2="690" y2="1072" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+    <text x="700" y="1077" class="member">association / dependency</text>
+  </g>
+</svg>

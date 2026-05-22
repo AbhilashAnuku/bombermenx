@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clone and play in 5 minutes - BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+<style>
+  .step-num {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 50%;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 14px;
+  }
+  .step h3 { display: flex; align-items: center; gap: 0; }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green);
+    border-radius: 4px;
+    background: var(--panel);
+    margin: 8px 0;
+  }
+  .checklist li code { white-space: nowrap; }
+  .checklist .label {
+    color: var(--green);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  .checklist .hints { color: var(--dim); font-size: 13px; margin-top: 4px; }
+  .checklist .hints code { display: inline-block; margin: 2px 4px 2px 0; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Setup</span>
+    <span class="sep">/</span>
+    <span class="title">Clone and play in 5 minutes</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">Week 5 of 8 &middot; WIP</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Clone and play in 5 minutes</h1>
+  <p>Two paths to a playable arena: a full Dockerised stack with the desktop client, or a zero-install browser client. Either one fits inside a coffee break.</p>
+
+  <h2>1. Prerequisites</h2>
+  <p>Install once. Skip anything you already have.</p>
+  <ul class="checklist">
+    <li>
+      <span class="label">JDK 21 (Eclipse Temurin)</span> &mdash; required for the desktop client and Maven builds.
+      <div class="hints">
+        Windows: <code>scoop install temurin21-jdk</code> &middot;
+        macOS: <code>brew install --cask temurin</code> &middot;
+        Ubuntu/Debian: <code>sudo apt install temurin-21-jdk</code> (Adoptium APT repo)
+      </div>
+    </li>
+    <li>
+      <span class="label">Maven 3.9</span> &mdash; multi-module build orchestrator.
+      <div class="hints">
+        Windows: <code>scoop install maven</code> &middot;
+        macOS: <code>brew install maven</code> &middot;
+        Ubuntu/Debian: <code>sudo apt install maven</code>
+      </div>
+    </li>
+    <li>
+      <span class="label">Docker</span> &mdash; runs the server, Postgres 16, Redis 7.
+      <div class="hints">
+        Windows/macOS: install Docker Desktop &middot;
+        Ubuntu/Debian: <code>sudo apt install docker.io docker-compose-plugin</code>
+      </div>
+    </li>
+    <li>
+      <span class="label">Git</span> &mdash; clone the repository.
+      <div class="hints">
+        Windows: <code>scoop install git</code> &middot;
+        macOS: <code>brew install git</code> (or Xcode CLT) &middot;
+        Ubuntu/Debian: <code>sudo apt install git</code>
+      </div>
+    </li>
+  </ul>
+
+  <h2>2. From clone to playable in three commands</h2>
+
+  <div class="step">
+    <h3><span class="step-num">1</span>Clone the repository</h3>
+<pre><code>git clone &lt;repo URL&gt; BomberMan-X</code></pre>
+    <p>Replace <code>&lt;repo URL&gt;</code> with the repository URL handed out by the team. The clone takes a few seconds.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">2</span>Bring up the server stack</h3>
+<pre><code>cd BomberMan-X &amp;&amp; docker compose up -d --build</code></pre>
+    <p>Builds the server image and starts <code>bomb-server</code>, Postgres 16, and Redis 7 on the internal <code>bxnet</code> bridge. First build pulls base images and runs <code>mvn -B package</code> inside the builder stage; expect 2&ndash;4 minutes on a warm Maven cache. Tail the logs until you see <code>WebSocket server listening on ws://0.0.0.0:8080/ws</code>.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">3</span>Launch the desktop client (second terminal)</h3>
+<pre><code>mvn -B -pl bomb-core,bomb-client -am package &amp;&amp; mvn -B -pl bomb-client javafx:run</code></pre>
+    <p>The first Maven invocation builds <code>bomb-core</code> and <code>bomb-client</code> together (the <code>-am</code> flag pulls in dependent modules). The second launches the JavaFX 21 client, which goes straight to the age-gate dialog and then the main menu. Hit <strong>JOIN LOBBY</strong> and you are in a match against three bots within eight seconds of warmup.</p>
+  </div>
+
+  <h2>3. Or: zero-install web client</h2>
+  <p>If you only want to play (no JavaFX, no Maven), open the bundled browser client directly from the repository checkout. It speaks the same wire protocol as the desktop client.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>OS</th><th>Command</th></tr></thead>
+      <tbody>
+        <tr><td>Windows</td><td><code>start presentation\play.html</code></td></tr>
+        <tr><td>macOS</td><td><code>open presentation/play.html</code></td></tr>
+        <tr><td>Linux</td><td><code>xdg-open presentation/play.html</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Click <strong>CONNECT</strong>, then <strong>JOIN QUEUE</strong>. The server URL defaults to <code>ws://localhost:8080/ws</code>; change it from the field if you point at a remote server.</p>
+
+  <h2>4. Controls</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Action</th><th>Keyboard</th><th>Gamepad</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Move</td><td>WASD or arrow keys</td><td>Left stick or D-pad</td></tr>
+        <tr><td>Place bomb</td><td>Space</td><td>A (Xbox) / X (PlayStation)</td></tr>
+        <tr><td>Quit to menu</td><td>Esc</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>JInput rescans connected pads on every scene change &mdash; if a controller is plugged in mid-session, press <strong>Esc</strong> to return to the menu and reopen the arena.</p>
+
+  <h2>5. Troubleshooting</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Port 8080 already in use</td>
+          <td>Another process owns 8080 on the host</td>
+          <td>Stop the other process, or remap the host port in <code>docker-compose.yml</code> (for example <code>"18080:8080"</code>) and connect to <code>ws://localhost:18080/ws</code>.</td>
+        </tr>
+        <tr>
+          <td>JavaFX client fails with &ldquo;module javafx.controls not found&rdquo; (Linux)</td>
+          <td>OpenJFX runtime modules not on the JDK 21 in use, or Maven did not resolve them on cold cache</td>
+          <td>Install <code>openjfx</code> for the system JDK (<code>sudo apt install openjfx</code>) <em>or</em> use an Eclipse Temurin 21 build with bundled FX; then <code>mvn -U dependency:resolve</code> and retry <code>mvn javafx:run</code>.</td>
+        </tr>
+        <tr>
+          <td>Gamepad not detected</td>
+          <td>Pad plugged in after the menu scene was shown; JInput only rescans on scene change</td>
+          <td>Press <strong>Esc</strong> to bounce back to the menu and re-enter, or reconnect the pad before launching.</td>
+        </tr>
+        <tr>
+          <td>First boot of <code>bomb-server</code> hangs on Postgres</td>
+          <td>Postgres 16 first-run initialisation is slow on a cold disk</td>
+          <td>Wait 30&ndash;60 seconds. The server&rsquo;s health check polls every 5 s and starts as soon as <code>pg_isready</code> succeeds. Run <code>docker compose logs -f bomb-server</code> to watch progress.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>If anything else goes wrong, the most useful single command is <code>docker compose logs -f bomb-server</code>. The slf4j output names the failing collaborator and the line is usually enough to localise the fix.</p>
+</main>
+
+<footer class="footer">
+  <div>Team &mdash; <span class="team">Abhilash Anuku (AA)</span> &middot; <span class="team">Simranjot Kaur (SK)</span> &middot; <span class="team">Jithendra Chittomothu (JC)</span></div>
+  <div class="src">Setup &middot; clone-and-play.view.html</div>
+</footer>
+</body>
+</html>

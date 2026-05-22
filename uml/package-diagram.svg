@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="pkgTitle pkgDesc">
+  <title id="pkgTitle">UML package diagram</title>
+  <desc id="pkgDesc">bomb-client (left) and bomb-server (right) both depend on bomb-core (centre). bomb-core contains shared packages including .sim, .entity, .world, .geom, .input, .net, and .net.dto. The two outer modules do not depend on each other.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M0,0 L12,6 L0,12" fill="none" stroke="#94a3b8" stroke-width="1.6"/>
+    </marker>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0 L0 0 0 20" fill="none" stroke="#1f2533" stroke-width="0.3"/>
+    </pattern>
+    <style>
+      .lbl { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e6eef8; }
+      .ttl { font-weight: 700; font-size: 22px; }
+      .modTtl { font-weight: 700; font-size: 18px; }
+      .pkgTtl { font-weight: 700; font-size: 14px; }
+      .sub { font-size: 12px; fill: #94a3b8; }
+      .member { font-family: "Consolas", "Menlo", monospace; font-size: 11px; fill: #cbd5e1; }
+      .grp { font-weight: 700; font-size: 12px; letter-spacing: 1.5px; fill: #94a3b8; }
+      .edgelbl { font-size: 12px; fill: #94a3b8; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="800" fill="#08090d"/>
+  <rect width="1200" height="800" fill="url(#grid)"/>
+
+  <text x="600" y="36" class="lbl ttl" text-anchor="middle">UML — Package and Module Layering</text>
+  <text x="600" y="58" class="lbl sub" text-anchor="middle">bomb-client and bomb-server both depend on bomb-core; they never depend on each other.</text>
+
+  <!-- Module: bomb-client -->
+  <g>
+    <!-- folder tab -->
+    <path d="M 40 100 L 200 100 L 220 120 L 320 120 L 320 680 L 40 680 z" fill="#0c0f17" stroke="#3affb5" stroke-width="2"/>
+    <text x="60" y="146" class="lbl modTtl" fill="#3affb5">bomb-client</text>
+    <text x="60" y="166" class="lbl sub">JavaFX desktop client module</text>
+
+    <g>
+      <rect x="60" y="190" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="210" class="lbl pkgTtl" fill="#3affb5">.client</text>
+      <text x="74" y="232" class="member">ClientLauncher</text>
+    </g>
+    <g>
+      <rect x="60" y="262" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="282" class="lbl pkgTtl" fill="#3affb5">.ui</text>
+      <text x="74" y="304" class="member">SceneRouter, TronTheme, *View</text>
+    </g>
+    <g>
+      <rect x="60" y="334" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="354" class="lbl pkgTtl" fill="#3affb5">.net</text>
+      <text x="74" y="376" class="member">GameClient</text>
+    </g>
+    <g>
+      <rect x="60" y="406" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="426" class="lbl pkgTtl" fill="#3affb5">.render</text>
+      <text x="74" y="448" class="member">ArenaRenderer, Particle, PostFx</text>
+    </g>
+    <g>
+      <rect x="60" y="478" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="498" class="lbl pkgTtl" fill="#3affb5">.input</text>
+      <text x="74" y="520" class="member">GamepadPoller, HapticsService</text>
+    </g>
+    <g>
+      <rect x="60" y="550" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="570" class="lbl pkgTtl" fill="#3affb5">.audio</text>
+      <text x="74" y="592" class="member">AudioBus, SpatialAudio</text>
+    </g>
+    <g>
+      <rect x="60" y="622" width="240" height="48" rx="4" fill="#11141c" stroke="#3affb5"/>
+      <text x="74" y="642" class="lbl pkgTtl" fill="#3affb5">.safety</text>
+      <text x="74" y="660" class="member">AgeGate</text>
+    </g>
+  </g>
+
+  <!-- Module: bomb-core (centre) -->
+  <g>
+    <path d="M 400 100 L 600 100 L 620 120 L 800 120 L 800 720 L 400 720 z" fill="#0c0f17" stroke="#3aedff" stroke-width="2.5"/>
+    <text x="420" y="146" class="lbl modTtl" fill="#3aedff">bomb-core</text>
+    <text x="420" y="166" class="lbl sub">Shared library: protocol + simulation</text>
+
+    <g>
+      <rect x="420" y="190" width="360" height="50" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="210" class="lbl pkgTtl" fill="#3aedff">com.bombermenx.core</text>
+      <text x="436" y="228" class="member">GameConfig</text>
+    </g>
+    <g>
+      <rect x="420" y="252" width="360" height="50" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="272" class="lbl pkgTtl" fill="#3aedff">.geom</text>
+      <text x="436" y="290" class="member">Direction, TilePos</text>
+    </g>
+    <g>
+      <rect x="420" y="314" width="360" height="60" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="334" class="lbl pkgTtl" fill="#3aedff">.world</text>
+      <text x="436" y="356" class="member">Arena, TileType, PowerUpType, ArenaTheme</text>
+    </g>
+    <g>
+      <rect x="420" y="386" width="360" height="60" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="406" class="lbl pkgTtl" fill="#3aedff">.entity</text>
+      <text x="436" y="428" class="member">Player, Bomb, Explosion, PowerUpItem</text>
+    </g>
+    <g>
+      <rect x="420" y="458" width="360" height="50" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="478" class="lbl pkgTtl" fill="#3aedff">.input</text>
+      <text x="436" y="496" class="member">PlayerInput</text>
+    </g>
+    <g>
+      <rect x="420" y="520" width="360" height="60" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="540" class="lbl pkgTtl" fill="#3aedff">.sim</text>
+      <text x="436" y="562" class="member">GameWorld, GameMode, GameState, Snapshotter</text>
+    </g>
+    <g>
+      <rect x="420" y="592" width="360" height="50" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="612" class="lbl pkgTtl" fill="#3aedff">.net</text>
+      <text x="436" y="630" class="member">Envelope, MessageType, WireCodec</text>
+    </g>
+    <g>
+      <rect x="420" y="654" width="360" height="50" rx="4" fill="#11141c" stroke="#3aedff"/>
+      <text x="436" y="674" class="lbl pkgTtl" fill="#3aedff">.net.dto</text>
+      <text x="436" y="692" class="member">SnapshotDto, InputDto, AuthReqDto, ...</text>
+    </g>
+  </g>
+
+  <!-- Module: bomb-server (right) -->
+  <g>
+    <path d="M 880 100 L 1040 100 L 1060 120 L 1160 120 L 1160 720 L 880 720 z" fill="#0c0f17" stroke="#ff3ad9" stroke-width="2"/>
+    <text x="900" y="146" class="lbl modTtl" fill="#ff3ad9">bomb-server</text>
+    <text x="900" y="166" class="lbl sub">Headless Java server</text>
+
+    <g>
+      <rect x="900" y="190" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="210" class="lbl pkgTtl" fill="#ff3ad9">.server</text>
+      <text x="914" y="228" class="member">BombServerApplication</text>
+    </g>
+    <g>
+      <rect x="900" y="252" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="272" class="lbl pkgTtl" fill="#ff3ad9">.net</text>
+      <text x="914" y="290" class="member">WebSocketServer, Handler, Metrics</text>
+    </g>
+    <g>
+      <rect x="900" y="314" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="334" class="lbl pkgTtl" fill="#ff3ad9">.session</text>
+      <text x="914" y="352" class="member">SessionRegistry, ClientSession</text>
+    </g>
+    <g>
+      <rect x="900" y="376" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="396" class="lbl pkgTtl" fill="#ff3ad9">.lobby</text>
+      <text x="914" y="414" class="member">LobbyService, Cosmetic, ...</text>
+    </g>
+    <g>
+      <rect x="900" y="438" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="458" class="lbl pkgTtl" fill="#ff3ad9">.match</text>
+      <text x="914" y="476" class="member">MatchManager, MatchSession</text>
+    </g>
+    <g>
+      <rect x="900" y="500" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="520" class="lbl pkgTtl" fill="#ff3ad9">.ai</text>
+      <text x="914" y="538" class="member">BotController</text>
+    </g>
+    <g>
+      <rect x="900" y="562" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="582" class="lbl pkgTtl" fill="#ff3ad9">.chat / .moderation</text>
+      <text x="914" y="600" class="member">ChatRouter, ProfanityFilter</text>
+    </g>
+    <g>
+      <rect x="900" y="624" width="240" height="50" rx="4" fill="#11141c" stroke="#ff3ad9"/>
+      <text x="914" y="644" class="lbl pkgTtl" fill="#ff3ad9">.auth / .config</text>
+      <text x="914" y="662" class="member">AuthProvider, ServerConfig</text>
+    </g>
+  </g>
+
+  <!-- Dependency arrows -->
+  <!-- client -> core -->
+  <path d="M 320 380 L 360 380 L 360 400 L 420 400" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+  <rect x="338" y="358" width="80" height="20" fill="#08090d" stroke="#1f2533"/>
+  <text x="378" y="372" class="edgelbl" text-anchor="middle">depends on</text>
+
+  <!-- server -> core -->
+  <path d="M 880 400 L 840 400 L 840 420 L 800 420" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+  <rect x="780" y="378" width="80" height="20" fill="#08090d" stroke="#1f2533"/>
+  <text x="820" y="392" class="edgelbl" text-anchor="middle">depends on</text>
+
+  <!-- Forbidden arrow: client X server -->
+  <line x1="320" y1="600" x2="880" y2="600" stroke="#ff3ad9" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <g>
+    <line x1="588" y1="588" x2="612" y2="612" stroke="#ff3ad9" stroke-width="3"/>
+    <line x1="612" y1="588" x2="588" y2="612" stroke="#ff3ad9" stroke-width="3"/>
+  </g>
+  <rect x="510" y="566" width="180" height="20" fill="#08090d" stroke="#ff3ad9"/>
+  <text x="600" y="580" class="edgelbl" text-anchor="middle" fill="#ff3ad9">not allowed</text>
+
+  <!-- Footnote -->
+  <g>
+    <rect x="40" y="730" width="1120" height="48" rx="6" fill="#0c0f17" stroke="#1f2533"/>
+    <text x="60" y="752" class="lbl pkgTtl" fill="#3aedff">Layering rule</text>
+    <text x="60" y="770" class="member">bomb-client and bomb-server do not depend on each other. Both link bomb-core. The wire protocol is therefore symmetric and single-sourced.</text>
+  </g>
+</svg>

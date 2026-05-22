@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BomberMen-X — Architecture &amp; Sequence Diagrams</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  :root {
+    --bg: #08090d;
+    --panel: #11141c;
+    --line: #1f2533;
+    --cyan: #3aedff;
+    --magenta: #ff3ad9;
+    --amber: #ffb53a;
+    --green: #3affb5;
+    --text: #e6eef8;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+  }
+  header {
+    padding: 36px 48px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav {
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  nav a {
+    color: var(--cyan);
+    text-decoration: none;
+    margin-right: 18px;
+  }
+  nav a:hover { text-decoration: underline; }
+  main {
+    padding: 32px 48px 64px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  article {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 32px;
+  }
+  article h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: var(--text);
+  }
+  article .tag {
+    display: inline-block;
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 12px;
+  }
+  article .tag.seq { color: var(--magenta); border-color: var(--magenta); }
+  article .tag.dep { color: var(--amber); border-color: var(--amber); }
+  article p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 1100px;
+    margin: 0 0 14px;
+  }
+  article img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .legend span::before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .l-cy::before  { background: var(--cyan); }
+  .l-mg::before  { background: var(--magenta); }
+  .l-am::before  { background: var(--amber); }
+  .l-gr::before  { background: var(--green); }
+  footer {
+    padding: 18px 48px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Architecture &amp; Sequence Diagrams</h1>
+  <p>Four hand-authored SVGs covering the system shape, the two key sequences, and the deployment topology.</p>
+  <div class="legend">
+    <span class="l-cy">client to server</span>
+    <span class="l-mg">server to client</span>
+    <span class="l-am">data sidecar</span>
+    <span class="l-gr">internal / build</span>
+  </div>
+</header>
+
+<nav>
+  <a href="../index.html">&lt; back to deliverables index</a>
+  <a href="architecture.html">architecture page</a>
+  <a href="../uml/uml.html">UML</a>
+</nav>
+
+<main>
+
+  <article>
+    <span class="tag">architecture</span>
+    <h2>System Architecture</h2>
+    <p>
+      The three modules at a glance: <strong>bomb-client</strong> (JavaFX) and the <strong>play.html</strong> browser
+      client both speak WebSocket to <strong>bomb-server</strong> on Cloud Run. The server holds match state and
+      delegates persistence to Postgres (rankings) and Redis (sessions, rate-limit, pub/sub). The shared
+      <strong>bomb-core</strong> library sits beneath both runtime modules — the only piece of code that compiles
+      into both ends of the wire.
+    </p>
+    <img src="architecture.svg" alt="System architecture: client, server, core, Postgres, Redis, CI"/>
+  </article>
+
+  <article>
+    <span class="tag seq">sequence</span>
+    <h2>Match Start</h2>
+    <p>
+      Trace of how a player goes from launching the desktop client to being inside a live 60 Hz match.
+      WebSocket upgrade, <code>HELLO</code>/<code>WELCOME</code>, authentication via <code>AuthRegistry</code>,
+      <code>JOIN_LOBBY</code>, the <code>LOBBY_STATE</code> countdown loop, and the eventual
+      <code>MATCH_START</code> broadcast that begins <code>GameWorld.tick</code> at 60 Hz with
+      <code>SNAPSHOT</code> messages flowing back to the client every frame.
+    </p>
+    <img src="sequence-match-start.svg" alt="Sequence diagram for match start"/>
+  </article>
+
+  <article>
+    <span class="tag seq">sequence</span>
+    <h2>Bomb Place → Detonate → Kill</h2>
+    <p>
+      End-to-end path of a single bomb placement: client <code>INPUT(placeBomb=true)</code> reaches
+      <code>MatchSession.applyInput</code>, which calls <code>GameWorld.placeBomb</code>. Each tick the bomb
+      counts down (fuse = 150 ticks). When the fuse hits zero <code>detonate</code> ray-traces the four axes,
+      breaks soft walls, drops power-ups, and any player on a burning tile is killed. The resulting
+      <code>SNAPSHOT</code>, <code>KILL_FEED</code>, <code>EVENT</code> and <code>HAPTIC</code> envelopes are
+      pushed back to every client in the match. The explosion entity itself lives for 36 ticks.
+    </p>
+    <img src="sequence-bomb.svg" alt="Sequence diagram for bomb placement and detonation"/>
+  </article>
+
+  <article>
+    <span class="tag dep">deployment</span>
+    <h2>Deployment View</h2>
+    <p>
+      Physical topology: clients on user machines, TLS termination at the Cloud Run edge, the server container
+      sized for the free tier (512 MiB / 1 vCPU / max-instances 1), Cloud SQL Postgres 16 and Memorystore Redis 7
+      as managed sidecars (or self-hosted Redis on the same Compose stack for development), and the GitHub Actions
+      CI cluster pushing images to Artifact Registry and triggering Cloud Run deploys via
+      <code>deploy-cloudrun.yml</code>.
+    </p>
+    <img src="deployment.svg" alt="Deployment topology"/>
+  </article>
+
+</main>
+
+<footer>
+  capstone team: AA · SK · JC — diagrams gallery
+</footer>
+</body>
+</html>

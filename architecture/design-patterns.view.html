@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design patterns — BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+<style>
+  .dp-intro {
+    background: linear-gradient(180deg, var(--panel), #0c0f17);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 22px;
+  }
+  html[data-theme="light"] .dp-intro { background: linear-gradient(180deg, #ffffff, #f4f6fb); }
+  .dp-intro h1 { margin: 0 0 6px; font-size: 22px; color: var(--cyan); border: none; padding: 0; letter-spacing: 0.04em; }
+  .dp-intro p { margin: 0 0 6px; color: var(--dim); font-size: 14px; line-height: 1.6; }
+
+  .dp-block { margin: 24px 0; }
+  .dp-block h2 {
+    font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--pink); border-bottom: 1px solid var(--line); padding-bottom: 6px;
+    margin: 0 0 14px;
+  }
+  .dp-prose p { color: var(--dim); font-size: 14px; line-height: 1.7; margin: 0 0 12px; }
+  .dp-prose code { font-family: "Menlo","Consolas",monospace; font-size: 12.5px; color: var(--cyan); background: var(--bg); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; }
+
+  .pattern {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 14px 0;
+    position: relative;
+  }
+  html[data-theme="light"] .pattern { background: #ffffff; }
+  .pattern::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    border-radius: 12px 12px 0 0;
+  }
+  .pattern.creational::before { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+  .pattern.behavioural::before { background: linear-gradient(90deg, var(--pink), var(--amber)); }
+  .pattern.structural::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+  .pattern .tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--dim);
+    margin-bottom: 8px;
+  }
+  .pattern.creational .tag { color: var(--cyan); border-color: rgba(58,237,255,0.4); }
+  .pattern.behavioural .tag { color: var(--pink); border-color: rgba(255,58,217,0.4); }
+  .pattern.structural .tag { color: var(--green); border-color: rgba(58,255,181,0.4); }
+  .pattern h3 {
+    margin: 0 0 4px;
+    font-size: 18px; color: var(--ink); letter-spacing: 0.02em;
+  }
+  .pattern .gist {
+    color: var(--dim); font-size: 13px; margin: 0 0 12px; font-style: italic;
+  }
+  .pattern .grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .pattern .grid dt {
+    color: var(--dim-2);
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .pattern .grid dd { margin: 0; color: var(--dim); }
+  .pattern .grid dd strong { color: var(--ink); }
+  .pattern .grid dd code { font-family: "Menlo","Consolas",monospace; font-size: 12px; color: var(--cyan); }
+  .pattern pre {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+  }
+  html[data-theme="light"] .pattern pre { background: #f4f6fb; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Architecture</span>
+    <span class="sep">/</span>
+    <span class="title">Design patterns</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">5 patterns · catalogued</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="dp-intro" data-reveal>
+    <h1>Design patterns in BomberMen-X.</h1>
+    <p>Five patterns earn their place in the codebase. Each one is here because removing it would either duplicate code or break the layering rule — never because &ldquo;a pattern was applied.&rdquo; This page lists them, the class that embodies each, and the alternative we rejected.</p>
+  </section>
+
+  <section class="dp-block" data-reveal>
+    <article class="pattern creational">
+      <span class="tag">creational · GoF</span>
+      <h3>Factory Method &mdash; spawning pickups, bombs, and explosions</h3>
+      <p class="gist">When the simulation needs a new entity, it goes through a factory that knows the right constructor and the rules for IDs, lifetimes, and tile-locks.</p>
+      <dl class="grid">
+        <dt>Where</dt><dd><code>com.bombermenx.core.world.EntityFactory</code> (private to <code>GameWorld</code>).</dd>
+        <dt>What it makes</dt><dd><code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>. Each carries a server-issued <code>long id</code> drawn from a single monotonic counter.</dd>
+        <dt>Why this, not <code>new</code></dt><dd>ID monotonicity + tile-lock enforcement need to be in one place. Doing them at every call site duplicates rules and invites desync.</dd>
+        <dt>Rejected</dt><dd>Direct <code>new Bomb(...)</code> in <code>MatchSession</code> &mdash; would scatter the &ldquo;next ID&rdquo; counter across the file.</dd>
+      </dl>
+<pre>// Inside GameWorld — only place new Bomb / Explosion are ever called
+long id = ids.next();
+Bomb b = factory.bomb(id, x, y, owner.power(), fuse);
+bombs.add(b);
+tiles.lock(x, y, TileLock.BOMB);
+events.emit(new BombPlaced(id));</pre>
+    </article>
+
+    <article class="pattern behavioural">
+      <span class="tag">behavioural · GoF</span>
+      <h3>Observer &mdash; per-match event bus</h3>
+      <p class="gist">The simulation emits typed events (<code>BombPlaced</code>, <code>BombDetonated</code>, <code>PlayerKilled</code>) on a local bus. Subscribers — the snapshotter, the moderator, the analytics sink — react without the simulation knowing they exist.</p>
+      <dl class="grid">
+        <dt>Where</dt><dd><code>com.bombermenx.core.event.MatchEventBus</code>. One instance per <code>MatchSession</code>; never shared across matches.</dd>
+        <dt>Publishers</dt><dd><code>GameWorld</code> exclusively. Events are typed records; no <code>Object</code> payload.</dd>
+        <dt>Subscribers</dt><dd><code>Snapshotter</code> (turns events into delta-coded snapshot deltas), <code>MatchModerator</code> (kill-feed + chat filtering), <code>MetricsCollector</code> (Prometheus counters).</dd>
+        <dt>Why this, not direct calls</dt><dd>Lets the simulation stay pure — no knowledge of how snapshots, moderation, or metrics happen. Tests can subscribe a recorder and assert on the event stream.</dd>
+      </dl>
+<pre>events.subscribe(BombDetonated.class, e -&gt; {
+    snapshotter.markDirty(e.tilesAffected());
+    metrics.bombsDetonated.inc();
+    if (e.killedCount() &gt;= 3) moderator.flagChainKill(e.id());
+});</pre>
+    </article>
+
+    <article class="pattern behavioural">
+      <span class="tag">behavioural · GoF</span>
+      <h3>State &mdash; match lifecycle and entity FSMs</h3>
+      <p class="gist">The match itself, and several entities inside it, have discrete states with rules about valid transitions. Modelling them as a State machine keeps the &ldquo;is this transition allowed?&rdquo; logic in one place.</p>
+      <dl class="grid">
+        <dt>Match states</dt><dd><code>WAITING → STARTING → ACTIVE → ENDING → ENDED</code>. Transitions live in <code>MatchSession.transitionTo</code> with a guard table.</dd>
+        <dt>Bomb states</dt><dd><code>ARMED → TICKING → EXPLODING → SPENT</code>. The fuse tick drives <code>TICKING → EXPLODING</code>; an inbound blast can drive <code>TICKING → EXPLODING</code> early (chain reaction).</dd>
+        <dt>Player states</dt><dd><code>JOINING → ALIVE → SPECTATING → LEFT</code>. Dead players transition to <code>SPECTATING</code>, never back.</dd>
+        <dt>Where</dt><dd><code>com.bombermenx.core.state.MatchState</code> + <code>BombState</code> + <code>PlayerState</code> enums, each with a <code>can(MatchState next)</code> guard.</dd>
+        <dt>Rejected</dt><dd>Boolean fields (<code>isActive</code>, <code>isAlive</code>, <code>isSpectating</code>) &mdash; impossible-to-reach combinations (<code>isAlive=false &amp;&amp; isSpectating=false</code>) make tests guess what&apos;s legal.</dd>
+      </dl>
+<pre>public enum BombState {
+    ARMED, TICKING, EXPLODING, SPENT;
+
+    public boolean can(BombState next) {
+        return switch (this) {
+            case ARMED    -&gt; next == TICKING;
+            case TICKING  -&gt; next == EXPLODING;
+            case EXPLODING-&gt; next == SPENT;
+            case SPENT    -&gt; false;
+        };
+    }
+}</pre>
+    </article>
+
+    <article class="pattern behavioural">
+      <span class="tag">behavioural · GoF</span>
+      <h3>Strategy &mdash; input source and AI personalities</h3>
+      <p class="gist">The simulation accepts an <code>InputSource</code> abstraction; humans, network inputs, and AI bots all implement the same interface. Swapping in is a one-line change.</p>
+      <dl class="grid">
+        <dt>Interface</dt><dd><code>InputSource</code> with <code>InputFrame next(WorldSnapshot, long tick)</code>.</dd>
+        <dt>Implementations</dt><dd><code>KeyboardInputSource</code> (client), <code>GamepadInputSource</code> (client), <code>NetworkInputSource</code> (server — drains the per-player queue), <code>BotPolicy</code> (deterministic AI).</dd>
+        <dt>Where the swap happens</dt><dd>On the client, <code>ArenaView.attachInputSource</code> is the seam. On the server, <code>MatchSession.bind(playerId, source)</code> takes any implementation.</dd>
+        <dt>Why this, not subclassing</dt><dd>Keyboard, gamepad, network and AI have nothing in common in their internals; only the output shape (<code>InputFrame</code>) matters. Composition is the cheaper bond.</dd>
+      </dl>
+<pre>public interface InputSource {
+    InputFrame next(WorldSnapshot world, long tick);
+}
+
+// Switch a player to AI mid-match — no other code change.
+matchSession.bind(playerId, new BotPolicy(seed));</pre>
+    </article>
+
+    <article class="pattern behavioural">
+      <span class="tag">behavioural · GoF</span>
+      <h3>Command &mdash; client-side input buffer for reconciliation</h3>
+      <p class="gist">Every input the client sends is also stored as a Command in a small ring buffer. When the server&apos;s snapshot diverges from the client&apos;s prediction, the buffered commands are replayed in order on top of the authoritative state.</p>
+      <dl class="grid">
+        <dt>Command</dt><dd><code>InputFrame</code> &mdash; carries direction, place-bomb flag, and client tick number. Immutable record.</dd>
+        <dt>Invoker</dt><dd><code>ReconciliationEngine</code> &mdash; on every snapshot, trims acknowledged commands and re-applies the rest.</dd>
+        <dt>Receiver</dt><dd>The local copy of <code>GameWorld</code>. Apply is pure — same input, same world, same outcome.</dd>
+        <dt>Why this is the pattern</dt><dd>Reconciliation needs to undo + redo a sequence of inputs without knowing what those inputs did. That&apos;s the Command shape exactly.</dd>
+      </dl>
+<pre>void onSnapshot(WorldSnapshot snap) {
+    localWorld.replaceWith(snap);                       // authoritative reset
+    inputBuffer.dropUpToAndIncluding(snap.tick());      // trim acknowledged
+    for (InputFrame cmd : inputBuffer)                  // replay
+        localWorld.applyInput(cmd);
+}</pre>
+    </article>
+
+    <article class="pattern structural">
+      <span class="tag">structural · bonus</span>
+      <h3>Adapter &mdash; the WebSocket boundary</h3>
+      <p class="gist">Netty&apos;s <code>WebSocketFrame</code> on the server and JavaFX&apos;s WebSocket-client API on the client both get adapted to a single <code>WireChannel</code> interface. Above that line, the code never sees Netty or JavaFX. Below it, the code never sees <code>Envelope</code>.</p>
+      <dl class="grid">
+        <dt>Server adapter</dt><dd><code>NettyWireChannel</code> implements <code>WireChannel</code>; wraps a Netty <code>ChannelHandlerContext</code>.</dd>
+        <dt>Client adapter</dt><dd><code>FxWireChannel</code> implements <code>WireChannel</code>; wraps a <code>java.net.http.WebSocket</code>.</dd>
+        <dt>Why</dt><dd>Keeps the simulation and snapshot layers free of transport-specific types. Switching to gRPC or QUIC in the future is a new adapter, not a rewrite.</dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="dp-block dp-prose" data-reveal>
+    <h2>SOLID by example</h2>
+    <p>The patterns above land in service of the SOLID principles. The mapping isn&apos;t one-to-one but each principle has a single class that demonstrates it most clearly:</p>
+    <ul>
+      <li><strong>S</strong>ingle-responsibility &mdash; <code>Snapshotter</code> only turns simulation state into DTOs; it doesn&apos;t know about Netty or about the wire format.</li>
+      <li><strong>O</strong>pen/closed &mdash; <code>BotPolicy</code> takes a list of threat-contributing functions; new tactics extend the list without editing the policy.</li>
+      <li><strong>L</strong>iskov &mdash; every <code>InputSource</code> implementation is interchangeable; the simulation cannot tell whether the source is a keyboard or an AI.</li>
+      <li><strong>I</strong>nterface-segregation &mdash; <code>WireChannel</code> exposes only <code>send</code> and <code>onMessage</code>; transport-specific options live on the implementation, not the interface.</li>
+      <li><strong>D</strong>ependency-inversion &mdash; <code>MatchSession</code> depends on the <code>InputSource</code> abstraction, not on concrete keyboard / gamepad / network / bot classes.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>Owned by AA · reviewed by SK and JC. Cross-checked against the class diagrams in <a href="../uml/uml.html">deliverables/uml/</a>.</div>
+</footer>
+</body>
+</html>

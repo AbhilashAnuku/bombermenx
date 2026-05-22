@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UML diagrams — print / export each</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ========================================================
+     One A4 page per diagram. Open this file in a browser,
+     File → Print → Save as PDF. You get a 6-page PDF where
+     each page is a single diagram filling the page. To
+     export an individual diagram, click "Open standalone"
+     on the cards above and Save Image / Print just that one.
+     ======================================================== */
+
+  @page { size: A4; margin: 14mm; }
+
+  :root {
+    --ink:    #0e1320;
+    --dim:    #4a5468;
+    --dim-2:  #6b7892;
+    --line:   #d8dde7;
+    --soft:   #eef1f7;
+    --accent: #0a6e95;
+    --vayu:   #0fb5a9;
+    --agni:   #ff5a1f;
+    --gold:   #b8860b;
+    --bg:     #2a2e3a;
+    --sans:   -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --serif:  Georgia, "Times New Roman", serif;
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+
+  /* On-screen toolbar — links to each standalone SVG. Hidden on print. */
+  .toolbar {
+    max-width: 920px;
+    margin: 24px auto 16px;
+    padding: 18px 20px;
+    background: #0c0f17;
+    color: #e6eef8;
+    border: 1px solid #1f2533;
+    border-radius: 12px;
+  }
+  .toolbar h1 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    color: #3aedff;
+  }
+  .toolbar p {
+    margin: 0 0 12px;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .toolbar p code { font-family: "Menlo","Consolas",monospace; color: #ffd700; background: #161a25; padding: 1px 6px; border-radius: 3px; }
+  .toolbar .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .toolbar button, .toolbar a.btn {
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid #1f2533;
+    background: #161a25;
+    color: #e6eef8;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .toolbar button.primary { background: #3aedff; color: #0c0f17; border-color: #3aedff; font-weight: 700; }
+  .toolbar .cards {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .toolbar .card {
+    padding: 10px 12px;
+    background: #161a25;
+    border: 1px solid #1f2533;
+    border-radius: 8px;
+  }
+  .toolbar .card .name { font-size: 12px; color: #e6eef8; font-weight: 600; margin-bottom: 6px; }
+  .toolbar .card .row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .toolbar .card a {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3aedff;
+    text-decoration: none;
+    padding: 3px 8px;
+    border: 1px solid #1f2533;
+    border-radius: 999px;
+  }
+  .toolbar .card a:hover { background: #1f2533; }
+
+  /* Each diagram lives on one page. */
+  .sheet {
+    width: 182mm;
+    min-height: 265mm;
+    margin: 12mm auto;
+    padding: 12mm 12mm 14mm;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .sheet:last-child { page-break-after: auto; }
+  .sheet .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 5px;
+    margin-bottom: 10mm;
+    font-size: 8.5pt;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .sheet .head .title { color: var(--accent); font-weight: 700; font-size: 9pt; }
+  .sheet .head .src code { font-family: "Menlo","Consolas",monospace; color: var(--ink); font-size: 8pt; background: var(--soft); padding: 1px 6px; border-radius: 3px; }
+  .sheet h2 {
+    margin: 0 0 4mm;
+    font-size: 18pt;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+  .sheet .lead {
+    font-family: var(--serif);
+    font-size: 11pt;
+    color: var(--dim);
+    margin: 0 0 6mm;
+    text-align: justify;
+    hyphens: auto;
+  }
+  .sheet figure {
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sheet figure img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: white;
+  }
+  .sheet .foot {
+    margin-top: 6mm;
+    padding-top: 4mm;
+    border-top: 1px solid var(--line);
+    font-size: 8pt;
+    color: var(--dim-2);
+    letter-spacing: 0.06em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media print {
+    body { background: white; }
+    .toolbar { display: none; }
+    .sheet { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== ON-SCREEN TOOLBAR (hidden on print) ============== -->
+<div class="toolbar">
+  <h1>UML — Print &amp; export each diagram</h1>
+  <p>
+    Two ways to export. <strong>All at once:</strong> hit the button below — you get one 6-page PDF, one diagram per page. <strong>One at a time:</strong> use the per-diagram cards. <em>Open standalone</em> shows just that diagram in a clean print wrapper; the SVG itself is already a standalone file inside <code>deliverables/uml/</code>, so you can also right-click → <em>Save image as</em> on the standalone view to get a vector copy.
+  </p>
+  <div class="actions">
+    <button class="primary" onclick="window.print()">Print all six — Save as PDF</button>
+    <a class="btn" href="uml.html">← back to UML gallery</a>
+    <a class="btn" href="../index.html">deliverables index</a>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="name">1. Use case</div>
+      <div class="row">
+        <a href="use-case.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=use-case" target="_blank">Standalone print</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">2. Activity (match lifecycle)</div>
+      <div class="row">
+        <a href="activity-match-lifecycle.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=activity-match-lifecycle" target="_blank">Standalone print</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">3. Class — bomb-core</div>
+      <div class="row">
+        <a href="class-diagram-core.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=class-diagram-core" target="_blank">Standalone print</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">4. Class — bomb-server</div>
+      <div class="row">
+        <a href="class-diagram-server.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=class-diagram-server" target="_blank">Standalone print</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">5. Class — bomb-client</div>
+      <div class="row">
+        <a href="class-diagram-client.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=class-diagram-client" target="_blank">Standalone print</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">6. Package</div>
+      <div class="row">
+        <a href="package-diagram.svg" target="_blank">Open SVG</a>
+        <a href="print-each.html?only=package-diagram" target="_blank">Standalone print</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== ONE A4 PAGE PER DIAGRAM ============== -->
+
+<section class="sheet" data-id="use-case">
+  <div class="head">
+    <span><span class="title">UML / USE CASE</span></span>
+    <span class="src">src: <code>uml/use-case.svg</code></span>
+  </div>
+  <h2>Use Case Diagram</h2>
+  <p class="lead">
+    Five actors interacting with the BomberMen-X system across five lifecycle groups (discovery, lobby, in-match, post-match, cross-cutting). Dashed arrows are <code>«extends»</code> / <code>«includes»</code> stereotypes — e.g. the brief&apos;s 30 s / 3 s detonate-the-laggard rule is an extension of <em>Place bomb</em>.
+  </p>
+  <figure><img src="use-case.svg" alt="Use case diagram for BomberMen-X"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>1 / 6</span>
+  </div>
+</section>
+
+<section class="sheet" data-id="activity-match-lifecycle">
+  <div class="head">
+    <span><span class="title">UML / ACTIVITY</span></span>
+    <span class="src">src: <code>uml/activity-match-lifecycle.svg</code></span>
+  </div>
+  <h2>Activity Diagram — Match Lifecycle</h2>
+  <p class="lead">
+    Three swimlanes: <strong>Server</strong> (left), <strong>Shared coordination</strong> (centre), <strong>Client</strong> (right). The gold bar is the fork into the 60 Hz tick loop; cross-lane dashed arrows are wire packets. The bottom diamond is the canonical end condition — ≤ 1 alive or time expired.
+  </p>
+  <figure><img src="activity-match-lifecycle.svg" alt="Activity diagram of the match lifecycle"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>2 / 6</span>
+  </div>
+</section>
+
+<section class="sheet" data-id="class-diagram-core">
+  <div class="head">
+    <span><span class="title">UML / CLASS · bomb-core</span></span>
+    <span class="src">src: <code>uml/class-diagram-core.svg</code></span>
+  </div>
+  <h2>Class Diagram — bomb-core</h2>
+  <p class="lead">
+    The shared simulation library. Filled diamonds mark composition — <code>GameWorld</code> owns the lifecycle of its entities — while open arrows show plain associations. The wire layer (<code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>) sits at the edge so the inner game model never depends on transport.
+  </p>
+  <figure><img src="class-diagram-core.svg" alt="Class diagram for bomb-core"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>3 / 6</span>
+  </div>
+</section>
+
+<section class="sheet" data-id="class-diagram-server">
+  <div class="head">
+    <span><span class="title">UML / CLASS · bomb-server</span></span>
+    <span class="src">src: <code>uml/class-diagram-server.svg</code></span>
+  </div>
+  <h2>Class Diagram — bomb-server</h2>
+  <p class="lead">
+    <code>BombServerApplication</code> is the composition root. It builds the WebSocket server, the session registry, the match manager, the auth providers, the lobby service, and the moderation stack. Implementations (e.g. <code>DevAuthProvider</code>, <code>GoogleAuthProvider</code>) sit behind the <code>AuthProvider</code> interface — Liskov-clean.
+  </p>
+  <figure><img src="class-diagram-server.svg" alt="Class diagram for bomb-server"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>4 / 6</span>
+  </div>
+</section>
+
+<section class="sheet" data-id="class-diagram-client">
+  <div class="head">
+    <span><span class="title">UML / CLASS · bomb-client</span></span>
+    <span class="src">src: <code>uml/class-diagram-client.svg</code></span>
+  </div>
+  <h2>Class Diagram — bomb-client</h2>
+  <p class="lead">
+    The JavaFX side. <code>ClientLauncher</code> bootstraps the age gate and the <code>SceneRouter</code>, which swaps between menu, lobby, rankings, and the in-game arena. <code>ArenaView</code> drives the render pipeline (renderer + particles + camera shake + post-FX) and pulls input through the gamepad poller; <code>GameClient</code> is the single WebSocket adapter every scene shares.
+  </p>
+  <figure><img src="class-diagram-client.svg" alt="Class diagram for bomb-client"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>5 / 6</span>
+  </div>
+</section>
+
+<section class="sheet" data-id="package-diagram">
+  <div class="head">
+    <span><span class="title">UML / PACKAGE</span></span>
+    <span class="src">src: <code>uml/package-diagram.svg</code></span>
+  </div>
+  <h2>Package Diagram</h2>
+  <p class="lead">
+    Three columns — one per Maven module — with dependency edges between them. Both runtime modules depend on <code>bomb-core</code>; the dashed line between client and server is the explicit non-dependency that the layering rule enforces. Inside core, sub-packages stack from <code>net</code> / <code>net.dto</code> at the top down through <code>sim</code>, <code>entity</code>, <code>world</code>, and <code>geom</code>, with <code>GameConfig</code> at the root.
+  </p>
+  <figure><img src="package-diagram.svg" alt="Package diagram for the three Maven modules"></figure>
+  <div class="foot">
+    <span>BomberMen-X · Architecture · 22 May 2026</span>
+    <span>6 / 6</span>
+  </div>
+</section>
+
+<script>
+  // If ?only=ID is in the URL, hide every other sheet so the user can
+  // print just one diagram at a time and the PDF comes out as one page.
+  (function () {
+    var url = new URL(window.location.href);
+    var only = url.searchParams.get("only");
+    if (!only) return;
+    document.querySelectorAll(".sheet").forEach(function (s) {
+      if (s.getAttribute("data-id") !== only) s.style.display = "none";
+    });
+    document.querySelector(".toolbar").style.display = "none";
+    document.title = "UML — " + only + " (standalone)";
+  })();
+</script>
+
+</body>
+</html>
