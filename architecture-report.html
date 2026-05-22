@@ -301,7 +301,7 @@
 <body>
 
 <div class="hint">
-  Open in browser → File → Print → Save as PDF. A4, default margins, background graphics ON. 17 pages.
+  Open in browser → File → Print → Save as PDF. A4, default margins, background graphics ON. 18 pages.
   <br><button onclick="window.print()">Print now</button>
 </div>
 
@@ -312,7 +312,7 @@
   <div class="subtitle">Agni vs V&#257;yu: The Mandala Wars</div>
   <hr class="rule">
   <div class="doctype">Architecture Report</div>
-  <div class="doctype-sub">Descriptive and Prescriptive Views &middot; one diagram per page</div>
+  <div class="doctype-sub">Descriptive and Prescriptive Views &middot; one diagram per page · with comparison tables</div>
   <hr class="rule2">
   <div class="uni">SRH University Stuttgart</div>
   <div class="course">Software Architecture and Development &middot; Java</div>
@@ -323,14 +323,14 @@
       <span>Jithendra Chittomothu &middot; Engineer</span>
     </div>
     <div>Brief: <em>Lastenheft</em>, Prof. Steffen Becker</div>
-    <div class="date">22 May 2026 &middot; 17 pages</div>
+    <div class="date">22 May 2026 &middot; 18 pages</div>
   </div>
 </div>
 </section>
 
 <!-- ============== PAGE 2 — ABSTRACT + CONTENTS ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">BomberMan-X &middot; Architecture Report</span><span>2 / 17</span></div>
+  <div class="head"><span class="l">BomberMan-X &middot; Architecture Report</span><span>3 / 18</span></div>
 
   <h2>Abstract and contents</h2>
   <p class="lead">
@@ -367,20 +367,21 @@
       <tr><td>1</td><td>Cover</td></tr>
       <tr><td>2</td><td>Abstract and contents</td></tr>
       <tr><td>3</td><td>Descriptive: module structure and layering rule</td></tr>
-      <tr><td>4</td><td>Class diagram &mdash; <code>bomb-core</code></td></tr>
-      <tr><td>5</td><td>Class diagram &mdash; <code>bomb-server</code></td></tr>
-      <tr><td>6</td><td>Class diagram &mdash; <code>bomb-client</code></td></tr>
-      <tr><td>7</td><td>Package diagram</td></tr>
-      <tr><td>8</td><td>Use case diagram</td></tr>
-      <tr><td>9</td><td>Activity diagram (match lifecycle)</td></tr>
-      <tr><td>10</td><td>Sequence diagram (match start)</td></tr>
-      <tr><td>11</td><td>Sequence diagram (bomb placement)</td></tr>
-      <tr><td>12</td><td>Packet protocol</td></tr>
-      <tr><td>13</td><td>Server authority and synchronisation</td></tr>
-      <tr><td>14</td><td>AI bot and state management</td></tr>
-      <tr><td>15</td><td>Prescriptive recommendations</td></tr>
-      <tr><td>16</td><td>Visual identity &mdash; hero banners</td></tr>
-      <tr><td>17</td><td>Visual identity &mdash; team crests and arena</td></tr>
+      <tr><td>4</td><td>Defence of architectural choices</td></tr>
+      <tr><td>5</td><td>Class diagram &mdash; <code>bomb-core</code></td></tr>
+      <tr><td>6</td><td>Class diagram &mdash; <code>bomb-server</code></td></tr>
+      <tr><td>7</td><td>Class diagram &mdash; <code>bomb-client</code></td></tr>
+      <tr><td>8</td><td>Package diagram</td></tr>
+      <tr><td>9</td><td>Use case diagram</td></tr>
+      <tr><td>10</td><td>Activity diagram (match lifecycle)</td></tr>
+      <tr><td>11</td><td>Sequence diagram (match start)</td></tr>
+      <tr><td>12</td><td>Sequence diagram (bomb placement)</td></tr>
+      <tr><td>13</td><td>Packet protocol</td></tr>
+      <tr><td>14</td><td>Server authority and synchronisation</td></tr>
+      <tr><td>15</td><td>AI bot and state management</td></tr>
+      <tr><td>16</td><td>Prescriptive recommendations</td></tr>
+      <tr><td>17</td><td>Visual identity &mdash; hero banners</td></tr>
+      <tr><td>18</td><td>Visual identity &mdash; team crests and arena</td></tr>
     </tbody>
   </table>
 
@@ -397,7 +398,7 @@
 
 <!-- ============== PAGE 3 — MODULES ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Descriptive &middot; modules and layering</span><span>3 / 17</span></div>
+  <div class="head"><span class="l">Descriptive &middot; modules and layering</span><span>4 / 18</span></div>
 
   <h2>4. Descriptive: modules and layering</h2>
   <p class="lead">
@@ -447,18 +448,91 @@
   <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
 </div></section>
 
-<!-- ============== PAGE 4 — CLASS: bomb-core ============== -->
+<!-- ============== PAGE 4 — DEFENCE OF CHOICES ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Class diagram &middot; <code>bomb-core</code></span><span>4 / 17</span></div>
+  <div class="head"><span class="l">Descriptive &middot; defence of architectural choices</span><span>4 / 18</span></div>
 
-  <h2>5. Class diagram &mdash; <code>bomb-core</code></h2>
+  <h2>6. Defence of the architectural choices</h2>
+  <p class="lead">
+    Five decisions shape the system. The table below names each
+    alternative considered, the reason the chosen option won, and what
+    would change if the other one had been picked instead.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Decision</th><th>Chosen</th><th>Alternatives considered</th><th>Why this wins</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Desktop client framework</strong></td>
+        <td>JavaFX 21</td>
+        <td>Swing, web client (HTML5 + Canvas)</td>
+        <td>Ships with the JDK. Scene-graph plus Canvas for custom rendering. JInput-compatible. Swing&apos;s animation primitives are weaker; a web client doubles the wire-format surface area.</td>
+      </tr>
+      <tr>
+        <td><strong>Server I/O</strong></td>
+        <td>Netty + WebSocket</td>
+        <td>Spring Boot Web, Vert.x, plain TCP</td>
+        <td>Battle-tested NIO with explicit control over the pipeline. Spring&apos;s footprint and Vert.x&apos;s reactive model fight the 60 Hz tick loop. Plain TCP would force us to re-implement WebSocket framing.</td>
+      </tr>
+      <tr>
+        <td><strong>Wire format</strong></td>
+        <td>JSON over WebSocket</td>
+        <td>Kryo, Protocol Buffers, FlatBuffers</td>
+        <td>Inspectable in a browser dev-tools panel; no schema compiler. The cost is roughly four times the bandwidth of a binary format; the next protocol version introduces Kryo as an opt-in.</td>
+      </tr>
+      <tr>
+        <td><strong>Authority model</strong></td>
+        <td>Server-authoritative</td>
+        <td>Deterministic lockstep, peer-to-peer</td>
+        <td>Single source of truth; clients cannot cheat; a centralised log enables replay. Lockstep is bug-prone across heterogeneous clients; peer-to-peer fragments truth and breaks moderation.</td>
+      </tr>
+      <tr>
+        <td><strong>Module layout</strong></td>
+        <td>Three Maven modules</td>
+        <td>One module, four or more modules</td>
+        <td>Three columns map cleanly to the three runtime concerns (simulation, server, client). One module hides the layering rule; four or more adds Maven friction without a real boundary.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.1 Tick rate, sequence numbers, and other micro-choices</h3>
+  <table>
+    <thead><tr><th>Question</th><th>Choice</th><th>Reason</th></tr></thead>
+    <tbody>
+      <tr><td>Tick rate</td><td>60 Hz</td><td>30 Hz felt sluggish on the bomb-place press; 120 Hz doubled the CPU cost with no visible benefit.</td></tr>
+      <tr><td>Sequence numbers</td><td>Monotonic 32-bit per connection</td><td>Vector clocks were over-engineered for one server per match; a single integer is sufficient.</td></tr>
+      <tr><td>Input buffer depth</td><td>30 frames</td><td>Half a second at 60 Hz &mdash; long enough for reconciliation under typical RTT, short enough for bounded replay.</td></tr>
+      <tr><td>Interpolation buffer</td><td>100 ms</td><td>One-frame jitter cushion; smaller buffers stutter on a dropped packet, larger ones feel laggy.</td></tr>
+      <tr><td>Threat-map size</td><td>13 &times; 13 cells</td><td>Matches the default arena; A* closed set fits in 169 entries, search runs in well under a millisecond.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 What this report does not promise</h3>
+  <p>
+    The architecture does not target hundreds of concurrent matches per
+    server; the brief asks for a single match. There is no horizontal
+    scaling, no sharding, no leaderless replication. Persistence is a
+    single Postgres instance behind the server. The cost of removing
+    these ceilings is documented in the prescriptive section.
+  </p>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 5 — CLASS: bomb-core ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Class diagram &middot; <code>bomb-core</code></span><span>5 / 18</span></div>
+
+  <h2>6. Class diagram &mdash; <code>bomb-core</code></h2>
   <figure class="big">
     <img src="uml/class-diagram-core.svg" alt="UML class diagram for bomb-core">
     <div class="cap"><b>Figure 1.</b> Class diagram for <code>bomb-core</code>. Filled diamonds mark composition; open arrows mark plain associations.</div>
   </figure>
 
   <div class="twocol">
-    <h3>5.1 What lives in core</h3>
+    <h3>6.1 What lives in core</h3>
     <p>
       <code>bomb-core</code> is the shared library. It carries the
       deterministic game model, the value types used by both runtimes,
@@ -475,7 +549,7 @@
       removing the world removes its contents.
     </p>
 
-    <h3>5.2 The tick interface</h3>
+    <h3>6.2 The tick interface</h3>
     <p>
       The world advances through <code>GameWorld.tick(input)</code>. The
       method is pure with respect to the input: given the same world
@@ -483,7 +557,7 @@
       That property is what makes determinism testable.
     </p>
 
-    <h3>5.3 The wire boundary</h3>
+    <h3>6.3 The wire boundary</h3>
     <p>
       The inner game model has no reference to the outer wire layer.
       Three classes bridge the two sides. <code>Snapshotter</code>
@@ -493,7 +567,7 @@
       enum tag that says what shape sits inside the envelope.
     </p>
 
-    <h3>5.4 Geometry and identity</h3>
+    <h3>6.4 Geometry and identity</h3>
     <p>
       <code>Direction</code>, <code>TileType</code>, and the
       <code>id</code> sequence generator all live in core because both
@@ -502,7 +576,7 @@
       writer.
     </p>
 
-    <h3>5.5 Why one library, not two</h3>
+    <h3>6.5 Why one library, not two</h3>
     <p>
       The choice to keep the simulation, the entities, and the wire
       types in one library &mdash; rather than split into
@@ -519,16 +593,16 @@
 
 <!-- ============== PAGE 5 — CLASS: bomb-server ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Class diagram &middot; <code>bomb-server</code></span><span>5 / 17</span></div>
+  <div class="head"><span class="l">Class diagram &middot; <code>bomb-server</code></span><span>6 / 18</span></div>
 
-  <h2>6. Class diagram &mdash; <code>bomb-server</code></h2>
+  <h2>7. Class diagram &mdash; <code>bomb-server</code></h2>
   <figure class="big">
     <img src="uml/class-diagram-server.svg" alt="UML class diagram for bomb-server">
     <div class="cap"><b>Figure 2.</b> Class diagram for <code>bomb-server</code>. <code>BombServerApplication</code> is the composition root; the magenta triangle marks the <code>AuthProvider</code> interface implemented by the dev and Google providers.</div>
   </figure>
 
   <div class="twocol">
-    <h3>6.1 The composition root</h3>
+    <h3>7.1 The composition root</h3>
     <p>
       <code>BombServerApplication</code> is where every server-side
       object is wired together. It builds the Netty
@@ -538,7 +612,7 @@
       authentication and lobby services.
     </p>
 
-    <h3>6.2 From bytes to envelopes</h3>
+    <h3>7.2 From bytes to envelopes</h3>
     <p>
       Inbound traffic flows through Netty's pipeline up to
       <code>GameServerHandler</code>, which is responsible for parsing
@@ -548,7 +622,7 @@
       and auth envelopes go to the lobby or auth service.
     </p>
 
-    <h3>6.3 Matches as state machines</h3>
+    <h3>7.3 Matches as state machines</h3>
     <p>
       Each active match is one <code>MatchSession</code>. The session
       owns the only canonical <code>GameWorld</code> for that match
@@ -558,7 +632,7 @@
       guarded transitions in <code>MatchSession.transitionTo</code>.
     </p>
 
-    <h3>6.4 Authentication as an interface</h3>
+    <h3>7.4 Authentication as an interface</h3>
     <p>
       <code>AuthProvider</code> is an interface with two
       implementations: <code>DevAuthProvider</code> for local
@@ -568,7 +642,7 @@
       environment without touching <code>GameServerHandler</code>.
     </p>
 
-    <h3>6.5 Server authority in one place</h3>
+    <h3>7.5 Server authority in one place</h3>
     <p>
       The simulation, the player roster, the bomb pool, and the
       pickup tables are all read and written by exactly one thread
@@ -583,16 +657,16 @@
 
 <!-- ============== PAGE 6 — CLASS: bomb-client ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Class diagram &middot; <code>bomb-client</code></span><span>6 / 17</span></div>
+  <div class="head"><span class="l">Class diagram &middot; <code>bomb-client</code></span><span>7 / 18</span></div>
 
-  <h2>7. Class diagram &mdash; <code>bomb-client</code></h2>
+  <h2>8. Class diagram &mdash; <code>bomb-client</code></h2>
   <figure class="big">
     <img src="uml/class-diagram-client.svg" alt="UML class diagram for bomb-client">
     <div class="cap"><b>Figure 3.</b> Class diagram for <code>bomb-client</code>. The <code>SceneRouter</code> swaps JavaFX scenes; <code>GameClient</code> is the single WebSocket adapter every scene shares.</div>
   </figure>
 
   <div class="twocol">
-    <h3>7.1 Boot sequence</h3>
+    <h3>8.1 Boot sequence</h3>
     <p>
       <code>ClientLauncher</code> is the JavaFX <code>Application</code>
       entry point. It builds the <code>SceneRouter</code>, runs the
@@ -600,7 +674,7 @@
       navigates to the <code>MainMenuView</code>.
     </p>
 
-    <h3>7.2 Scenes and routing</h3>
+    <h3>8.2 Scenes and routing</h3>
     <p>
       A single <code>SceneRouter</code> owns the stage. It swaps
       between four <em>views</em>: the main menu, the lobby, the
@@ -610,7 +684,7 @@
       the router can start and stop per-view resources cleanly.
     </p>
 
-    <h3>7.3 The render loop</h3>
+    <h3>8.3 The render loop</h3>
     <p>
       <code>ArenaView</code> drives a JavaFX
       <code>AnimationTimer</code> at 60 FPS. Each frame, it
@@ -623,7 +697,7 @@
       post-effect pass (scanline + vignette).
     </p>
 
-    <h3>7.4 Input and feedback</h3>
+    <h3>8.4 Input and feedback</h3>
     <p>
       Input comes from two sources. The keyboard pump lives in
       <code>ArenaView</code>; the gamepad pump lives in
@@ -634,7 +708,7 @@
       consecutive snapshots.
     </p>
 
-    <h3>7.5 One WebSocket, many scenes</h3>
+    <h3>8.5 One WebSocket, many scenes</h3>
     <p>
       <code>GameClient</code> is the shared WebSocket adapter. It is
       created once at lobby time and stays alive across the lobby
@@ -648,16 +722,16 @@
 
 <!-- ============== PAGE 7 — PACKAGE ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Package diagram</span><span>7 / 17</span></div>
+  <div class="head"><span class="l">Package diagram</span><span>8 / 18</span></div>
 
-  <h2>8. Package diagram</h2>
+  <h2>9. Package diagram</h2>
   <figure class="big">
     <img src="uml/package-diagram.svg" alt="Package diagram">
     <div class="cap"><b>Figure 4.</b> Package diagram. Three columns, one per Maven module. Both runtimes depend on <code>bomb-core</code>; the dashed line between client and server marks the explicit non-dependency that the layering rule enforces.</div>
   </figure>
 
   <div class="twocol">
-    <h3>8.1 The three columns</h3>
+    <h3>9.1 The three columns</h3>
     <p>
       Each column is one Maven module. The columns are arranged so
       that the two runtimes flank the shared library: client on the
@@ -666,7 +740,7 @@
       themselves are what matter.
     </p>
 
-    <h3>8.2 The dashed non-edge</h3>
+    <h3>9.2 The dashed non-edge</h3>
     <p>
       The dashed line between client and server is the most important
       element on the diagram. It records the explicit absence of a
@@ -675,7 +749,7 @@
       Cross-runtime communication happens only over the wire.
     </p>
 
-    <h3>8.3 Sub-packages inside core</h3>
+    <h3>9.3 Sub-packages inside core</h3>
     <p>
       Inside the middle column, <code>bomb-core</code> is broken into
       seven sub-packages stacked from outer wire layer down to inner
@@ -688,7 +762,7 @@
       package may depend on it, but it depends on nothing.
     </p>
 
-    <h3>8.4 Why the rule matters</h3>
+    <h3>9.4 Why the rule matters</h3>
     <p>
       Without the layering rule, a small refactor in either runtime
       would risk pulling shared code in by accident, and the two
@@ -703,16 +777,16 @@
 
 <!-- ============== PAGE 8 — USE CASE ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Use case diagram</span><span>8 / 17</span></div>
+  <div class="head"><span class="l">Use case diagram</span><span>9 / 18</span></div>
 
-  <h2>9. Use case diagram</h2>
+  <h2>10. Use case diagram</h2>
   <figure class="big">
     <img src="uml/use-case.svg" alt="Use case diagram">
     <div class="cap"><b>Figure 5.</b> Use case diagram. Five actors and five lifecycle groups around the system boundary. Dashed arrows are <em>«extends»</em> and <em>«includes»</em> stereotypes.</div>
   </figure>
 
   <div class="twocol">
-    <h3>9.1 Five actors</h3>
+    <h3>10.1 Five actors</h3>
     <p>
       The <strong>Player</strong> is the human user, two to four per
       match. The <strong>AI Bot</strong> may substitute for any
@@ -725,7 +799,7 @@
       <em>Verwaltungsserver</em> &mdash; brokers discovery.
     </p>
 
-    <h3>9.2 Five lifecycle groups</h3>
+    <h3>10.2 Five lifecycle groups</h3>
     <p>
       The use cases are grouped by where in the player&apos;s lifecycle
       they fire: <em>discovery</em> (browse servers, log in,
@@ -736,7 +810,7 @@
       <em>cross-cutting</em> (spectate, switch to AI, log gameplay).
     </p>
 
-    <h3>9.3 Stereotypes that matter</h3>
+    <h3>10.3 Stereotypes that matter</h3>
     <p>
       Three dashed arrows carry stereotypes. <em>Resolve chains</em>
       <code>«includes»</code> <em>Place bomb</em> because every place
@@ -748,7 +822,7 @@
       fallback is offered immediately after the player logs in.
     </p>
 
-    <h3>9.4 What the diagram tells the reader</h3>
+    <h3>10.4 What the diagram tells the reader</h3>
     <p>
       The use case diagram fixes the system boundary. Anything not
       inside the dashed rectangle is external. Anything inside is
@@ -763,16 +837,16 @@
 
 <!-- ============== PAGE 9 — ACTIVITY ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Activity diagram &middot; match lifecycle</span><span>9 / 17</span></div>
+  <div class="head"><span class="l">Activity diagram &middot; match lifecycle</span><span>10 / 18</span></div>
 
-  <h2>10. Activity diagram &mdash; match lifecycle</h2>
+  <h2>11. Activity diagram &mdash; match lifecycle</h2>
   <figure class="big">
     <img src="uml/activity-match-lifecycle.svg" alt="Activity diagram of the match lifecycle">
     <div class="cap"><b>Figure 6.</b> Activity diagram of one complete match. Server (left), Shared coordination (centre), Client (right). The gold bar is the fork into the parallel 60 Hz tick loop.</div>
   </figure>
 
   <div class="twocol">
-    <h3>10.1 Three lanes</h3>
+    <h3>11.1 Three lanes</h3>
     <p>
       The activity is partitioned into three swimlanes. The
       <strong>Server</strong> lane owns boot, registration with the
@@ -785,7 +859,7 @@
       client side.
     </p>
 
-    <h3>10.2 The quorum gate</h3>
+    <h3>11.2 The quorum gate</h3>
     <p>
       The match cannot start until the quorum gate (top centre
       diamond) is satisfied: at least two players, at most four. The
@@ -793,7 +867,7 @@
       server&apos;s lobby state, never the other way around.
     </p>
 
-    <h3>10.3 The fork into the tick loop</h3>
+    <h3>11.3 The fork into the tick loop</h3>
     <p>
       The gold bar is a fork. Server and client run their tick-loop
       activities in parallel from this point. Cross-lane dashed
@@ -803,7 +877,7 @@
       client.
     </p>
 
-    <h3>10.4 The end condition</h3>
+    <h3>11.4 The end condition</h3>
     <p>
       The bottom diamond evaluates the canonical end condition every
       tick: one or zero bombermen alive, or the match time has
@@ -811,7 +885,7 @@
       tick. If "yes", control flows up to the ranking screen.
     </p>
 
-    <h3>10.5 What the diagram does not show</h3>
+    <h3>11.5 What the diagram does not show</h3>
     <p>
       The diagram intentionally omits reconciliation and prediction
       &mdash; those are activities <em>inside</em> the client
@@ -826,16 +900,16 @@
 
 <!-- ============== PAGE 10 — SEQUENCE: match start ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Sequence diagram &middot; match start</span><span>10 / 17</span></div>
+  <div class="head"><span class="l">Sequence diagram &middot; match start</span><span>11 / 18</span></div>
 
-  <h2>11. Sequence diagram &mdash; match start</h2>
+  <h2>12. Sequence diagram &mdash; match start</h2>
   <figure class="big">
     <img src="diagrams/sequence-match-start.svg" alt="Sequence diagram: match start">
     <div class="cap"><b>Figure 7.</b> The sequence from client connect through to the first authoritative snapshot of an active match. Time flows top to bottom.</div>
   </figure>
 
   <div class="twocol">
-    <h3>11.1 Connect and identify</h3>
+    <h3>12.1 Connect and identify</h3>
     <p>
       The sequence begins with a WebSocket upgrade. Immediately after,
       the client sends a <code>JOIN</code> envelope carrying the
@@ -844,7 +918,7 @@
       first <code>LOBBY</code> snapshot describing the current seats.
     </p>
 
-    <h3>11.2 Lobby coordination</h3>
+    <h3>12.2 Lobby coordination</h3>
     <p>
       While the lobby is open, any change to its state &mdash; a
       player joining, leaving, marking themselves ready, the game
@@ -853,7 +927,7 @@
       from that single source of truth.
     </p>
 
-    <h3>11.3 Transition to active</h3>
+    <h3>12.3 Transition to active</h3>
     <p>
       When quorum is met and the game master starts the match, the
       server transitions <code>MatchState</code> from
@@ -864,7 +938,7 @@
       shows the arena scene.
     </p>
 
-    <h3>11.4 What is not shown</h3>
+    <h3>12.4 What is not shown</h3>
     <p>
       The diagram does not show the bot-substitution path (any client
       can offer a non-random AI; the substitution is internal to the
@@ -872,7 +946,7 @@
       background at 0.2 Hz from the moment of connection.
     </p>
 
-    <h3>11.5 Why this is a reference</h3>
+    <h3>12.5 Why this is a reference</h3>
     <p>
       This sequence is the canonical first interaction for every
       practicum group&apos;s client. A new client implementation can
@@ -886,16 +960,16 @@
 
 <!-- ============== PAGE 11 — SEQUENCE: bomb ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Sequence diagram &middot; bomb placement</span><span>11 / 17</span></div>
+  <div class="head"><span class="l">Sequence diagram &middot; bomb placement</span><span>12 / 18</span></div>
 
-  <h2>12. Sequence diagram &mdash; bomb placement</h2>
+  <h2>13. Sequence diagram &mdash; bomb placement</h2>
   <figure class="big">
     <img src="diagrams/sequence-bomb.svg" alt="Sequence diagram: bomb placement and explosion">
     <div class="cap"><b>Figure 8.</b> One bomb&apos;s journey from key press through to the explosion event and the kill feed. Time flows top to bottom.</div>
   </figure>
 
   <div class="twocol">
-    <h3>12.1 Press to wire</h3>
+    <h3>13.1 Press to wire</h3>
     <p>
       The player presses the place-bomb key. The client&apos;s input
       pump emits a <code>BOMB_PLACE</code> envelope with the current
@@ -903,7 +977,7 @@
       envelope is queued on the WebSocket for delivery.
     </p>
 
-    <h3>12.2 Server validates</h3>
+    <h3>13.2 Server validates</h3>
     <p>
       On the next server tick, the envelope is drained. The server
       checks that the player still has at least one bomb in their
@@ -912,7 +986,7 @@
       the next <code>SYNC</code> tells the client what is real.
     </p>
 
-    <h3>12.3 The fuse runs</h3>
+    <h3>13.3 The fuse runs</h3>
     <p>
       A successful placement creates a <code>Bomb</code> entity with
       the configured fuse length. Every subsequent server tick, the
@@ -923,7 +997,7 @@
       reaction.
     </p>
 
-    <h3>12.4 Cosmetic vs canonical</h3>
+    <h3>13.4 Cosmetic vs canonical</h3>
     <p>
       Detonation produces two outbound packets. The
       <code>EXPLOSION</code> packet is cosmetic; it carries the list
@@ -935,7 +1009,7 @@
       gone.
     </p>
 
-    <h3>12.5 What the client never trusts</h3>
+    <h3>13.5 What the client never trusts</h3>
     <p>
       The client never trusts its own prediction. If the predicted
       bomb is rejected by the server, the next <code>SYNC</code>
@@ -949,9 +1023,9 @@
 
 <!-- ============== PAGE 12 — PACKET PROTOCOL ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Packet protocol</span><span>12 / 17</span></div>
+  <div class="head"><span class="l">Packet protocol</span><span>13 / 18</span></div>
 
-  <h2>13. Packet protocol</h2>
+  <h2>14. Packet protocol</h2>
   <p class="lead">
     The wire format is JSON over WebSocket. Every message is wrapped in one
     envelope so framing, sequencing, and version negotiation stay in one
@@ -959,7 +1033,7 @@
     requires cross-group interoperability.
   </p>
 
-  <h3>13.1 Envelope</h3>
+  <h3>14.1 Envelope</h3>
   <p>
     Every message is a JSON object with five fields: <code>v</code>
     (protocol version, uint8), <code>t</code> (message type tag),
@@ -968,7 +1042,7 @@
     only), and <code>p</code> (typed payload).
   </p>
 
-  <h3>13.2 Catalogue</h3>
+  <h3>14.2 Catalogue</h3>
   <table>
     <thead><tr><th>Type</th><th>Direction</th><th>Trigger</th><th>Rate</th></tr></thead>
     <tbody>
@@ -984,7 +1058,7 @@
     </tbody>
   </table>
 
-  <h3>13.3 Anti-desync rules</h3>
+  <h3>14.3 Anti-desync rules</h3>
   <ul>
     <li>Strict monotonic <code>seq</code> per connection; duplicates and out-of-order frames are dropped.</li>
     <li>The server overrides any illegal client prediction in the next snapshot; the client reconciles.</li>
@@ -998,16 +1072,16 @@
 
 <!-- ============== PAGE 13 — SERVER AUTHORITY ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Server authority &amp; synchronisation</span><span>13 / 17</span></div>
+  <div class="head"><span class="l">Server authority &amp; synchronisation</span><span>14 / 18</span></div>
 
-  <h2>14. Server authority and synchronisation</h2>
+  <h2>15. Server authority and synchronisation</h2>
   <p class="lead">
     The server runs the only canonical simulation. The client predicts
     locally for responsiveness and reconciles against every server snapshot.
     Between snapshots, the renderer interpolates so motion stays smooth.
   </p>
 
-  <h3>14.1 The 60 Hz tick loop</h3>
+  <h3>15.1 The 60 Hz tick loop</h3>
   <p>
     The server runs a fixed step loop at 60 Hz (16.67 ms per tick). Each
     tick has five stages: drain queued inputs, resolve player intents into
@@ -1016,7 +1090,7 @@
     leaving about 3 ms of headroom.
   </p>
 
-  <h3>14.2 Client prediction</h3>
+  <h3>15.2 Client prediction</h3>
   <p>
     The client applies its input locally on the same frame it sends the
     matching <code>MovePacket</code>. The input is kept in a ring buffer
@@ -1025,7 +1099,7 @@
     latency.
   </p>
 
-  <h3>14.3 Reconciliation</h3>
+  <h3>15.3 Reconciliation</h3>
   <p>
     Each arriving <code>SyncPacket</code> carries a server tick. The
     client compares the snapshot to its predicted state at the same tick.
@@ -1034,7 +1108,7 @@
     newer than that tick is replayed on top, frame by frame.
   </p>
 
-  <h3>14.4 Interpolation</h3>
+  <h3>15.4 Interpolation</h3>
   <p>
     The renderer keeps its display cursor about 100 ms behind the latest
     snapshot and interpolates linearly between the two most recent ones.
@@ -1042,7 +1116,7 @@
     prediction or reconciliation.
   </p>
 
-  <h3>14.5 Invariants</h3>
+  <h3>15.5 Invariants</h3>
   <ol>
     <li>Determinism. Same seed, same input log, same state stream.</li>
     <li>The server is the sole writer of the canonical world.</li>
@@ -1056,16 +1130,16 @@
 
 <!-- ============== PAGE 14 — AI + STATE ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">AI bot &amp; state management</span><span>14 / 17</span></div>
+  <div class="head"><span class="l">AI bot &amp; state management</span><span>15 / 18</span></div>
 
-  <h2>15. AI bot and state management</h2>
+  <h2>16. AI bot and state management</h2>
   <p class="lead">
     The brief requires that every client offer a non-random AI fallback.
     State management uses explicit enumerations with guarded transitions,
     rather than boolean flags.
   </p>
 
-  <h3>15.1 The AI bot</h3>
+  <h3>16.1 The AI bot</h3>
   <p>
     The bot is a pure function of the current world snapshot and the
     bot&apos;s own seat. Every tick it builds a 13&times;13 threat map
@@ -1089,7 +1163,7 @@
     heuristic; the closed set is bounded by the 169 cells of the grid.
   </p>
 
-  <h3>15.2 State management</h3>
+  <h3>16.2 State management</h3>
   <table>
     <thead><tr><th>Enumeration</th><th>States</th></tr></thead>
     <tbody>
@@ -1110,16 +1184,16 @@
 
 <!-- ============== PAGE 15 — PRESCRIPTIVE ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Prescriptive &middot; recommendations</span><span>15 / 17</span></div>
+  <div class="head"><span class="l">Prescriptive &middot; recommendations</span><span>16 / 18</span></div>
 
-  <h2>16. Prescriptive architecture</h2>
+  <h2>17. Prescriptive architecture</h2>
   <p class="lead">
     The system meets every functional requirement in the brief. The
     recommendations below are future-proofing rather than defect fixes.
     They are ordered by priority and accompanied by an effort estimate.
   </p>
 
-  <h3>16.1 Must do</h3>
+  <h3>17.1 Must do</h3>
   <table>
     <thead><tr><th>ID</th><th>Recommendation</th><th>Effort</th></tr></thead>
     <tbody>
@@ -1129,7 +1203,7 @@
     </tbody>
   </table>
 
-  <h3>16.2 Should do</h3>
+  <h3>17.2 Should do</h3>
   <table>
     <thead><tr><th>ID</th><th>Recommendation</th><th>Effort</th></tr></thead>
     <tbody>
@@ -1140,7 +1214,7 @@
     </tbody>
   </table>
 
-  <h3>16.3 Should not do</h3>
+  <h3>17.3 Should not do</h3>
   <p>
     Three otherwise-tempting paths to avoid. First, adding a shared library
     between client and server beyond <code>bomb-core</code> would dissolve
@@ -1154,9 +1228,9 @@
 
 <!-- ============== PAGE 16 — BANNERS ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Visual identity &middot; hero banners</span><span>16 / 17</span></div>
+  <div class="head"><span class="l">Visual identity &middot; hero banners</span><span>17 / 18</span></div>
 
-  <h2>17. Visual identity: hero banners</h2>
+  <h2>18. Visual identity: hero banners</h2>
   <p class="lead">
     The hero banner is the project&apos;s identity. It carries the project
     name, the two faction names, and the tagline. A dark variant ships in
@@ -1180,7 +1254,7 @@
 
 <!-- ============== PAGE 17 — CRESTS + ARENA ============== -->
 <section class="page"><div class="pagebox">
-  <div class="head"><span class="l">Visual identity &middot; crests and arena</span><span>17 / 17</span></div>
+  <div class="head"><span class="l">Visual identity &middot; crests and arena</span><span>18 / 18</span></div>
 
   <h2>18. Visual identity: team crests and arena spread</h2>
   <p class="lead">

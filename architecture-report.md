@@ -2,43 +2,41 @@
 
 ## Agni vs Vāyu: The Mandala Wars
 
-**Architecture Report — Descriptive and Prescriptive Views**
+**Architecture Report — Descriptive and Prescriptive Views (one diagram per page)**
 
-SRH University Stuttgart  ·  Software Architecture and Development · Java  
-Brief: *Lastenheft*, Prof. Steffen Becker  
-Authors: Abhilash Anuku · Captain  ·  Simranjot Kaur · Designer  ·  Jithendra Chittomothu · Engineer  
-22 May 2026
+SRH University Stuttgart · Software Architecture and Development · Java
+Brief: *Lastenheft*, Prof. Steffen Becker
+Authors: Abhilash Anuku · Captain · Simranjot Kaur · Designer · Jithendra Chittomothu · Engineer
+22 May 2026 · 17 pages
 
 ---
 
-> **Importing into Google Docs.** Upload this file to Google Drive and open it
-> with Google Docs. Drive will offer "Open with Google Docs" and convert the
-> Markdown. Alternatively, in Google Docs use *File → Import → Upload* and
-> pick this `.md`. Make sure the "Markdown" option is on under
-> *Tools → Preferences → Enable Markdown*.
+> **Importing into Google Docs.** Upload this file to Google Drive and open
+> it with Google Docs (right-click → Open with → Google Docs). For automatic
+> Markdown conversion, enable *Settings → Convert uploaded files* in Drive,
+> or in Docs use *Tools → Preferences → Enable Markdown*.
 
 ---
 
 ## 1. Abstract
 
-BomberMan-X is a client and server application written in Java. The brief, by
-Prof. Steffen Becker, asks for a Bomberman that lets two to four players
+BomberMan-X is a client and server application written in Java. The brief,
+by Prof. Steffen Becker, asks for a Bomberman that lets two to four players
 compete in one shared arena over the network. The brief also requires that
 any group's server must work with any other group's client. This
 interoperability rule is the strongest single constraint in the design.
 
-The system is organised as three Maven modules. The shared library holds the
-deterministic simulation and the wire protocol. The server module runs the
-canonical match instance on top of Netty and WebSockets. The client module
-is a JavaFX desktop application that predicts inputs locally for
-responsiveness and reconciles against the server on every snapshot. The two
-runtime modules never depend on each other; they meet only at runtime, over
-the wire.
+The system is organised as three Maven modules. The shared library holds
+the deterministic simulation and the wire protocol. The server module runs
+the canonical match instance on top of Netty and WebSockets. The client
+module is a JavaFX desktop application that predicts inputs locally for
+responsiveness and reconciles against the server on every snapshot. The
+two runtime modules never depend on each other; they meet only at runtime,
+over the wire.
 
 The descriptive sections walk through the system as built. The prescriptive
 section lists, in priority order, the architecture changes a successor team
-should make. The image plates at the end carry the visual identity for the
-in-game arena and the player profiles.
+should make.
 
 ## 2. Contents
 
@@ -46,27 +44,32 @@ in-game arena and the player profiles.
 |------|---------|
 | 1 | Cover |
 | 2 | Abstract and contents |
-| 3 | Descriptive: module structure and layering rule |
-| 4 | Descriptive: class diagrams (core, server, client) |
-| 5 | Descriptive: package diagram and use case diagram |
-| 6 | Descriptive: activity diagram and sequence diagrams |
-| 7 | Descriptive: packet protocol |
-| 8 | Descriptive: server authority and synchronisation |
-| 9 | Descriptive: AI bot and state management |
-| 10 | Prescriptive: recommendations for the next iteration |
-| 11 | Visual identity: hero banners |
-| 12 | Visual identity: team crests and arena spread |
+| 3 | Modules and layering rule |
+| 4 | Class diagram — `bomb-core` |
+| 5 | Class diagram — `bomb-server` |
+| 6 | Class diagram — `bomb-client` |
+| 7 | Package diagram |
+| 8 | Use case diagram |
+| 9 | Activity diagram (match lifecycle) |
+| 10 | Sequence diagram (match start) |
+| 11 | Sequence diagram (bomb placement) |
+| 12 | Packet protocol |
+| 13 | Server authority and synchronisation |
+| 14 | AI bot and state management |
+| 15 | Prescriptive recommendations |
+| 16 | Visual identity — hero banners |
+| 17 | Visual identity — team crests and arena |
 
 ## 3. References
 
 1. M. Frank and S. Becker. *Lastenheft fürs Softwarepraktikum: Aufgabe Bomberman*. Version 1.1, 29.05.2017.
-2. Glenn Fiedler. *Networked Physics*, gafferongames.com, 2014. Reference for client prediction and reconciliation.
-3. E. Gamma, R. Helm, R. Johnson, J. Vlissides. *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley, 1994.
+2. Glenn Fiedler. *Networked Physics*, gafferongames.com, 2014.
+3. E. Gamma, R. Helm, R. Johnson, J. Vlissides. *Design Patterns*. Addison-Wesley, 1994.
 4. R. C. Martin. *Clean Architecture*. Prentice Hall, 2017.
 
 ---
 
-## 4. Descriptive architecture: modules and layering
+## 4. Modules and layering rule
 
 BomberMan-X is built as three Maven modules. The dependency edges between
 them are the load-bearing rule of the whole architecture.
@@ -75,127 +78,407 @@ them are the load-bearing rule of the whole architecture.
 
 | Module | Role | Major types |
 |---|---|---|
-| `bomb-core` | Shared library. Holds the deterministic simulation, the entity model, and the wire protocol. Compiled against by both runtimes. Depends on nothing inside the project. | `GameWorld`, `GameConfig`, `Bomb`, `Explosion`, `PowerUpItem`, `Envelope`, `MessageType`, `WireCodec` |
+| `bomb-core` | Shared library. Deterministic simulation, entity model, wire protocol. Depends on nothing inside the project. | `GameWorld`, `GameConfig`, `Bomb`, `Explosion`, `PowerUpItem`, `Envelope`, `MessageType`, `WireCodec` |
 | `bomb-server` | Authoritative server. Owns the only canonical `GameWorld` for each active match. Accepts WebSocket connections via Netty. | `BombServerApplication`, `WebSocketServer`, `SessionRegistry`, `MatchManager`, `MatchSession` |
-| `bomb-client` | JavaFX desktop application. Predicts locally for responsiveness, reconciles against every server snapshot, renders the arena and HUD. | `ClientLauncher`, `SceneRouter`, `ArenaView`, `ArenaRenderer`, `GameClient`, `BotPolicy` |
+| `bomb-client` | JavaFX desktop application. Predicts locally for responsiveness, reconciles against every snapshot, renders the arena and HUD. | `ClientLauncher`, `SceneRouter`, `ArenaView`, `ArenaRenderer`, `GameClient`, `BotPolicy` |
 
 ### 4.2 The layering rule
 
-Both runtime modules depend on `bomb-core`. Neither runtime module depends on
-the other. The two runtimes meet only at runtime, over the WebSocket wire, by
-exchanging the JSON envelopes defined in `com.bombermenx.core.net`. This rule
-is enforced by the Maven dependency graph. A pull request that adds an edge
-between the two runtimes is rejected at review.
+Both runtime modules depend on `bomb-core`. Neither runtime module depends
+on the other. The two runtimes meet only at runtime, over the WebSocket
+wire, by exchanging the JSON envelopes defined in
+`com.bombermenx.core.net`. This rule is enforced by the Maven dependency
+graph; a pull request that adds an edge between the two runtimes is
+rejected at review.
 
 ### 4.3 Inner and outer layers inside the shared library
 
-Inside `bomb-core`, the inner game model (packages `geom`, `world`, `entity`)
-has no knowledge of the outer wire layer (packages `net`, `net.dto`). The
-`Snapshotter` class is the bridge that turns simulation state into
-wire-shaped data transfer objects. This means the simulation can run, be
-tested, and be replayed without ever opening a socket.
+Inside `bomb-core`, the inner game model (`geom`, `world`, `entity`) has
+no knowledge of the outer wire layer (`net`, `net.dto`). The
+`Snapshotter` class is the bridge that turns simulation state into wire
+DTOs.
 
-### 4.4 What this architecture is built to optimise for
+### 4.4 What this architecture optimises for
 
-1. **Determinism.** Given a seed and an input log, every replay must produce
-   the same state stream. This is the property that lets us write
-   replay-from-seed tests.
-2. **Cross-group interoperability.** Any group's server must accept any
-   group's client over the same envelope. The protocol is treated as a
-   published contract, not an implementation detail.
-3. **Responsiveness.** Client-side prediction keeps input feel under one
-   frame (16 ms) even when network round-trip time climbs to 80 ms.
+1. **Determinism.** Same seed, same input log, same state stream.
+2. **Cross-group interoperability.** Any group's server must accept any group's client over the same envelope.
+3. **Responsiveness.** Client prediction keeps input feel under one frame even when network round-trip time climbs.
 
-### 4.5 What this architecture is not built to optimise for
+### 4.5 Defence of the architectural choices
 
-The system is not designed for thousands of concurrent matches per process.
-The brief asks for a single match at a time on one server. We have not added
-horizontal scaling, sharding, or distributed state. The prescriptive section
-lists scaling as an open recommendation.
+Five decisions shape the system. The table below names each alternative
+that was considered, the reason the chosen option won, and what would
+change if the other one had been picked instead.
+
+| Decision | Chosen | Alternatives considered | Why the chosen option wins |
+|---|---|---|---|
+| **Desktop client framework** | JavaFX 21 | Swing, web client (HTML5 + Canvas) | Ships with the JDK, scene-graph plus Canvas for custom rendering, JInput-compatible. Swing's animation primitives are weaker; a web client doubles the wire-format surface area. |
+| **Server I/O** | Netty + WebSocket | Spring Boot Web, Vert.x, plain TCP | Battle-tested NIO with explicit control over the pipeline. Spring's footprint and Vert.x's reactive model fight the 60 Hz tick loop. Plain TCP would force us to reimplement WebSocket framing. |
+| **Wire format** | JSON over WebSocket | Kryo, Protocol Buffers, FlatBuffers | Inspectable in a browser dev-tools panel; no schema compiler. The cost is roughly four times the bandwidth of a binary format; the next protocol version introduces Kryo as an opt-in. |
+| **Authority model** | Server-authoritative | Deterministic lockstep, peer-to-peer | Single source of truth; clients cannot cheat; centralised log enables replay. Lockstep is bug-prone across heterogeneous clients; peer-to-peer fragments truth and breaks moderation. |
+| **Module layout** | Three Maven modules | One module, four-plus modules | Three columns map cleanly to the three runtime concerns (simulation, server, client). One module hides the layering rule; four-plus adds Maven friction without a real boundary. |
+
+### 4.6 Tick rate, sequence numbers, and other micro-choices
+
+| Question | Choice | Reason |
+|---|---|---|
+| Tick rate | 60 Hz | 30 Hz felt sluggish on the bomb-place press; 120 Hz doubled the CPU cost with no visible benefit. |
+| Sequence numbers | Monotonic 32-bit per connection | Vector clocks were over-engineered for one server per match; a single integer is sufficient. |
+| Input buffer depth | 30 frames | Half a second at 60 Hz — long enough for reconciliation under typical RTT, short enough that bounded replay stays cheap. |
+| Interpolation buffer | 100 ms | One frame jitter cushion; smaller buffers stutter on a single dropped packet, larger buffers feel laggy. |
+| Threat-map size | 13 × 13 cells | Matches the default arena; A\* closed set fits in 169 entries, search runs in well under a millisecond. |
+
+### 4.7 What this report does not promise
+
+The architecture does not target hundreds of concurrent matches per
+server; the brief asks for a single match. There is no horizontal
+scaling, no sharding, no leaderless replication. Persistence is a
+single Postgres instance behind the server. The cost of removing these
+ceilings is documented in the prescriptive section.
 
 ---
 
-## 5. Class diagrams
+## 5. Class diagram — `bomb-core`
 
-One class diagram per module. Filled diamonds mark composition (the owner
-controls the lifetime of the part). Open arrows mark plain associations.
+![Class diagram for bomb-core](uml/class-diagram-core.svg)
 
-![Figure 1. Class diagram for bomb-core.](uml/class-diagram-core.svg)
+**Figure 1.** Class diagram for `bomb-core`. Filled diamonds mark composition; open arrows mark plain associations.
 
-**Figure 1.** Class diagram for `bomb-core`. `GameWorld` composes the entity set. The wire layer sits at the edge so the simulation has no knowledge of transport.
+### 5.1 What lives in core
 
-![Figure 2. Class diagram for bomb-server.](uml/class-diagram-server.svg)
+`bomb-core` is the shared library. It carries the deterministic game
+model, the value types used by both runtimes, and the on-the-wire envelope
+that both runtimes serialise to and deserialise from.
+
+The central class is `GameWorld`. It composes the arena and every entity
+inside it: the active `Bomb` instances, the live `Explosion` objects, the
+collectable `PowerUpItem` entries on the floor, and the per-player
+`PlayerState`. The filled-diamond composition mark on its outgoing edges
+is deliberate — removing the world removes its contents.
+
+### 5.2 The tick interface
+
+The world advances through `GameWorld.tick(input)`. The method is pure
+with respect to the input: given the same world hash and the same input
+stream, it produces the same next world. That property is what makes
+determinism testable.
+
+### 5.3 The wire boundary
+
+Three classes bridge the simulation and the wire. `Snapshotter` turns a
+`GameWorld` into a `WorldSnapshot` DTO. `WireCodec` serialises any
+`Envelope` to JSON. `MessageType` is the enum tag that says what shape
+sits inside the envelope.
+
+### 5.4 Geometry and identity
+
+`Direction`, `TileType`, and the id sequence generator all live in core
+because both runtimes need to agree on them. Player ids and entity ids
+are monotonic 64-bit values; the server is the only writer.
+
+### 5.5 Why one library, not two
+
+Keeping simulation, entities, and wire in one library — instead of
+splitting into `bomb-sim` and `bomb-protocol` — is deliberate. The
+snapshots produced by the simulation *are* the protocol payload. Splitting
+them would force one half to depend on the other anyway, with no real
+isolation benefit.
+
+---
+
+## 6. Class diagram — `bomb-server`
+
+![Class diagram for bomb-server](uml/class-diagram-server.svg)
 
 **Figure 2.** Class diagram for `bomb-server`. `BombServerApplication` is the composition root.
 
-![Figure 3. Class diagram for bomb-client.](uml/class-diagram-client.svg)
+### 6.1 The composition root
 
-**Figure 3.** Class diagram for `bomb-client`. `SceneRouter` swaps JavaFX scenes; `GameClient` is the shared WebSocket adapter.
+`BombServerApplication` is where every server-side object is wired
+together. It builds the Netty `WebSocketServer`, the in-memory
+`SessionRegistry` that tracks live connections, the `MatchManager` that
+owns active matches, and the authentication and lobby services.
 
----
+### 6.2 From bytes to envelopes
 
-## 6. Package diagram and use case diagram
+Inbound traffic flows through Netty's pipeline up to `GameServerHandler`,
+which parses each `WebSocketFrame` into an `Envelope` and routes it. Move
+and bomb-place envelopes go to the `MatchSession` of the player's current
+match; lobby and auth envelopes go to the lobby or auth service.
 
-The package diagram visualises the dependency rule. The use case diagram
-fixes the system boundary and the actors that act on it.
+### 6.3 Matches as state machines
 
-![Figure 4. Package diagram.](uml/package-diagram.svg)
+Each active match is one `MatchSession`. The session owns the only
+canonical `GameWorld` for that match and runs the 60 Hz tick loop. The
+match lifecycle is held in a single `MatchState` enum
+(WAITING → STARTING → ACTIVE → ENDING → ENDED), with guarded transitions
+in `MatchSession.transitionTo`.
 
-**Figure 4.** Package diagram. Three columns, one per module. Both runtimes depend on `bomb-core`; the dashed line between client and server indicates the explicit non-dependency.
+### 6.4 Authentication as an interface
 
-![Figure 5. Use case diagram.](uml/use-case.svg)
+`AuthProvider` is an interface with two implementations:
+`DevAuthProvider` for local development, and `GoogleAuthProvider` for the
+production identity flow. The interface lets us swap one for the other
+per environment without touching `GameServerHandler`.
 
-**Figure 5.** Use case diagram. Five actors (Player, AI Bot, Game Master, Match Server, Registry) interact with the system across five lifecycle groups: discovery, lobby, in-match, post-match, cross-cutting. Dashed arrows are *«extends»* and *«includes»* stereotypes.
+### 6.5 Server authority in one place
 
----
-
-## 7. Activity and sequence diagrams
-
-The activity diagram describes one full match in three lanes. The two
-sequence diagrams describe the most frequent interactions between client and
-server.
-
-![Figure 6. Activity diagram of the match lifecycle.](uml/activity-match-lifecycle.svg)
-
-**Figure 6.** Activity diagram of a match lifecycle. Server (left), Shared coordination (centre), Client (right). The fork bar marks entry into the parallel 60 Hz tick loop.
-
-![Figure 7. Sequence diagram for a match start.](diagrams/sequence-match-start.svg)
-
-**Figure 7.** Sequence diagram for a match start.
-
-![Figure 8. Sequence diagram for a bomb placement.](diagrams/sequence-bomb.svg)
-
-**Figure 8.** Sequence diagram for a bomb placement and the resulting explosion.
+The simulation, the player roster, the bomb pool, and the pickup tables
+are all read and written by exactly one thread per match. Clients send
+intent; the server resolves it; the server broadcasts the result.
 
 ---
 
-## 8. Packet protocol
+## 7. Class diagram — `bomb-client`
+
+![Class diagram for bomb-client](uml/class-diagram-client.svg)
+
+**Figure 3.** Class diagram for `bomb-client`. `SceneRouter` swaps JavaFX scenes; `GameClient` is the single WebSocket adapter every scene shares.
+
+### 7.1 Boot sequence
+
+`ClientLauncher` is the JavaFX `Application` entry point. It builds the
+`SceneRouter`, runs the `AgeGate` (child-safety check on first launch),
+and navigates to the `MainMenuView`.
+
+### 7.2 Scenes and routing
+
+A single `SceneRouter` owns the stage. It swaps between four views: the
+main menu, the lobby, the rankings page, and the in-match arena. Each
+view implements `SceneRouter.View` with `onShown` and `onHidden`
+callbacks, so the router can start and stop per-view resources cleanly.
+
+### 7.3 The render loop
+
+`ArenaView` drives a JavaFX `AnimationTimer` at 60 FPS. Each frame, it
+*predicts* using the buffered input, calls `ArenaRenderer` to draw the
+world onto a `Canvas`, and lets the `HudOverlay` redraw on top. The
+renderer composes several passes: arena floor, grid lines, tiles,
+pickups, bombs, explosions, players, particles, and the post-effect
+pass.
+
+### 7.4 Input and feedback
+
+Input comes from two sources. The keyboard pump lives in `ArenaView`; the
+gamepad pump lives in `GamepadPoller`. Both produce the same `InputFrame`
+record. Haptic feedback and spatial audio come from `HapticsService` and
+`AudioBus`, based on the diff between two consecutive snapshots.
+
+### 7.5 One WebSocket, many scenes
+
+`GameClient` is the shared WebSocket adapter. It is created once at lobby
+time and stays alive across the lobby and arena scenes. Each scene
+subscribes to events it cares about and unsubscribes on `onHidden`.
+
+---
+
+## 8. Package diagram
+
+![Package diagram](uml/package-diagram.svg)
+
+**Figure 4.** Package diagram. Three columns, one per Maven module. Both runtimes depend on `bomb-core`; the dashed line between client and server marks the explicit non-dependency.
+
+### 8.1 The three columns
+
+Each column is one Maven module. Client on the left, core in the middle,
+server on the right. The arrangement is purely for readability; the
+dependency edges themselves are what matter.
+
+### 8.2 The dashed non-edge
+
+The dashed line between client and server records the explicit absence of
+a dependency. The Maven dependency graph forbids this edge, and a code
+review will reject any pull request that introduces it. Cross-runtime
+communication happens only over the wire.
+
+### 8.3 Sub-packages inside core
+
+Inside the middle column, `bomb-core` is broken into seven sub-packages
+stacked from outer wire layer down to inner simulation: `net` and
+`net.dto` at the top, `sim`, `entity`, `world`, and `geom` below.
+`GameConfig` sits at the very root.
+
+### 8.4 Why the rule matters
+
+Without the layering rule, a small refactor in either runtime would risk
+pulling shared code in by accident, and the two runtimes would slowly
+drift into a state where they could only run together.
+
+---
+
+## 9. Use case diagram
+
+![Use case diagram](uml/use-case.svg)
+
+**Figure 5.** Use case diagram. Five actors and five lifecycle groups around the system boundary. Dashed arrows are *«extends»* and *«includes»* stereotypes.
+
+### 9.1 Five actors
+
+The **Player** is the human user, two to four per match. The **AI Bot**
+may substitute for any player. The **Game Master** configures and starts
+the match. The **Match Server** is a system actor that owns several
+use cases. The **Registry** (the brief's *Verwaltungsserver*) brokers
+discovery.
+
+### 9.2 Five lifecycle groups
+
+Use cases are grouped by where in the player's lifecycle they fire:
+discovery, lobby, in-match (player actions on the top row, server
+actions on the bottom row), post-match, and cross-cutting.
+
+### 9.3 Stereotypes that matter
+
+*Resolve chains* «includes» *Place bomb* because every place triggers the
+chain-resolution pass on the server. *Detonate inactive* «extends» *Place
+bomb* because the brief's 30-second-no-response rule is modelled as a
+server-driven bomb placement on the laggard. *Switch to AI* «extends»
+*Login* because the AI fallback is offered immediately after login.
+
+### 9.4 What the diagram tells the reader
+
+The use case diagram fixes the system boundary. Anything not inside the
+dashed rectangle is external. Reviewers can use this single view to check
+whether every functional requirement in the brief is covered by at least
+one use case.
+
+---
+
+## 10. Activity diagram — match lifecycle
+
+![Activity diagram of the match lifecycle](uml/activity-match-lifecycle.svg)
+
+**Figure 6.** Activity diagram of one complete match. Server (left), Shared coordination (centre), Client (right). The gold bar is the fork into the parallel 60 Hz tick loop.
+
+### 10.1 Three lanes
+
+The **Server** lane owns boot, registration with the registry, and the
+tick loop's server side. The **Shared** lane in the centre carries the
+coordination steps that depend on both sides. The **Client** lane on the
+right owns boot, registry query, server selection, and the tick loop's
+client side.
+
+### 10.2 The quorum gate
+
+The match cannot start until the quorum gate is satisfied: at least two
+players, at most four. The gate is server-driven; the client's lobby
+view reflects the server's lobby state, never the other way around.
+
+### 10.3 The fork into the tick loop
+
+The gold bar is a fork. Server and client run their tick-loop activities
+in parallel from this point. Cross-lane dashed arrows are network
+packets: `MOVE` and `BOMB_PLACE` from client to server, `SYNC` and
+`EXPLOSION` from server to client.
+
+### 10.4 The end condition
+
+The bottom diamond evaluates the end condition every tick: one or zero
+bombermen alive, or the match time has elapsed.
+
+### 10.5 What the diagram does not show
+
+The diagram intentionally omits reconciliation and prediction — those
+are activities *inside* the client tick-loop boxes. They live in the
+server-authority page below.
+
+---
+
+## 11. Sequence diagram — match start
+
+![Sequence diagram: match start](diagrams/sequence-match-start.svg)
+
+**Figure 7.** The sequence from client connect through to the first authoritative snapshot of an active match. Time flows top to bottom.
+
+### 11.1 Connect and identify
+
+The sequence begins with a WebSocket upgrade. Immediately after, the
+client sends a `JOIN` envelope carrying the player's display name and
+age class. The server validates both, allocates a session id, and
+answers with the first `LOBBY` snapshot.
+
+### 11.2 Lobby coordination
+
+While the lobby is open, any change to its state produces another `LOBBY`
+packet. The client's lobby view re-renders from that single source of
+truth.
+
+### 11.3 Transition to active
+
+When quorum is met and the game master starts the match, the server
+transitions `MatchState` from *WAITING* to *STARTING*, broadcasts a
+`MATCH_STATE` packet, initialises the arena, and transitions to
+*ACTIVE*. The first `SYNC` packet follows immediately.
+
+### 11.4 What is not shown
+
+The diagram does not show the bot-substitution path or heartbeats
+(which run in the background at 0.2 Hz from the moment of connection).
+
+### 11.5 Why this is a reference
+
+This sequence is the canonical first interaction for every practicum
+group's client. Anything that diverges from it will not interoperate.
+
+---
+
+## 12. Sequence diagram — bomb placement
+
+![Sequence diagram: bomb placement](diagrams/sequence-bomb.svg)
+
+**Figure 8.** One bomb's journey from key press through to the explosion event and the kill feed. Time flows top to bottom.
+
+### 12.1 Press to wire
+
+The player presses the place-bomb key. The client emits a `BOMB_PLACE`
+envelope with the current client tick number and the player's current
+cell. The envelope is queued on the WebSocket for delivery.
+
+### 12.2 Server validates
+
+On the next server tick, the envelope is drained. The server checks that
+the player still has at least one bomb in their pool and that the cell
+does not already hold a bomb or a wall. If either check fails, the
+request is dropped silently — the next `SYNC` tells the client what is
+real.
+
+### 12.3 The fuse runs
+
+A successful placement creates a `Bomb` entity with the configured fuse
+length. Every subsequent server tick, the fuse counts down. When it
+reaches zero, the bomb transitions from *TICKING* to *EXPLODING*. Any
+neighbouring ticking bomb caught in the blast also transitions on the
+same tick — the chain reaction.
+
+### 12.4 Cosmetic vs canonical
+
+Detonation produces two outbound packets. The `EXPLOSION` packet is
+cosmetic; it carries the list of tiles in the cross-shaped blast and the
+ids of any eliminated players. Clients use it to drive particles, camera
+shake, and the kill feed. The `SYNC` packet on the same tick carries the
+authoritative state.
+
+### 12.5 What the client never trusts
+
+The client never trusts its own prediction. If the predicted bomb is
+rejected by the server, the next `SYNC` restores the world as if the
+bomb were never placed.
+
+---
+
+## 13. Packet protocol
 
 The wire format is JSON over WebSocket. Every message is wrapped in one
-envelope so framing, sequencing, and version negotiation stay in one place.
-The brief requires that any group's server work with any group's client. We
-treat the protocol as a published contract.
+envelope so framing, sequencing, and version negotiation stay in one
+place.
 
-### 8.1 Envelope
+### 13.1 Envelope
 
-Every message is a JSON object with five fields:
+Every message is a JSON object with five fields: `v` (protocol version,
+uint8), `t` (message type tag), `seq` (monotonic sequence number,
+uint32), `ts` (sender epoch ms, uint64, for round-trip estimation only),
+and `p` (typed payload).
 
-- `v` — protocol version (uint8). The handshake negotiates the highest
-  version both sides accept.
-- `t` — message type tag, one of the enum values in `MessageType`.
-- `seq` — monotonic sequence number from the sender (uint32). The server
-  rejects out-of-order client messages.
-- `ts` — sender's epoch time in milliseconds (uint64). Used for round-trip
-  estimation only; the simulation does not depend on it.
-- `p` — typed payload. The schema differs per message type.
-
-Validation rules apply to every envelope. The version must equal the
-negotiated value, or the connection ends. The type must be a known
-`MessageType`. The sequence number must strictly increase. The timestamp
-must be within thirty seconds of the server's clock; messages outside this
-window are dropped.
-
-### 8.2 Catalogue
+### 13.2 Catalogue
 
 | Type | Direction | Trigger | Rate |
 |---|---|---|---|
@@ -209,214 +492,128 @@ window are dropped.
 | `HEARTBEAT` | Both | Liveness check | 0.2 Hz |
 | `DISCONNECT` | Both | Clean teardown | Once |
 
-### 8.3 Serialisation
+### 13.3 Anti-desync rules
 
-Version one of the protocol uses JSON over text WebSocket frames. JSON was
-chosen so that messages remain debuggable in a browser developer panel and
-so that interoperability with other practicum groups does not require
-agreement on binary layouts. Version two of the protocol will introduce
-Kryo as an optional binary mode, negotiated at the `JOIN` handshake.
-
-### 8.4 Anti-desync rules
-
-- Strict monotonic `seq` per connection. Duplicate or out-of-order frames
-  are dropped.
+- Strict monotonic `seq` per connection; duplicates and out-of-order frames dropped.
 - The server overrides any illegal client prediction in the next snapshot.
-  The client reconciles by replaying its buffered inputs.
-- Each snapshot carries enough state to rebuild the world without the
-  previous snapshot.
-- The simulation clock is monotonic on the server. Wall-clock jumps do not
-  affect the tick.
-- Envelope timestamps outside thirty seconds of the server clock are
-  rejected.
+- Each snapshot carries enough state to rebuild the world without the previous snapshot.
+- The simulation clock is monotonic on the server.
+- Envelope timestamps outside ±30 s of the server clock are rejected.
 
 ---
 
-## 9. Server authority and synchronisation
+## 14. Server authority and synchronisation
 
-The server runs the only canonical simulation. The client predicts locally
-for responsiveness and reconciles against the server's snapshot on each
-arrival. Between snapshots, the renderer interpolates so that motion remains
-smooth when the network drops a single frame.
+The server runs the only canonical simulation. The client predicts
+locally for responsiveness and reconciles against every server snapshot.
 
-### 9.1 The 60 Hz tick loop
+### 14.1 The 60 Hz tick loop
 
-The server's match thread runs a fixed step loop at 60 Hz, which means
-16.67 ms per tick. Each tick has five stages. First, queued inputs are
-drained per player. Second, player intents are applied to `GameWorld` with
-cell-lock and collision checks. Third, entity lifetimes advance: bomb fuses
-count down, explosions age out, pickups spawn. Fourth, the end condition is
-evaluated. Fifth, the resulting snapshot is serialised and broadcast to
-every connected client.
+The server runs a fixed step loop at 60 Hz (16.67 ms per tick). Each
+tick has five stages: drain queued inputs, resolve player intents into
+the world, advance entity lifetimes, evaluate the end condition,
+serialise and broadcast the snapshot. We measure p99 at 13.6 ms,
+leaving about 3 ms of headroom.
 
-We measured the p99 total at 13.6 ms. This leaves about 3 ms of headroom
-before the next tick must begin.
+### 14.2 Client prediction
 
-### 9.2 Client prediction
+The client applies its input locally on the same frame it sends the
+matching `MovePacket`. The input is kept in a ring buffer of 30 frames,
+keyed by client tick.
 
-The client applies its own input locally on the same frame that it sends
-the matching `MovePacket`. The input is also stored in a bounded ring
-buffer of thirty frames, keyed by client tick number. The renderer draws
-the predicted state immediately. Under normal network conditions the player
-feels no input latency.
+### 14.3 Reconciliation
 
-### 9.3 Reconciliation
+Each arriving `SyncPacket` carries a server tick. If the snapshot agrees
+with the predicted state, the input buffer is trimmed. If they
+disagree, the local state is replaced by the snapshot and every
+buffered input newer than that tick is replayed on top.
 
-Each arriving `SyncPacket` carries a server tick number. The client compares
-the snapshot to its predicted state at the same tick. If they agree, the
-input buffer is trimmed up to that tick. If they disagree, the local state
-is replaced by the snapshot and every buffered input newer than that tick
-is replayed on top, frame by frame. The replay is pure simulation; the
-renderer is not invoked during replay, so the cost is bounded and fast.
-
-### 9.4 Interpolation buffer
+### 14.4 Interpolation
 
 The renderer keeps its display cursor about 100 ms behind the latest
-received snapshot. Between snapshots, it interpolates linearly between the
-two most recently received ones. The buffer only affects rendering; it does
-not feed back into prediction or reconciliation. On a same region server
-with typical network conditions, the 100 ms cushion is small enough not to
-feel laggy.
+snapshot and interpolates linearly between the two most recent ones.
 
-### 9.5 Invariants the simulation guarantees
+### 14.5 Invariants
 
-1. Determinism. Given a seed and an input log, every replay produces the
-   same state stream.
-2. The server is the sole writer of the canonical world.
-3. The simulation clock is monotonic, not wall-clock.
+1. Determinism. Same seed, same input log, same state stream.
+2. The server is the sole writer.
+3. The simulation clock is monotonic.
 4. Replay cost is bounded by the input-buffer size.
-5. Each event identifier is unique within a match; a client that processes
-   the same event twice is a no-op.
+5. Each event id is unique within a match.
 
 ---
 
-## 10. AI bot and state management
+## 15. AI bot and state management
 
-The brief requires that every client offer an AI fallback that does not
-behave randomly. State management uses explicit enumerations with guarded
-transitions, rather than boolean flags.
+### 15.1 The AI bot
 
-### 10.1 The AI bot
+The bot is a pure function of the current world snapshot and the bot's
+own seat. Every tick it builds a 13×13 threat map where each cell scores
+0 (safe) to 4 (lethal this tick). A six-node decision tree sits on top:
+*escape* if the current cell is threat ≥ 3, *chain-evade* if a chain is
+about to spread, *pickup* if one is reachable safely, *destroy wall* if
+adjacent and clear, *pressure enemy* on a low-threat path, otherwise
+*wander*.
 
-The bot is a pure function of the current world snapshot and the bot's own
-seat identifier. It produces an `InputFrame` identical to one a human
-keyboard would produce, so the server does not know whether a player is
-human or AI. The bot lives in `com.bombermenx.client.ai.BotPolicy`.
+Pathfinding is A\* on the threat grid with edge cost `1 + threat[cell]`
+and Manhattan distance as the heuristic.
 
-Before any decision, the bot builds a threat map on the 13 by 13 grid. Each
-cell receives a score from 0 (safe) to 4 (lethal this tick). The score is
-the maximum of three contributions: bomb proximity (distance plus remaining
-fuse), current explosion membership, and predicted chain-reaction expansion.
+### 15.2 State management
 
-On top of the threat map sits a six-node decision tree. The bot walks it
-top down each tick and emits the first matched leaf as its input:
+| Enumeration | States |
+|---|---|
+| `MatchState` | WAITING → STARTING → ACTIVE → ENDING → ENDED |
+| `BombState` | ARMED → TICKING → EXPLODING → SPENT |
+| `PlayerState` | JOINING → ALIVE → SPECTATING → LEFT |
 
-1. Threat at the current cell is 3 or higher. Run a bounded BFS to the
-   nearest safe cell reachable within the bomb's remaining fuse, then step
-   toward it.
-2. A chain reaction is about to spread into the current row or column.
-   Treat as case 1.
-3. A pickup is reachable within an A\* distance of 5 along a path that
-   stays safe. Step along the computed path.
-4. A destructible wall is adjacent and no other bomb is nearby. Place a
-   bomb, then switch to escape mode for 8 ticks.
-5. An enemy is reachable within an A\* distance of 6 along a low-threat
-   path. Approach. If the path can trap them, place a bomb.
-6. None of the above applies. Wander to the lowest-threat reachable cell
-   that has not been visited in the last 12 ticks.
-
-The A\* search uses an edge cost of one plus the threat at the target cell,
-so safe paths are preferred over short ones. The heuristic is Manhattan
-distance. The closed set is bounded by the 169 cells of the grid, so the
-search is fast.
-
-### 10.2 State management
-
-Three explicit enumerations carry the legal lifecycle of the simulation.
-
-| Enumeration | States | Guard location |
-|---|---|---|
-| `MatchState` | WAITING → STARTING → ACTIVE → ENDING → ENDED | `MatchSession.transitionTo` |
-| `BombState` | ARMED → TICKING → EXPLODING → SPENT | fuse tick; chain reactions can fast-forward |
-| `PlayerState` | JOINING → ALIVE → SPECTATING → LEFT | SPECTATING is terminal within the match |
-
-Each enumeration exposes a `can(next)` method so that the guard table lives
-next to the states. This pattern replaces multiple boolean fields with one
-enumeration and removes the possibility of impossible combinations such as
-"not alive and not spectating".
+Each enumeration exposes a `can(next)` method so that the guard table
+lives next to the states.
 
 ---
 
-## 11. Prescriptive architecture
+## 16. Prescriptive recommendations
 
-The system as built meets every functional requirement in the brief. The
-recommendations below are about future-proofing rather than fixing defects.
-They are ordered by priority and accompanied by an effort estimate and a
-short rationale.
+The system meets every functional requirement in the brief. The
+recommendations below are future-proofing rather than defect fixes.
 
-### 11.1 Must do
+### 16.1 Must do
 
 | ID | Recommendation | Effort |
 |---|---|---|
-| P1 | Stand up the central registry (the brief calls it *Verwaltungsserver*). At present the client knows the server URL out of band. The fix is a small REST service that match servers register against at boot and that clients query at lobby time. The brief calls for this explicitly and cross-group interoperability depends on it. | About 2 days |
-| P2 | Add Kryo serialisation as an optional version two of the protocol. JSON is fine for debugging, but binary keeps bandwidth flat at higher player counts. The envelope shape does not change; only the bytes on the wire do. | About 3 days |
-| P3 | Promote the inactivity-detonate rule to a first-class event. The brief requires that a player who fails to respond for 30 seconds is detonated by the server after a 3-second countdown. Today this logic lives in the connection layer; it deserves its own state and its own event. | About 1 day |
+| P1 | Stand up the central registry (the brief calls it *Verwaltungsserver*). | About 2 days |
+| P2 | Add Kryo serialisation as an optional protocol version two. | About 3 days |
+| P3 | Promote the inactivity-detonate rule to a first-class event. | About 1 day |
 
-### 11.2 Should do
+### 16.2 Should do
 
 | ID | Recommendation | Effort |
 |---|---|---|
-| R1 | Externalise `GameConfig` to a configuration file the server reads at boot. The constants currently live in code; a configuration file would let a game master pick arena size, bomb fuse, and pickup tables without a rebuild. | Half a day |
-| R2 | Add a pluggable arena registry. The simulation already takes the arena as a tile map. The next step is a folder of arena definitions the server loads at boot and offers through the lobby. | About 1 day |
-| R3 | Run the AI bot on the server as well as on the client. The bot is already a pure function of the snapshot. Moving it server-side closes the door on a client-side "helper" that uses the AI to cheat in human matches. | About 1.5 days |
-| R4 | Stream the gameplay log to an external sink (for example OpenTelemetry) in addition to the server window. The brief's log requirement is already met; this is the next step. | About 1 day |
+| R1 | Externalise `GameConfig` to a configuration file. | Half a day |
+| R2 | Add a pluggable arena registry. | About 1 day |
+| R3 | Run the AI bot on the server as well as the client. | About 1.5 days |
+| R4 | Stream the gameplay log to an external sink. | About 1 day |
 
-### 11.3 Could do
+### 16.3 Should not do
 
-- Replace the JSON wire wholesale with a binary format such as FlatBuffers
-  if random access into payloads becomes useful (for example, for replay
-  scrubbing).
-- Add a team layer above the match so that team mode can be matched without
-  coordination in the lobby.
-- Persist rankings. The simulation already emits the four required
-  statistics per player; a write-through cache turns the per-match
-  scoreboard into a multi-match leaderboard.
-
-### 11.4 Should not do
-
-We recommend against three otherwise-tempting paths. First, adding a shared
-library between client and server beyond `bomb-core` would dissolve the
-layering rule that makes both modules independently testable. Second,
-introducing WebRTC peer-to-peer fragments the source of truth and breaks
-determinism. Third, moving the canonical simulation off the server thread
-to chase throughput sacrifices replayability for performance that the
-project does not need.
+- Adding a shared library between client and server beyond `bomb-core` would dissolve the layering rule.
+- WebRTC peer-to-peer fragments the source of truth and breaks determinism.
+- Moving the canonical simulation off the server thread sacrifices replayability for unneeded throughput.
 
 ---
 
-## 12. Visual identity: hero banners
+## 17. Visual identity — hero banners
 
-The hero banner is the project's identity. It carries the project name, the
-two faction names, and the tagline. A dark version ships in the JavaFX
-client and the deliverables portal; a light version is the print version,
-used inside this report.
+![Hero banner, dark variant](assets/banners/hero-dark.png)
 
-![Figure 9. Hero banner, dark variant.](assets/banners/hero-dark.png)
+**Figure 9.** Hero banner, dark variant. Default in the JavaFX client and the deliverables portal.
 
-**Figure 9.** Hero banner, dark variant. Used as the default in the JavaFX client and the deliverables portal.
-
-![Figure 10. Hero banner, light variant.](assets/banners/hero-light.png)
+![Hero banner, light variant](assets/banners/hero-light.png)
 
 **Figure 10.** Hero banner, light variant. Used in printed reports such as this one.
 
 ---
 
-## 13. Visual identity: team crests and arena spread
-
-Three team crests appear on the portal's about page and on the in-game
-profile card. The arena spread is the canonical layout reference for the
-renderer. Every block, bomb, power-up, portal, and spawn point in the
-in-game arena maps to a labelled element on the spread.
+## 18. Visual identity — team crests and arena
 
 | Crest | Member |
 |---|---|
@@ -424,9 +621,9 @@ in-game arena maps to a labelled element on the spread.
 | ![Designer crest](assets/avatars/mayura-sk.png) | Designer — S. Kaur |
 | ![Engineer crest](assets/avatars/vyaghra-jc.png) | Engineer — J. Chittomothu |
 
-![Figure 12. Arena reference spread.](assets/banners/arena-elements.png)
+![Arena reference spread](assets/banners/arena-elements.png)
 
-**Figure 12.** Arena reference spread. The two factions are shown side by side, with the per-side bombs and power-ups, and the shared block, portal, and spawn-point vocabulary used by the renderer.
+**Figure 12.** Arena reference spread. The two factions are shown side by side, with their per-side bombs and power-ups, and the shared block, portal, and spawn-point vocabulary.
 
 ---
 
