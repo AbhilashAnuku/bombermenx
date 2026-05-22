@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BomberMan-X — Architecture &amp; deliverables</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/viewer.css">
+<script defer src="assets/portal.js"></script>
+<style>
+  :root {
+    --bg:#08090d; --panel:#11141c; --line:#1f2533;
+    --ink:#e6eef8; --dim:#94a3b8; --dim-2:#6b7892;
+    --cyan:#3aedff; --pink:#ff3ad9; --amber:#ffb53a; --green:#3affb5;
+    --vayu:#0fb5a9; --agni:#ff5a1f; --gold:#ffd700;
+  }
+  html[data-theme="light"] {
+    --bg:#f7f8fb; --panel:#fff; --line:#d8dde7;
+    --ink:#0e1320; --dim:#4a5468; --dim-2:#6b7892;
+    --cyan:#0a6e95; --pink:#a01d80; --amber:#8a5a00; --green:#1e7a4f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header.hero{padding:56px 28px 36px;border-bottom:1px solid var(--line);background:
+    radial-gradient(900px 360px at 10% 0%, rgba(15,181,169,0.10), transparent 60%),
+    radial-gradient(900px 360px at 90% 0%, rgba(255,90,31,0.08), transparent 60%),
+    linear-gradient(180deg, var(--panel) 0%, var(--bg) 100%);}
+  .hero-inner{max-width:1100px;margin:0 auto}
+  .super{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--dim)}
+  h1{margin:8px 0 6px;font-size:clamp(28px,4.5vw,42px);letter-spacing:0.04em}
+  h1 .accent{background:linear-gradient(90deg,var(--vayu),var(--gold),var(--agni));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-style:italic;color:var(--dim);font-size:15px;max-width:720px;margin:0 0 18px}
+  .course{color:var(--dim-2);font-size:12px;letter-spacing:0.06em}
+  main{max-width:1100px;margin:0 auto;padding:32px 24px 80px}
+  section{margin-bottom:36px}
+  h2{font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--pink);margin:0 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .blurb{color:var(--dim);font-size:14px;max-width:720px;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  a.card{display:block;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);text-decoration:none;transition:border-color 160ms, transform 160ms}
+  a.card:hover{border-color:var(--cyan);transform:translateY(-2px)}
+  a.card .t{font-weight:600;margin-bottom:4px}
+  a.card .d{color:var(--dim);font-size:13px}
+  a.card .k{display:inline-block;margin-top:10px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim-2);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  a.card.featured{border-color:rgba(58,255,181,0.4)}
+  a.card.featured .k{color:var(--green);border-color:rgba(58,255,181,0.35)}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 18px;border-radius:8px;color:var(--dim);font-size:14px}
+  footer{border-top:1px solid var(--line);padding:18px 24px;color:var(--dim-2);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="super">BomberMan-X &middot; Architecture deliverables</div>
+    <h1>Three architects, one <span class="accent">mandala arena</span> &mdash; Agni vs V&#257;yu.</h1>
+    <p class="sub">A real-time multiplayer game built in Java for the Software Architecture and Development module at SRH University Stuttgart. This is the reviewer-facing pack: report, diagrams, code walkthrough, plans, audits.</p>
+    <div class="course">SRH University Stuttgart &middot; Software Architecture and Development &middot; Brief: Lastenheft (Prof. Steffen Becker)</div>
+  </div>
+</header>
+<main>
+
+  <section>
+    <div class="note">For external reviewers: start with the <strong>Architecture Report</strong>. PDF and Markdown copies live side by side &mdash; the Markdown one imports straight into Google Docs.</div>
+  </section>
+
+  <section>
+    <h2>Architecture Report</h2>
+    <p class="blurb">Open the HTML in any browser, then Print &rarr; Save as PDF (A4, default margins, background graphics ON). Exactly 12 pages. Or grab the Markdown copy for Google Docs.</p>
+    <div class="grid">
+      <a class="card featured" href="architecture-report.html"><div class="t">Architecture Report &mdash; HTML / PDF</div><div class="d">Open in browser, print to PDF. 12 pages, with every UML diagram included.</div><span class="k">Submit this</span></a>
+      <a class="card" href="architecture-report.md"><div class="t">Architecture Report &mdash; Markdown</div><div class="d">Same content. Upload to Drive and open with Google Docs.</div><span class="k">Google Docs</span></a>
+      <a class="card" href="uml/print-each.html"><div class="t">UML &mdash; one page per diagram</div><div class="d">Export each UML standalone as PDF or image.</div><span class="k">Tool</span></a>
+      <a class="card" href="presentation/slides.html"><div class="t">Slide deck</div><div class="d">Self-contained presentation deck for the defence.</div><span class="k">Deck</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Architecture deep-dives</h2>
+    <div class="grid">
+      <a class="card" href="architecture/packet-protocol.view.html"><div class="t">Packet protocol</div><div class="d">All nine message types, envelope, validation, anti-desync.</div><span class="k">Deep dive</span></a>
+      <a class="card" href="architecture/server-authority.view.html"><div class="t">Server authority &amp; sync</div><div class="d">60 Hz tick, prediction, reconciliation, interpolation.</div><span class="k">Deep dive</span></a>
+      <a class="card" href="architecture/ai-bot.view.html"><div class="t">AI bot</div><div class="d">Threat map, A* and BFS, six-node decision tree.</div><span class="k">Deep dive</span></a>
+      <a class="card" href="architecture/design-patterns.view.html"><div class="t">Design patterns</div><div class="d">Factory, Observer, State, Strategy, Command, Adapter.</div><span class="k">Reference</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Diagrams &amp; UML</h2>
+    <div class="grid">
+      <a class="card" href="diagrams/architecture.html"><div class="t">Architecture overview</div><div class="d">Three-module Maven layout.</div><span class="k">HTML</span></a>
+      <a class="card" href="diagrams/diagrams.html"><div class="t">All system diagrams</div><div class="d">Sequence, deployment, data flow.</div><span class="k">HTML</span></a>
+      <a class="card" href="uml/uml.html"><div class="t">UML gallery</div><div class="d">Class, package, use case, activity.</div><span class="k">HTML</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Code walk-through</h2>
+    <div class="grid">
+      <a class="card" href="code-explanation/overview.view.html"><div class="t">Codebase map</div><div class="d">Start here.</div><span class="k">Read</span></a>
+      <a class="card" href="code-explanation/bomb-core.view.html"><div class="t">bomb-core</div><div class="d">Deterministic simulation.</div><span class="k">Module</span></a>
+      <a class="card" href="code-explanation/bomb-server.view.html"><div class="t">bomb-server</div><div class="d">Netty + match session.</div><span class="k">Module</span></a>
+      <a class="card" href="code-explanation/bomb-client.view.html"><div class="t">bomb-client</div><div class="d">JavaFX scenes and renderer.</div><span class="k">Module</span></a>
+      <a class="card" href="code-explanation/wire-protocol.view.html"><div class="t">Wire protocol</div><div class="d">Every MessageType and payload.</div><span class="k">Reference</span></a>
+      <a class="card" href="code-explanation/gameplay-simulation.view.html"><div class="t">Gameplay simulation</div><div class="d">Tick budget, chain reactions.</div><span class="k">Deep dive</span></a>
+      <a class="card" href="code-explanation/design-language.view.html"><div class="t">Design language</div><div class="d">Palette, type, mandala vocabulary.</div><span class="k">Reference</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Plans</h2>
+    <div class="grid">
+      <a class="card" href="plans/descriptive-plan.view.html"><div class="t">Descriptive plan</div><div class="d">What we actually built.</div><span class="k">As-is</span></a>
+      <a class="card" href="plans/prescriptive-plan.view.html"><div class="t">Prescriptive plan</div><div class="d">Recommendations for a successor team.</div><span class="k">To-be</span></a>
+      <a class="card" href="plans/sprint-plan.view.html"><div class="t">Sprint plan</div><div class="d">Day-by-day owners and deliverables.</div><span class="k">Schedule</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Build &amp; setup</h2>
+    <div class="grid">
+      <a class="card" href="build/build-explanation.view.html"><div class="t">Build explanation</div><div class="d">Maven layout, Docker images, CI pipeline.</div><span class="k">Read</span></a>
+      <a class="card" href="build/run-locally.view.html"><div class="t">Run locally</div><div class="d">One-page quickstart.</div><span class="k">Quickstart</span></a>
+      <a class="card" href="setup/clone-and-play.view.html"><div class="t">Clone &amp; play</div><div class="d">From git clone to a match in five minutes.</div><span class="k">Quickstart</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Audits</h2>
+    <div class="grid">
+      <a class="card" href="audits/security-audit.view.html"><div class="t">Security audit</div><div class="d">Threat model, findings, fixes.</div><span class="k">Audit</span></a>
+      <a class="card" href="audits/ui-audit.view.html"><div class="t">UI audit</div><div class="d">UX issues and fixes.</div><span class="k">Audit</span></a>
+      <a class="card" href="audits/clean-code-audit.view.html"><div class="t">Clean-code audit</div><div class="d">Static review pass and outcomes.</div><span class="k">Audit</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Project report (four parts)</h2>
+    <div class="grid">
+      <a class="card" href="report/REPORT-PART-A.md"><div class="t">Part A &mdash; context</div><div class="d">Brief, requirements, constraints.</div><span class="k">MD</span></a>
+      <a class="card" href="report/REPORT-PART-B.md"><div class="t">Part B &mdash; architecture</div><div class="d">Design decisions.</div><span class="k">MD</span></a>
+      <a class="card" href="report/REPORT-PART-C.md"><div class="t">Part C &mdash; implementation</div><div class="d">Build and testing.</div><span class="k">MD</span></a>
+      <a class="card" href="report/REPORT-PART-D.md"><div class="t">Part D &mdash; operations</div><div class="d">Audits and retrospective.</div><span class="k">MD</span></a>
+    </div>
+  </section>
+
+</main>
+<footer>
+  BomberMan-X &middot; Architecture deliverables &middot; SRH University Stuttgart &middot; 22 May 2026<br>
+  Authored by Abhilash Anuku, Simranjot Kaur, and Jithendra Chittomothu.
+</footer>
+</body>
+</html>
