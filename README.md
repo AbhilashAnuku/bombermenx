@@ -5,7 +5,7 @@ real-time multiplayer game built in Java for the *Software Architecture and
 Development* module at **SRH University Stuttgart**.
 
 - **Brief:** *Lastenheft*, Prof. Steffen Becker
-- **Authors:** Abhilash Anuku · Simranjot Kaur · Jithendra Chittomothu
+- **Authors:** Abhilash Anuku · Simranjot Kaur · Jithendra Chittimothu
 - **Live:** https://abhilashanuku.github.io/bombermenx/
 
 > The source code lives in a private repository. This mirror carries the
@@ -64,4 +64,4 @@ of Prof. Steffen Becker; only the team's own reading of it is published here.
 
 ---
 
-*22 May 2026 — Anuku · Kaur · Chittomothu.*
+*22 May 2026 — Anuku · Kaur · Chittimothu.*
