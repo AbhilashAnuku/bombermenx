@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 940" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">UML Use-Case Diagram — BomberMen-X</title>
   <desc id="desc">Actors Player, Spectator, Admin outside a system boundary that contains use-case ellipses.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -45,61 +35,61 @@
   <text x="40" y="64" class="sub">Actors outside the boundary · use-case ellipses inside · associations are straight lines (UML allows diagonals here)</text>
 
   <!-- ============ SYSTEM BOUNDARY ============ -->
-  <rect x="280" y="100" width="940" height="780" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="280" y="100" width="940" height="780" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
   <text x="750" y="130" text-anchor="middle" class="ttl" fill="#3aedff">BomberMen-X  (system boundary)</text>
 
   <!-- ============ USE CASES (ellipses) — 4 rows of 3 -->
   <!-- Row centers y: 200, 360, 520, 680. Col centers x: 430, 750, 1070. ry=46 rx=140 -->
 
   <!-- Row 1: Sign in, Browse Lobby, View Rankings -->
-  <ellipse cx="430"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="430"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="430"  y="195" text-anchor="middle" class="uc-label">UC-01</text>
   <text x="430"  y="215" text-anchor="middle" class="uc-label">Sign in</text>
 
-  <ellipse cx="750"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="750"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="750"  y="195" text-anchor="middle" class="uc-label">UC-02</text>
   <text x="750"  y="215" text-anchor="middle" class="uc-label">Browse Lobby</text>
 
-  <ellipse cx="1070" cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="1070" cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="1070" y="195" text-anchor="middle" class="uc-label">UC-03</text>
   <text x="1070" y="215" text-anchor="middle" class="uc-label">View Rankings</text>
 
   <!-- Row 2: Join Match, Chat, Spectate Match -->
-  <ellipse cx="430"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="430"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="430"  y="355" text-anchor="middle" class="uc-label">UC-04</text>
   <text x="430"  y="375" text-anchor="middle" class="uc-label">Join Match</text>
 
-  <ellipse cx="750"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="750"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="750"  y="355" text-anchor="middle" class="uc-label">UC-05</text>
   <text x="750"  y="375" text-anchor="middle" class="uc-label">Chat in Lobby / Match</text>
 
-  <ellipse cx="1070" cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="1070" cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="1070" y="355" text-anchor="middle" class="uc-label">UC-06</text>
   <text x="1070" y="375" text-anchor="middle" class="uc-label">Spectate Match</text>
 
   <!-- Row 3: Place Bomb, Throw Bomb, Pick Up Power-up -->
-  <ellipse cx="430"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="430"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="430"  y="515" text-anchor="middle" class="uc-label">UC-07</text>
   <text x="430"  y="535" text-anchor="middle" class="uc-label">Place Bomb</text>
 
-  <ellipse cx="750"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="750"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="750"  y="515" text-anchor="middle" class="uc-label">UC-08</text>
   <text x="750"  y="535" text-anchor="middle" class="uc-label">Throw / Kick Bomb</text>
 
-  <ellipse cx="1070" cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="1070" cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="1070" y="515" text-anchor="middle" class="uc-label">UC-09</text>
   <text x="1070" y="535" text-anchor="middle" class="uc-label">Pick Up Power-up</text>
 
   <!-- Row 4: Buy Cosmetic, Configure Server, Ban Player -->
-  <ellipse cx="430"  cy="680" rx="130" ry="46" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="430"  cy="680" rx="130" ry="46" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
   <text x="430"  y="675" text-anchor="middle" class="uc-label">UC-10</text>
   <text x="430"  y="695" text-anchor="middle" class="uc-label">Buy Cosmetic</text>
 
-  <ellipse cx="750"  cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="750"  cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="750"  y="675" text-anchor="middle" class="uc-label">UC-11</text>
   <text x="750"  y="695" text-anchor="middle" class="uc-label">Configure Server</text>
 
-  <ellipse cx="1070" cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <ellipse cx="1070" cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1070" y="675" text-anchor="middle" class="uc-label">UC-12</text>
   <text x="1070" y="695" text-anchor="middle" class="uc-label">Ban Player</text>
 
@@ -160,7 +150,7 @@
 
   <!-- Payment system (right, y≈360) -->
   <g transform="translate(1360,330)">
-    <rect x="-50" y="-22" width="100" height="44" rx="6" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+    <rect x="-50" y="-22" width="100" height="44" rx="6" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
     <text x="0" y="-6" text-anchor="middle" class="ttl" fill="#ffb53a">«system»</text>
     <text x="0" y="14" text-anchor="middle" class="sub">Payment GW</text>
     <text x="0" y="60" text-anchor="middle" class="ttl" fill="#ffb53a">Payment Gateway</text>

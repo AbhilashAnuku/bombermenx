@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 920" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">UML Package Diagram — com.bombermenx.*</title>
   <desc id="desc">Maven modules and packages, with import dependencies. core is depended on by server and client.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -44,7 +34,7 @@
 
   <!-- ============ CLIENT MODULE (left) ============ -->
   <!-- Folder tab -->
-  <path d="M 40,100 H 200 V 120 H 480 V 720 H 40 Z" fill="#11141c" stroke="#3affb5" class="tab" filter="url(#bx-3d-bevel)"/>
+  <path d="M 40,100 H 200 V 120 H 480 V 720 H 40 Z" fill="#11141c" stroke="#3affb5" class="tab"/>
   <text x="260" y="148" text-anchor="middle" class="ttl" fill="#3affb5">bomberman-client</text>
   <text x="260" y="166" text-anchor="middle" class="sub">JavaFX desktop client</text>
 
@@ -100,7 +90,7 @@
   </g>
 
   <!-- ============ CORE MODULE (center) ============ -->
-  <path d="M 600,100 H 760 V 120 H 1020 V 720 H 600 Z" fill="#11141c" stroke="#3aedff" class="tab" filter="url(#bx-3d-bevel)"/>
+  <path d="M 600,100 H 760 V 120 H 1020 V 720 H 600 Z" fill="#11141c" stroke="#3aedff" class="tab"/>
   <text x="810" y="148" text-anchor="middle" class="ttl" fill="#3aedff">bomberman-core</text>
   <text x="810" y="166" text-anchor="middle" class="sub">Shared library (no I/O)</text>
 
@@ -132,7 +122,7 @@
   </g>
 
   <!-- ============ SERVER MODULE (right) ============ -->
-  <path d="M 1140,100 H 1300 V 120 H 1460 V 720 H 1140 Z" fill="#11141c" stroke="#ff3ad9" class="tab" filter="url(#bx-3d-bevel)"/>
+  <path d="M 1140,100 H 1300 V 120 H 1460 V 720 H 1140 Z" fill="#11141c" stroke="#ff3ad9" class="tab"/>
   <text x="1300" y="148" text-anchor="middle" class="ttl" fill="#ff3ad9">bomberman-server</text>
   <text x="1300" y="166" text-anchor="middle" class="sub">Netty + persistence</text>
 
@@ -202,7 +192,7 @@
   <text x="850" y="734" text-anchor="middle" class="edge">runtime WSS  (wire/protocol)</text>
 
   <!-- ============ NOTE BOXES ============ -->
-  <rect x="40" y="760" width="700" height="120" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="760" width="700" height="120" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="56" y="784" class="ttl" fill="#ffb53a">Dependency rule</text>
   <line x1="40" y1="794" x2="740" y2="794" stroke="#ffb53a" stroke-width="0.6" opacity="0.5"/>
   <text x="56" y="814" class="sub">·  core depends on NOTHING. It contains only domain + DTO + simulation + util.</text>
@@ -210,7 +200,7 @@
   <text x="56" y="850" class="sub">·  No cycles. The WebSocket runtime arrow is wire-level, not a Maven dependency.</text>
   <text x="56" y="868" class="sub">·  Result: core can be unit-tested with no Netty / JavaFX / Postgres on the classpath.</text>
 
-  <rect x="760" y="760" width="700" height="120" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="760" y="760" width="700" height="120" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4"/>
   <text x="776" y="784" class="ttl" fill="#daa520">Build order</text>
   <line x1="760" y1="794" x2="1460" y2="794" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
   <text x="776" y="814" class="sub">1.  mvn -pl bomberman-core install     (publishes jar to the local repo)</text>

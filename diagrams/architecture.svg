@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 940" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">BomberMen-X System Architecture</title>
   <desc id="desc">Three-tier architecture: clients on the left, shared bomberman-core in the middle, Netty server on the right, Postgres and Redis sidecars below.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -43,12 +33,12 @@
   <text x="40" y="64" class="sub">Three-tier real-time multiplayer · Client tier · Shared core · Server tier · Postgres + Redis sidecars</text>
 
   <!-- ============ CLIENT TIER ============ -->
-  <rect x="40" y="100" width="340" height="620" rx="14" fill="#11141c" stroke="#3affb5" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="100" width="340" height="620" rx="14" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
   <text x="210" y="130" text-anchor="middle" class="ttl" fill="#3affb5">CLIENT TIER  (vāyu · air)</text>
   <text x="210" y="148" text-anchor="middle" class="sub">Rendering · Input · UX</text>
 
   <!-- JavaFX Desktop -->
-  <rect x="70" y="170" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="170" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="210" y="194" text-anchor="middle" class="ttl" fill="#3affb5">JavaFX Desktop Client</text>
   <line x1="82" y1="204" x2="338" y2="204" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
   <text x="86" y="224" class="sub">ClientLauncher · SceneRouter</text>
@@ -59,7 +49,7 @@
   <text x="86" y="314" class="sub">GameClient (WS transport)</text>
 
   <!-- Web HTML Client -->
-  <rect x="70" y="360" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="360" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="210" y="384" text-anchor="middle" class="ttl" fill="#3affb5">Web HTML Client</text>
   <line x1="82" y1="394" x2="338" y2="394" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
   <text x="86" y="414" class="sub">Canvas 2D renderer</text>
@@ -70,7 +60,7 @@
   <text x="86" y="504" class="sub">Spectator / quick-play entry</text>
 
   <!-- 3D Spectator -->
-  <rect x="70" y="550" width="280" height="150" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.85" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="550" width="280" height="150" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.85"/>
   <text x="210" y="574" text-anchor="middle" class="ttl" fill="#3affb5">3D Spectator (deferred)</text>
   <line x1="82" y1="584" x2="338" y2="584" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
   <text x="86" y="604" class="sub">JavaFX 3D scene-graph</text>
@@ -80,12 +70,12 @@
   <text x="86" y="678" class="sub" fill="#daa520">Planned, not in v1.0</text>
 
   <!-- ============ SHARED CORE ============ -->
-  <rect x="500" y="170" width="300" height="530" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="500" y="170" width="300" height="530" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2.4"/>
   <text x="650" y="200" text-anchor="middle" class="ttl" fill="#3aedff">SHARED CORE  (ākāśa · ether)</text>
   <text x="650" y="218" text-anchor="middle" class="sub">bomberman-core Maven module</text>
 
   <!-- Domain box -->
-  <rect x="520" y="240" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="520" y="240" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="650" y="262" text-anchor="middle" class="ttl" fill="#3aedff">Domain entities</text>
   <line x1="532" y1="272" x2="768" y2="272" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="536" y="292" class="sub">Bomberman · Player · Bomb</text>
@@ -94,7 +84,7 @@
   <text x="536" y="346" class="sub">PowerUpItem · GameState · GameMode</text>
 
   <!-- Wire box -->
-  <rect x="520" y="395" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="520" y="395" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="650" y="417" text-anchor="middle" class="ttl" fill="#3aedff">Wire / DTO</text>
   <line x1="532" y1="427" x2="768" y2="427" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="536" y="447" class="sub">Envelope · WireCodec · MessageType</text>
@@ -103,7 +93,7 @@
   <text x="536" y="501" class="sub">MatchStart · MatchEnd · Inputs</text>
 
   <!-- Sim box -->
-  <rect x="520" y="550" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="520" y="550" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="650" y="572" text-anchor="middle" class="ttl" fill="#3aedff">Simulation</text>
   <line x1="532" y1="582" x2="768" y2="582" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="536" y="602" class="sub">GameWorld (authoritative)</text>
@@ -112,12 +102,12 @@
   <text x="536" y="656" class="sub">Deterministic, no I/O</text>
 
   <!-- ============ SERVER TIER ============ -->
-  <rect x="920" y="100" width="540" height="620" rx="14" fill="#11141c" stroke="#ff3ad9" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="920" y="100" width="540" height="620" rx="14" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
   <text x="1190" y="130" text-anchor="middle" class="ttl" fill="#ff3ad9">SERVER TIER  (agni · fire)</text>
   <text x="1190" y="148" text-anchor="middle" class="sub">Authoritative simulation · Netty WebSocket</text>
 
   <!-- Netty Edge -->
-  <rect x="950" y="170" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="950" y="170" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1070" y="194" text-anchor="middle" class="ttl" fill="#ff3ad9">Netty Edge</text>
   <line x1="962" y1="204" x2="1178" y2="204" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="966" y="222" class="sub">GameServer · WebSocketServer</text>
@@ -126,7 +116,7 @@
   <text x="966" y="276" class="sub">Frame · ping · backpressure</text>
 
   <!-- Lobby + Auth -->
-  <rect x="1220" y="170" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1220" y="170" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1330" y="194" text-anchor="middle" class="ttl" fill="#ff3ad9">Lobby + Auth</text>
   <line x1="1232" y1="204" x2="1428" y2="204" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="1236" y="222" class="sub">LobbyService</text>
@@ -135,7 +125,7 @@
   <text x="1236" y="276" class="sub">ClientSession</text>
 
   <!-- Match Manager -->
-  <rect x="950" y="320" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="950" y="320" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1070" y="344" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchManager</text>
   <line x1="962" y1="354" x2="1178" y2="354" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="966" y="372" class="sub">Pairs queued players</text>
@@ -144,7 +134,7 @@
   <text x="966" y="426" class="sub">Disposes finished sessions</text>
 
   <!-- Match Session -->
-  <rect x="1220" y="320" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1220" y="320" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1330" y="344" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
   <line x1="1232" y1="354" x2="1428" y2="354" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="1236" y="372" class="sub">Owns GameWorld</text>
@@ -153,7 +143,7 @@
   <text x="1236" y="426" class="sub">Applies inputs server-side</text>
 
   <!-- Chat + Bots -->
-  <rect x="950" y="470" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="950" y="470" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1070" y="494" text-anchor="middle" class="ttl" fill="#ff3ad9">Chat + Bots</text>
   <line x1="962" y1="504" x2="1178" y2="504" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="966" y="522" class="sub">ChatRouter</text>
@@ -162,7 +152,7 @@
   <text x="966" y="576" class="sub">Same input pipeline</text>
 
   <!-- Metrics -->
-  <rect x="1220" y="470" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1220" y="470" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1330" y="494" text-anchor="middle" class="ttl" fill="#ff3ad9">Ops / Metrics</text>
   <line x1="1232" y1="504" x2="1428" y2="504" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
   <text x="1236" y="522" class="sub">Micrometer counters</text>
@@ -171,32 +161,32 @@
   <text x="1236" y="576" class="sub">Structured JSON logs</text>
 
   <!-- ============ DATA TIER ============ -->
-  <rect x="40" y="760" width="640" height="150" rx="14" fill="#11141c" stroke="#ffb53a" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="760" width="640" height="150" rx="14" fill="#11141c" stroke="#ffb53a" stroke-width="2"/>
   <text x="360" y="790" text-anchor="middle" class="ttl" fill="#ffb53a">DATA TIER  (pṛthvī · earth)</text>
   <text x="360" y="808" text-anchor="middle" class="sub">Persistence + ephemeral state</text>
 
-  <rect x="70" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
   <text x="210" y="850" text-anchor="middle" class="ttl" fill="#ffb53a">PostgreSQL</text>
   <text x="210" y="872" text-anchor="middle" class="sub">accounts · match history · rankings</text>
 
-  <rect x="380" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
   <text x="520" y="850" text-anchor="middle" class="ttl" fill="#ffb53a">Redis</text>
   <text x="520" y="872" text-anchor="middle" class="sub">sessions · matchmaking queue · cache</text>
 
   <!-- ============ OPS TIER ============ -->
-  <rect x="760" y="760" width="700" height="150" rx="14" fill="#11141c" stroke="#daa520" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="760" y="760" width="700" height="150" rx="14" fill="#11141c" stroke="#daa520" stroke-width="2"/>
   <text x="1110" y="790" text-anchor="middle" class="ttl" fill="#daa520">BUILD + OPS  (gandha · scent)</text>
   <text x="1110" y="808" text-anchor="middle" class="sub">Tooling, CI, container runtime</text>
 
-  <rect x="780" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="780" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
   <text x="880" y="850" text-anchor="middle" class="ttl" fill="#daa520">Maven 3</text>
   <text x="880" y="872" text-anchor="middle" class="sub">multi-module build</text>
 
-  <rect x="1000" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1000" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
   <text x="1100" y="850" text-anchor="middle" class="ttl" fill="#daa520">JDK 17</text>
   <text x="1100" y="872" text-anchor="middle" class="sub">Red Hat OpenJDK</text>
 
-  <rect x="1220" y="825" width="220" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1220" y="825" width="220" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
   <text x="1330" y="850" text-anchor="middle" class="ttl" fill="#daa520">Docker · GitHub Actions</text>
   <text x="1330" y="872" text-anchor="middle" class="sub">CI + container images</text>
 

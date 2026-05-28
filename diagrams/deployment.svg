@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 920" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">BomberMen-X Deployment Topology</title>
   <desc id="desc">Deployment view: end-user devices, edge CDN/TLS, server pods, and the data tier inside a private subnet.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -43,11 +33,11 @@
   <text x="40" y="64" class="sub">End-user devices · CDN/TLS edge · Game server pods · Data tier (private subnet)</text>
 
   <!-- ============ END USERS ============ -->
-  <rect x="40" y="100" width="280" height="700" rx="14" fill="#11141c" stroke="#3affb5" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="100" width="280" height="700" rx="14" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
   <text x="180" y="130" text-anchor="middle" class="ttl" fill="#3affb5">END-USER DEVICES</text>
   <text x="180" y="148" text-anchor="middle" class="sub">Stateless, render-only</text>
 
-  <rect x="70" y="180" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="180" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <text x="180" y="204" text-anchor="middle" class="ttl" fill="#3affb5">Windows / macOS / Linux</text>
   <line x1="82" y1="214" x2="278" y2="214" stroke="#3affb5" stroke-width="0.6" opacity="0.6"/>
   <text x="86" y="234" class="sub">JavaFX desktop client</text>
@@ -55,7 +45,7 @@
   <text x="86" y="270" class="sub">Hardware-accelerated 2D</text>
   <text x="86" y="288" class="sub">Gamepad + keyboard input</text>
 
-  <rect x="70" y="340" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="340" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <text x="180" y="364" text-anchor="middle" class="ttl" fill="#3affb5">Browser (Chromium / FF)</text>
   <line x1="82" y1="374" x2="278" y2="374" stroke="#3affb5" stroke-width="0.6" opacity="0.6"/>
   <text x="86" y="394" class="sub">HTML5 Canvas client</text>
@@ -63,7 +53,7 @@
   <text x="86" y="430" class="sub">WebSocket WSS uplink</text>
   <text x="86" y="448" class="sub">No install required</text>
 
-  <rect x="70" y="500" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="500" width="220" height="130" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <text x="180" y="524" text-anchor="middle" class="ttl" fill="#3affb5">Mobile Web (read-only)</text>
   <line x1="82" y1="534" x2="278" y2="534" stroke="#3affb5" stroke-width="0.6" opacity="0.6"/>
   <text x="86" y="554" class="sub">iOS Safari / Android</text>
@@ -71,7 +61,7 @@
   <text x="86" y="590" class="sub">Touch UI prototype</text>
   <text x="86" y="608" class="sub">v1.1 candidate</text>
 
-  <rect x="70" y="660" width="220" height="120" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" stroke-dasharray="6 4" filter="url(#bx-3d-bevel)"/>
+  <rect x="70" y="660" width="220" height="120" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" stroke-dasharray="6 4"/>
   <text x="180" y="684" text-anchor="middle" class="ttl" fill="#3affb5">3D Spectator desktop</text>
   <line x1="82" y1="694" x2="278" y2="694" stroke="#3affb5" stroke-width="0.6" opacity="0.6"/>
   <text x="86" y="714" class="sub">JavaFX 3D viewer</text>
@@ -80,11 +70,11 @@
   <text x="86" y="768" class="sub" fill="#daa520">Post-MVP</text>
 
   <!-- ============ EDGE TIER ============ -->
-  <rect x="400" y="100" width="280" height="700" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="400" y="100" width="280" height="700" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
   <text x="540" y="130" text-anchor="middle" class="ttl" fill="#3aedff">EDGE TIER</text>
   <text x="540" y="148" text-anchor="middle" class="sub">DMZ · TLS · routing</text>
 
-  <rect x="430" y="180" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="430" y="180" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="540" y="204" text-anchor="middle" class="ttl" fill="#3aedff">Cloudflare CDN</text>
   <line x1="442" y1="214" x2="638" y2="214" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="446" y="234" class="sub">Static HTML / JS / CSS</text>
@@ -92,7 +82,7 @@
   <text x="446" y="270" class="sub">DDoS shield + WAF</text>
   <text x="446" y="288" class="sub">Geo-routed PoPs</text>
 
-  <rect x="430" y="340" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="430" y="340" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="540" y="364" text-anchor="middle" class="ttl" fill="#3aedff">NGINX ingress</text>
   <line x1="442" y1="374" x2="638" y2="374" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="446" y="394" class="sub">HTTP -&gt; 443 -&gt; wss://</text>
@@ -100,7 +90,7 @@
   <text x="446" y="430" class="sub">Health probe / least-conn</text>
   <text x="446" y="448" class="sub">Lets-Encrypt cert</text>
 
-  <rect x="430" y="500" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="430" y="500" width="220" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="540" y="524" text-anchor="middle" class="ttl" fill="#3aedff">Auth proxy</text>
   <line x1="442" y1="534" x2="638" y2="534" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="446" y="554" class="sub">JWT validation</text>
@@ -108,7 +98,7 @@
   <text x="446" y="590" class="sub">Origin allow-list</text>
   <text x="446" y="608" class="sub">Audit log</text>
 
-  <rect x="430" y="660" width="220" height="120" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="430" y="660" width="220" height="120" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="540" y="684" text-anchor="middle" class="ttl" fill="#3aedff">Metrics scraper</text>
   <line x1="442" y1="694" x2="638" y2="694" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
   <text x="446" y="714" class="sub">Prometheus pull</text>
@@ -117,11 +107,11 @@
   <text x="446" y="768" class="sub">SLO: p95 &lt; 80 ms</text>
 
   <!-- ============ APP TIER ============ -->
-  <rect x="760" y="100" width="320" height="700" rx="14" fill="#11141c" stroke="#ff3ad9" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="760" y="100" width="320" height="700" rx="14" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
   <text x="920" y="130" text-anchor="middle" class="ttl" fill="#ff3ad9">APP TIER  (server pods)</text>
   <text x="920" y="148" text-anchor="middle" class="sub">Stateful game-server replicas</text>
 
-  <rect x="790" y="180" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="790" y="180" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4"/>
   <text x="920" y="204" text-anchor="middle" class="ttl" fill="#ff3ad9">game-server pod #1</text>
   <line x1="802" y1="214" x2="1038" y2="214" stroke="#ff3ad9" stroke-width="0.6" opacity="0.6"/>
   <text x="806" y="234" class="sub">Netty 4 + JDK 17 image</text>
@@ -129,7 +119,7 @@
   <text x="806" y="270" class="sub">Hosts MatchSessions</text>
   <text x="806" y="288" class="sub">20 Hz authoritative loop</text>
 
-  <rect x="790" y="340" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="790" y="340" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4"/>
   <text x="920" y="364" text-anchor="middle" class="ttl" fill="#ff3ad9">game-server pod #2</text>
   <line x1="802" y1="374" x2="1038" y2="374" stroke="#ff3ad9" stroke-width="0.6" opacity="0.6"/>
   <text x="806" y="394" class="sub">Identical image · canary</text>
@@ -137,7 +127,7 @@
   <text x="806" y="430" class="sub">Sticky via session-id</text>
   <text x="806" y="448" class="sub">Rolling deploy ready</text>
 
-  <rect x="790" y="500" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="790" y="500" width="260" height="130" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4"/>
   <text x="920" y="524" text-anchor="middle" class="ttl" fill="#ff3ad9">game-server pod #3</text>
   <line x1="802" y1="534" x2="1038" y2="534" stroke="#ff3ad9" stroke-width="0.6" opacity="0.6"/>
   <text x="806" y="554" class="sub">HPA target: CPU 65%</text>
@@ -145,7 +135,7 @@
   <text x="806" y="590" class="sub">Graceful drain on SIGTERM</text>
   <text x="806" y="608" class="sub">Finishes match before exit</text>
 
-  <rect x="790" y="660" width="260" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="790" y="660" width="260" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.4"/>
   <text x="920" y="684" text-anchor="middle" class="ttl" fill="#ff3ad9">Bot worker pool</text>
   <line x1="802" y1="694" x2="1038" y2="694" stroke="#ff3ad9" stroke-width="0.6" opacity="0.6"/>
   <text x="806" y="714" class="sub">BotController instances</text>
@@ -154,11 +144,11 @@
   <text x="806" y="768" class="sub">Sandboxed CPU budget</text>
 
   <!-- ============ DATA TIER ============ -->
-  <rect x="1160" y="100" width="300" height="700" rx="14" fill="#11141c" stroke="#ffb53a" stroke-width="2" filter="url(#bx-3d-bevel)"/>
+  <rect x="1160" y="100" width="300" height="700" rx="14" fill="#11141c" stroke="#ffb53a" stroke-width="2"/>
   <text x="1310" y="130" text-anchor="middle" class="ttl" fill="#ffb53a">DATA TIER  (private subnet)</text>
   <text x="1310" y="148" text-anchor="middle" class="sub">No public ingress</text>
 
-  <rect x="1190" y="180" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1190" y="180" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="1310" y="204" text-anchor="middle" class="ttl" fill="#ffb53a">PostgreSQL 16</text>
   <line x1="1202" y1="214" x2="1418" y2="214" stroke="#ffb53a" stroke-width="0.6" opacity="0.6"/>
   <text x="1206" y="234" class="sub">Accounts table</text>
@@ -166,7 +156,7 @@
   <text x="1206" y="270" class="sub">Daily snapshot backup</text>
   <text x="1206" y="288" class="sub">PITR 7 days</text>
 
-  <rect x="1190" y="340" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1190" y="340" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="1310" y="364" text-anchor="middle" class="ttl" fill="#ffb53a">Redis 7</text>
   <line x1="1202" y1="374" x2="1418" y2="374" stroke="#ffb53a" stroke-width="0.6" opacity="0.6"/>
   <text x="1206" y="394" class="sub">Session tokens</text>
@@ -174,7 +164,7 @@
   <text x="1206" y="430" class="sub">Lobby presence</text>
   <text x="1206" y="448" class="sub">Hot leaderboards</text>
 
-  <rect x="1190" y="500" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1190" y="500" width="240" height="130" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="1310" y="524" text-anchor="middle" class="ttl" fill="#ffb53a">Object store (S3)</text>
   <line x1="1202" y1="534" x2="1418" y2="534" stroke="#ffb53a" stroke-width="0.6" opacity="0.6"/>
   <text x="1206" y="554" class="sub">Replay archive</text>
@@ -182,7 +172,7 @@
   <text x="1206" y="590" class="sub">Versioned bundles</text>
   <text x="1206" y="608" class="sub">Lifecycle: 90 d cold</text>
 
-  <rect x="1190" y="660" width="240" height="120" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1190" y="660" width="240" height="120" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="1310" y="684" text-anchor="middle" class="ttl" fill="#ffb53a">Log sink (Loki)</text>
   <line x1="1202" y1="694" x2="1418" y2="694" stroke="#ffb53a" stroke-width="0.6" opacity="0.6"/>
   <text x="1206" y="714" class="sub">JSON structured logs</text>

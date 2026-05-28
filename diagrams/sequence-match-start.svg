@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">Sequence — Hello to MatchStart</title>
   <desc id="desc">Sequence of a client logging in, joining the lobby, being matched, and receiving MatchStart.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -47,31 +37,31 @@
 
   <!-- 7 lifelines (centers): 130, 320, 510, 700, 890, 1080, 1320 -->
 
-  <rect x="50"   y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="50"   y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="130"  y="125" text-anchor="middle" class="ttl" fill="#3affb5">Client (A)</text>
   <text x="130"  y="145" text-anchor="middle" class="sub">GameClient</text>
 
-  <rect x="240"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="240"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="320"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">WebSocketServer</text>
   <text x="320"  y="145" text-anchor="middle" class="sub">Netty edge</text>
 
-  <rect x="430"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="430"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="510"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">AuthRegistry</text>
   <text x="510"  y="145" text-anchor="middle" class="sub">+ SessionRegistry</text>
 
-  <rect x="620"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="620"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="700"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">LobbyService</text>
   <text x="700"  y="145" text-anchor="middle" class="sub">presence/queue</text>
 
-  <rect x="810"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="810"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="890"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchManager</text>
   <text x="890"  y="145" text-anchor="middle" class="sub">creates sessions</text>
 
-  <rect x="1000" y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1000" y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
   <text x="1080" y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
   <text x="1080" y="145" text-anchor="middle" class="sub">tick loop</text>
 
-  <rect x="1240" y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1240" y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <text x="1320" y="125" text-anchor="middle" class="ttl" fill="#3affb5">Matched Clients</text>
   <text x="1320" y="145" text-anchor="middle" class="sub">A · B · C · D</text>
 
@@ -140,15 +130,15 @@
   <text x="1162" y="814" text-anchor="middle" class="edge"><tspan class="num">12.</tspan> first WorldSnapshot · t = 0</text>
 
   <!-- Notes -->
-  <rect x="60" y="870" width="500" height="60" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="60" y="870" width="500" height="60" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
   <text x="76" y="892" class="ttl" fill="#ffb53a">Handshake budget</text>
   <text x="76" y="912" class="sub">Steps 1–4 complete in &lt; 50 ms (one RTT + auth lookup)</text>
 
-  <rect x="600" y="870" width="540" height="60" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="600" y="870" width="540" height="60" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <text x="616" y="892" class="ttl" fill="#3aedff">Pairing rule</text>
   <text x="616" y="912" class="sub">MatchManager waits for 4 ready players (or 30 s timeout — bots fill the gap)</text>
 
-  <rect x="1180" y="870" width="280" height="60" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1180" y="870" width="280" height="60" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4"/>
   <text x="1196" y="892" class="ttl" fill="#daa520">Result</text>
   <text x="1196" y="912" class="sub">Match-id known to all participants.</text>
 

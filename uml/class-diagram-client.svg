@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1120" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <style>
+    rect { rx: 6; ry: 6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
+    .ttl { font-weight: 700; font-size: 14px; }
+    .sub { font-size: 12px; fill: #9aa6b8; }
+    .edge { font-size: 11px; fill: #c5cbd6; }
+  </style>
   <title id="title">UML Class Diagram — JavaFX client</title>
   <desc id="desc">Client classes: ClientLauncher, SceneRouter, MainMenuView, LobbyView, ArenaView, RankingsView, ArenaRenderer, HudOverlay, GameClient, MandalaArt, MandalaTheme.</desc>
   <defs>
-    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
-      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
-      <feFlood flood-color="#000" flood-opacity="0.55"/>
-      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
-      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
-                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
-        <feDistantLight azimuth="-45" elevation="65"/>
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
-      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
-      <feMerge>
-        <feMergeNode in="dropshadow"/>
-        <feMergeNode in="litPaint"/>
-      </feMerge>
-    </filter>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
     </pattern>
@@ -43,7 +33,7 @@
   <text x="40" y="64" class="sub">Scene routing · views · render pipeline · WebSocket transport · theme</text>
 
   <!-- ROW 1: ClientLauncher / SceneRouter / GameClient -->
-  <rect x="40"  y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40"  y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="100" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="116" width="280" height="10"             fill="#103a32"/>
   <text x="180" y="118" text-anchor="middle" class="ttl" fill="#3affb5">ClientLauncher  «main»</text>
@@ -57,7 +47,7 @@
   <text x="52" y="252" class="sub">+ start(stage): void</text>
   <text x="52" y="270" class="sub">+ main(args): void</text>
 
-  <rect x="500" y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="500" y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="500" y="100" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="500" y="116" width="280" height="10"             fill="#103a32"/>
   <text x="640" y="118" text-anchor="middle" class="ttl" fill="#3affb5">SceneRouter</text>
@@ -71,7 +61,7 @@
   <text x="512" y="252" class="sub">+ back(): void</text>
   <text x="512" y="270" class="sub">+ replace(route, scene)</text>
 
-  <rect x="960" y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="960" y="100" width="280" height="190" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="960" y="100" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="960" y="116" width="280" height="10"             fill="#103a32"/>
   <text x="1100" y="118" text-anchor="middle" class="ttl" fill="#3affb5">GameClient</text>
@@ -86,7 +76,7 @@
   <text x="972" y="270" class="sub">+ on(type, fn): void</text>
 
   <!-- MandalaTheme -->
-  <rect x="1300" y="100" width="260" height="190" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1300" y="100" width="260" height="190" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.6"/>
   <rect x="1300" y="100" width="260" height="26" rx="10" fill="#3a2c10" stroke="#daa520" stroke-width="1.6"/>
   <rect x="1300" y="116" width="260" height="10"             fill="#3a2c10"/>
   <text x="1430" y="118" text-anchor="middle" class="ttl" fill="#daa520">MandalaTheme</text>
@@ -102,7 +92,7 @@
 
   <!-- ROW 2: 4 Views -->
   <!-- MainMenuView -->
-  <rect x="40"  y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40"  y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="360" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="376" width="280" height="10"             fill="#103a32"/>
   <text x="180" y="378" text-anchor="middle" class="ttl" fill="#3affb5">MainMenuView</text>
@@ -118,7 +108,7 @@
   <text x="52" y="548" class="sub">+ onRankings(): void</text>
 
   <!-- LobbyView -->
-  <rect x="380" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="380" y="360" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="380" y="376" width="280" height="10"             fill="#103a32"/>
   <text x="520" y="378" text-anchor="middle" class="ttl" fill="#3affb5">LobbyView</text>
@@ -134,7 +124,7 @@
   <text x="392" y="548" class="sub">+ render(): Scene</text>
 
   <!-- ArenaView -->
-  <rect x="720" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="720" y="360" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="720" y="376" width="280" height="10"             fill="#103a32"/>
   <text x="860" y="378" text-anchor="middle" class="ttl" fill="#3affb5">ArenaView</text>
@@ -150,7 +140,7 @@
   <text x="732" y="548" class="sub">+ render(): Scene</text>
 
   <!-- RankingsView -->
-  <rect x="1060" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="360" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="1060" y="360" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="1060" y="376" width="280" height="10"             fill="#103a32"/>
   <text x="1200" y="378" text-anchor="middle" class="ttl" fill="#3affb5">RankingsView</text>
@@ -165,7 +155,7 @@
   <text x="1072" y="530" class="sub">+ onFilter(mode): void</text>
 
   <!-- View interface marker  -->
-  <rect x="1380" y="360" width="180" height="200" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.6" stroke-dasharray="5 3" filter="url(#bx-3d-bevel)"/>
+  <rect x="1380" y="360" width="180" height="200" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.6" stroke-dasharray="5 3"/>
   <rect x="1380" y="360" width="180" height="26" rx="10" fill="#3a2c10" stroke="#daa520" stroke-width="1.6"/>
   <rect x="1380" y="376" width="180" height="10"             fill="#3a2c10"/>
   <text x="1470" y="378" text-anchor="middle" class="ttl" fill="#daa520">«interface» View</text>
@@ -180,7 +170,7 @@
 
   <!-- ROW 3: Render pipeline -->
   <!-- ArenaRenderer -->
-  <rect x="40"  y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40"  y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="640" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="40"  y="656" width="280" height="10"             fill="#103a32"/>
   <text x="180" y="658" text-anchor="middle" class="ttl" fill="#3affb5">ArenaRenderer</text>
@@ -196,7 +186,7 @@
   <text x="52" y="828" class="sub">+ drawPlayers(list): void</text>
 
   <!-- HudOverlay -->
-  <rect x="380" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="380" y="640" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="380" y="656" width="280" height="10"             fill="#103a32"/>
   <text x="520" y="658" text-anchor="middle" class="ttl" fill="#3affb5">HudOverlay</text>
@@ -212,7 +202,7 @@
   <text x="392" y="828" class="sub">+ setTime(ms): void</text>
 
   <!-- InputController -->
-  <rect x="720" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="720" y="640" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="720" y="656" width="280" height="10"             fill="#103a32"/>
   <text x="860" y="658" text-anchor="middle" class="ttl" fill="#3affb5">InputController</text>
@@ -228,7 +218,7 @@
   <text x="732" y="828" class="sub">+ uninstall(): void</text>
 
   <!-- ChatPanel -->
-  <rect x="1060" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="640" width="280" height="200" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="1060" y="640" width="280" height="26"  rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.6"/>
   <rect x="1060" y="656" width="280" height="10"             fill="#103a32"/>
   <text x="1200" y="658" text-anchor="middle" class="ttl" fill="#3affb5">ChatPanel</text>
@@ -243,7 +233,7 @@
   <text x="1072" y="810" class="sub">+ scrollToBottom(): void</text>
 
   <!-- MandalaArt -->
-  <rect x="1380" y="640" width="180" height="200" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1380" y="640" width="180" height="200" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
   <rect x="1380" y="640" width="180" height="24" rx="10" fill="#3a2c10" stroke="#daa520" stroke-width="1.4"/>
   <rect x="1380" y="656" width="180" height="8"             fill="#3a2c10"/>
   <text x="1470" y="657" text-anchor="middle" class="ttl" fill="#daa520">MandalaArt</text>
@@ -257,7 +247,7 @@
   <text x="1392" y="792" class="sub" fill="#94a3b8">accents</text>
 
   <!-- ROW 4: Support -->
-  <rect x="40"  y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="40"  y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="40"  y="900" width="280" height="24" rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="40"  y="916" width="280" height="8"             fill="#103a32"/>
   <text x="180" y="917" text-anchor="middle" class="ttl" fill="#3affb5">GamepadPoller</text>
@@ -269,7 +259,7 @@
   <text x="52" y="1010" class="sub">+ rumble(idx, ms): void</text>
   <text x="52" y="1028" class="sub">+ shutdown(): void</text>
 
-  <rect x="380" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="380" y="900" width="280" height="24" rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="380" y="916" width="280" height="8"             fill="#103a32"/>
   <text x="520" y="917" text-anchor="middle" class="ttl" fill="#3affb5">SpatialAudio</text>
@@ -281,7 +271,7 @@
   <text x="392" y="1010" class="sub">+ setListener(pos): void</text>
   <text x="392" y="1028" class="sub">+ stopAll(): void</text>
 
-  <rect x="720" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="720" y="900" width="280" height="24" rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="720" y="916" width="280" height="8"             fill="#103a32"/>
   <text x="860" y="917" text-anchor="middle" class="ttl" fill="#3affb5">SpriteAtlas</text>
@@ -293,7 +283,7 @@
   <text x="732" y="1010" class="sub">+ animate(name, t): Sprite</text>
   <text x="732" y="1028" class="sub">+ disposeIfFreed(): void</text>
 
-  <rect x="1060" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="900" width="280" height="170" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="1060" y="900" width="280" height="24" rx="10" fill="#103a32" stroke="#3affb5" stroke-width="1.4"/>
   <rect x="1060" y="916" width="280" height="8"             fill="#103a32"/>
   <text x="1200" y="917" text-anchor="middle" class="ttl" fill="#3affb5">KillFeedWidget</text>
@@ -305,7 +295,7 @@
   <text x="1072" y="1010" class="sub">+ fade(): void</text>
   <text x="1072" y="1028" class="sub">+ render(gc): void</text>
 
-  <rect x="1380" y="900" width="180" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="1380" y="900" width="180" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
   <rect x="1380" y="900" width="180" height="24" rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.4"/>
   <rect x="1380" y="916" width="180" height="8"             fill="#0c2c44"/>
   <text x="1470" y="917" text-anchor="middle" class="ttl" fill="#3aedff">WireCodec</text>
