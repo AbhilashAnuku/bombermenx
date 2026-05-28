@@ -1,0 +1,269 @@
+# Input Validation and Server Authority — BomberMen-X
+
+**Course:** Software Architecture and Development — M.Sc. Applied Computer Science, SRH University Stuttgart
+**Module lead:** Prof. Dr. Floriment Klinaku
+**Project:** BomberMen-X (capstone, Sprint v0.2)
+**Architects:** Abhilash Anuku (AA — domain & contract owner), Jiya Christopher (JC — server validation), Sahil Khan (SK — gameplay-rule owner)
+**Date:** 28 May 2026 · Week 7 of 8 — Prototype
+
+---
+
+## 1. Why validation matters
+
+Two NFRs anchor the effort. NFR-04: the server is the sole authority on game state. NFR-05: the server must reject any action it can prove impossible. Together they remove the bug and exploit class arising when a peer can mutate state unilaterally. An unvalidated client could teleport through walls, place bombs from a corpse, fire a super-ability with no token cost, or rename itself to a slur. The spec restates this at the unit-of-work level:
+
+| Spec ID | Statement |
+|---------|-----------|
+| FR-82 | The server shall validate every movement intent against the arena geometry before committing. |
+| FR-83 | The server shall validate bomb placement against alive status, capacity and the target tile. |
+| FR-84 | The server shall broadcast only state changes that have passed validation. |
+| FR-85 | The server shall reject invalid intents silently and keep the previous authoritative state. |
+| FR-86 | The server shall log key match-lifecycle and rejection events for post-mortem review. |
+
+AA owns the architecture contract, JC owns the server-side gatekeeping in `bomberman-server`, and SK owns the gameplay-rule predicates inside `GameWorld`. Validation is layered — wire, session, simulation — and every input must pass all three before influencing a snapshot.
+
+## 2. Validation pipeline overview
+
+Network handlers never mutate world state; they deposit intents into per-player slots the tick reads at the next deterministic step.
+
+```mermaid
+flowchart TD
+    A[Client emits InputFrame] -->|WebSocket text frame| B[Netty pipeline]
+    B --> C[WireCodec.decode → Envelope]
+    C --> D[GameServerHandler.channelRead0]
+    D --> E{ClientSession known?\nplayerId set?\nmatchId set?}
+    E -- no --> X1[Drop + log warn]
+    E -- yes --> F[MatchManager.onInput]
+    F --> G[MatchSession.applyInput\ndeposit in PlayerInput slot]
+    G -.->|next tick| H[GameWorld.tick]
+    H --> I[applyPlayerInputs\nalive · cooldown · isWalkable · bombAt]
+    I -- invalid --> X2[Drop · keep state · FR-85]
+    I -- valid --> J[Commit pos + recordStep]
+    J --> K[Snapshotter.snapshot]
+    K --> L[broadcast SNAPSHOT · FR-84]
+```
+
+Three properties are load-bearing: the network thread is read-only w.r.t. authoritative state; per-player slots are last-writer-wins so a flooded client cannot starve others; the tick is the sole writer to `GameWorld` and is single-threaded per match (`bx-match-<id>`), so the simulation needs no locking.
+
+## 3. Wire-level validation (envelope + DTO)
+
+The first line of defence is `com.bombermenx.core.net.WireCodec`. `WireCodec.decode(String)` parses an `Envelope` through a shared `ObjectMapper` with `FAIL_ON_UNKNOWN_PROPERTIES` disabled — forward compatibility without weakening validation, since the next step is strongly typed via `WireCodec.decodePayload(env, Class<T>)`. Every `GameServerHandler` consumer re-decodes the loosely-typed `Envelope.payload` into the concrete record before touching it. Malformed JSON throws `IllegalStateException`, caught in `channelRead0`:
+
+```java
+try { env = WireCodec.decode(text.text()); }
+catch (Exception ex) {
+    log.warn("Bad envelope from {}: {}", s.getSessionId(), ex.getMessage());
+    return;
+}
+```
+
+The connection is not torn down — one fumble must not lose a match — but the frame is dropped. Unknown `MessageType` values fall through the dispatch `switch` into `default -> log.debug(...)`. The layer is exercised by `WireCodecTest#roundTripsHelloEnvelope` and `#roundTripsInputFrame`, pinning the contract downstream validation depends on.
+
+## 4. Session validation
+
+Once the envelope decodes, `GameServerHandler` enforces session identity. Every channel has a `ClientSession` attached via the Netty `AttributeKey` `SessionRegistry.SESSION_KEY`, set at `channelActive`. For an `INPUT` frame the handler additionally requires the session to be in a match (lobby messages require a lobby id):
+
+```java
+case INPUT -> {
+    if (s.getMatchId() == null) return;
+    InputFrame f = WireCodec.decodePayload(env, InputFrame.class);
+    matchManager.onInput(s, f);
+}
+```
+
+`MatchManager.onInput` repeats the check defensively and resolves the `MatchSession`; a frame for a finished match is dropped. `channelInactive` calls `onSessionDisconnected(s)` and `lobby.onDisconnect(...)` before unregistering the session, satisfying FR-07. Both paths:
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant H as GameServerHandler
+    participant M as MatchManager
+    participant S as MatchSession
+    participant W as GameWorld
+
+    C->>H: TextWebSocketFrame (INPUT)
+    H->>H: WireCodec.decode → Envelope
+    alt malformed JSON
+        H-->>C: drop · log warn · socket stays open
+    else valid envelope
+        H->>H: lookup ClientSession + matchId
+        alt no session or no matchId
+            H-->>C: drop silently (FR-85)
+        else session OK
+            H->>M: onInput(session, frame)
+            M->>S: applyInput(session, frame)
+            S->>S: deposit in PlayerInput slot
+            Note over W: at next tick
+            S->>W: tick() → applyPlayerInputs()
+            S-->>C: SNAPSHOT broadcast (FR-84)
+        end
+    end
+```
+
+## 5. Movement validation
+
+Movement is gated inside `GameWorld.applyPlayerInputs` (SK-owned):
+
+```java
+for (Player p : players.values()) {
+    if (!p.isAlive()) continue;                       // FR-31
+    PlayerInput in = inputFor(p.getId());
+    p.tickStepCooldown();
+    if (in.getMovement().isMoving()) {
+        p.setFacing(in.getMovement());
+        if (p.getStepCooldownTicks() == 0) {          // FR-29
+            TilePos next = p.getPos().translate(in.getMovement());
+            if (arena.isWalkable(next) && !bombAt(next)) {   // FR-30, FR-52, FR-82
+                p.setPos(next);
+                p.recordStep();
+                int cd = Math.max(4, Math.round(
+                    GameConfig.TICK_HZ / Math.max(1f, p.getMoveSpeed())));
+                p.setStepCooldownTicks(cd);
+            }
+        }
+    }
+    in.clearOneShots();
+}
+```
+
+Five predicates are expressed: alive (`Player.isAlive`), step cooldown elapsed (`getStepCooldownTicks() == 0`), in-bounds and walkable (`Arena.isWalkable(TilePos)` delegating to `inBounds` and `TileType.isWalkable`), and no bomb on the target (`bombAt(next)`). `Bomberman.canKick` is checked on a separate kick path. When any predicate fails the input is dropped, `Player.pos` is unchanged, and the next `Snapshotter.snapshot(world)` broadcasts the same tile — the literal definition of FR-85.
+
+## 6. Bomb placement validation
+
+Bomb placement re-uses the per-player `PlayerInput.isPlaceBomb()` one-shot, checked on the same tick. The predicates stack as a single expression:
+
+```java
+if (in.isPlaceBomb() && p.canPlaceBomb() && !bombAt(p.getPos())) {
+    placeBomb(p);
+}
+```
+
+`Player.canPlaceBomb()` returns `alive && bomberman.getActiveBombs() < bomberman.getMaxBombs();` — enforcing FR-47 (finite budget) and FR-54 (per-`Bomberman`). `bombAt(currentTile)` prevents two bombs sharing a tile (FR-55). `placeBomb` is the only call site that constructs a `Bomb`, making FR-83 trivially auditable; it increments `Bomberman.activeBombs` and records `Score.recordBombPlaced()`.
+
+## 7. Ability validation
+
+`GameWorld.triggerAbility(playerId, ability)` has a uniform shape: alive, tokens, cooldown, fire-and-arm.
+
+```java
+if (p == null || !p.isAlive()) return false;
+if ("NUKE".equals(ability)) {
+    if (p.getAbilityXCooldownTicks() > 0) return false;
+    if (!p.spendTokens(NUKE_COST)) return false;
+    fireNuke(p);
+    p.setAbilityXCooldownTicks(NUKE_COOLDOWN_TICKS);
+    return true;
+}
+```
+
+The `GameWorld` constants are `NUKE_COST = 3`, `NUKE_COOLDOWN_TICKS = 12 * GameConfig.TICK_HZ`, `DASH_COST = 1`, `DASH_COOLDOWN_TICKS = 6 * GameConfig.TICK_HZ`. `Player.spendTokens(n)` returns `false` without mutating the balance if the player cannot afford it — no path fires without paying. Unknown ability names return `false` and change nothing.
+
+## 8. Bonus collection validation
+
+Bonus pickup is resolved at the end of every tick by `GameWorld.collectPickups`. The player must be alive and on the pickup's tile; the effect is dispatched through `Player.applyPowerUp(PowerUpType)`:
+
+```java
+if (p.isAlive() && p.getPos().equals(item.getPos())) {
+    p.applyPowerUp(item.getType());
+    item.collect();
+}
+```
+
+`Player.applyPowerUp` switches over `PowerUpType` and routes to the matching `Bonus` subclass (`ExtraBombBonus`, `FlameBonus`, `SpeedBonus`, `KickBonus`, `ThrowBonus`, `LifeBonus`, `ArmorBonus`) via `Bomberman.incrementMaxBombs`, `incrementBombRange`, `increaseSpeed(0.5f, 8.0f)`, `enableKick`, `enableThrow`, `enableShield`; the call ends with `score.recordBonusCollected()`. This satisfies FR-69 (collection is server-side), FR-70 (each pickup is consumed once via `item.collect()` + `isCollected()` removal) and FR-71 (effect computed from `PowerUpType`, not a client delta).
+
+## 9. Explosion and chain-reaction validation
+
+`GameWorld.tickBombs` decrements every unfused bomb's fuse, gathers zeroed bombs into a `primed` list, then runs a fixed-point loop adding any non-primed bomb whose tile is reached by a primed bomb's blast ray (`rayHits`). The loop converges in at most `bombs.size()` iterations. The ray walk in `detonate(Bomb b)`:
+
+```java
+for (Direction dir : new Direction[]{UP, DOWN, LEFT, RIGHT}) {
+    TilePos cur = b.getPos();
+    for (int step = 1; step <= b.getPower(); step++) {
+        cur = cur.translate(dir);
+        if (!arena.inBounds(cur.x, cur.y)) break;
+        TileType t = arena.get(cur);
+        if (t == TileType.SOLID) break;
+        tiles.add(cur);
+        if (t == TileType.DESTRUCTIBLE) {
+            arena.set(cur, TileType.FLOOR);
+            maybeDropPickup(cur);
+            break;
+        }
+    }
+}
+```
+
+Three invariants cover FR-56..FR-62: `SOLID` stops a ray without being consumed; `DESTRUCTIBLE` is consumed once and may drop a `PowerUpItem`; a chained bomb is primed at most once because `tickBombs` checks `primed.contains(b)` first. Friendly-fire is suppressed when `killer.getTeam() == p.getTeam()` and the team is non-negative. Bomb lifecycle:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Armed: GameWorld.placeBomb\n(canPlaceBomb + !bombAt)
+    Armed --> Detonating: fuse == 0\n(Bomb.tickFuse)
+    Armed --> Detonating: ray reaches tile\n(chain reaction)
+    Detonating --> Cleared: tiles consumed\nExplosion spawned
+    Cleared --> [*]: removeIf(isDetonated)
+```
+
+## 10. Sudden death
+
+`GameWorld.advanceSuddenDeath` activates when `currentTick >= suddenDeathStartTick` (`TICK_HZ * 150`, 2 m 30 s) and drops one `SOLID` wall every 30 ticks along the inward spiral from `Arena.suddenDeathStep(step)`:
+
+```java
+TilePos t = arena.suddenDeathStep(suddenDeathStepsTaken++);
+if (t == null) return;
+for (Player p : players.values()) {
+    if (p.isAlive() && p.getPos().equals(t)) {
+        p.kill(); p.addDeath();
+        killFeed.add(new KillFeedEntry(..., "sudden_death"));
+    }
+}
+```
+
+The spiral is deterministic, so two servers replaying the same seed produce identical sequences. A player on the freshly dropped tile is killed with no shield grace. This satisfies FR-15 by collapsing the playable area to a single tile if the match has not ended.
+
+## 11. Score-update validation
+
+`Score` exposes `recordPlayerKilled`, `recordBombPlaced`, `recordBonusCollected`, `recordStep` (plus `recordDeath`, `recordControlPoint`). Each is called from exactly one site in `GameWorld`:
+
+| Mutator | Sole caller | Trigger |
+|---------|-------------|---------|
+| `recordStep` | `GameWorld.applyPlayerInputs` | committed tile movement |
+| `recordBombPlaced` | `GameWorld.placeBomb` | committed bomb placement |
+| `recordPlayerKilled` | `Player.addKill` ← `detonate` / `fireNuke` | victim killed by attacker |
+| `recordBonusCollected` | `Player.applyPowerUp` ← `collectPickups` | pickup consumed |
+| `recordControlPoint` | `Player.addControlPoint` ← `tickKingOfGrid` | tick on the king node |
+
+No network handler calls a score mutator directly. The score is derived from the simulation, not an input to it, and FR-72..FR-79 reduce to "the simulation is correct".
+
+## 12. Moderation
+
+`ProfanityFilter` is the chat and display-name gate. `GameServerHandler` calls `sanitizeDisplayName` on every `HELLO` and confirmed `AUTH_RESULT` name; `ChatRouter` calls `redact` on each chat line before broadcast. The filter offers `contains` (word-boundary regex, case-insensitive), `redact` (matches → `***`), and `sanitizeDisplayName` (trim, truncate to 24, substitute `"Player" + hash` if a loose pattern matches — loose because handles like `FUCKboi42` glue tokens together). `ProfanityFilterTest` pins the contract with four cases: `redactsBannedTokensCaseInsensitive`, `containsFlagsBannedTokens`, `sanitizeDisplayNameReplacesProfaneInputs`, `sanitizeDisplayNameTruncatesAndDefaults`.
+
+## 13. Logging important events
+
+FR-86 is satisfied by SLF4J calls at the following categories:
+
+| Logger | Level | Event |
+|--------|-------|-------|
+| `GameServerHandler` | `info` | connection open / close |
+| `GameServerHandler` | `warn` | malformed envelope, idle close, pipeline exception |
+| `MatchManager` | `info` | player joined queue, warmup elapsed → match started |
+| `MatchSession` | `info` | countdown finished, authoritative ticks starting |
+| `MatchSession` | `error` | tick failure (then stops the match) |
+| `GameWorld` kill feed | structured `KillFeedEntry` | every kill with attacker, victim, cause (`bomb` / `nuke` / `sudden_death`) |
+| `WebSocketServer` | `info` | listener bind, listener stop |
+
+The kill feed is the highest-value audit stream: each kill carries wall-clock timestamp, attacker, victim, and cause, broadcast as `KILL_FEED` so spectator clients render it without polling.
+
+## 14. Acceptance
+
+| Spec | Acceptance criterion | Test artefact |
+|------|----------------------|---------------|
+| FR-82 | Movement to SOLID or out-of-bounds is rejected with no state change | `GameWorldTest` movement scenarios + `Arena.isWalkable` |
+| FR-83 | Placement on an occupied tile or by a dead/over-capacity player is rejected | `GameWorldTest` placement via `Player.canPlaceBomb` |
+| FR-84 | Only validated changes appear in `WorldSnapshot` | `Snapshotter.snapshot(world)` is the sole author; covered end-to-end in `GameWorldTest` |
+| FR-85 | An invalid intent leaves `getPos`, `getActiveBombs`, `getTokens` unchanged | `GameWorldTest` negative paths |
+| FR-86 | Every match-lifecycle and rejection event is logged | manual log review against `MatchSession`, `MatchManager`, `GameServerHandler`; kill feed verified by `MatchSession.tick` |
+| Wire | `Envelope` and `InputFrame` round-trip correctly | `WireCodecTest#roundTripsHelloEnvelope`, `#roundTripsInputFrame` |
+| Moderation | Display names sanitized, chat redacted | `ProfanityFilterTest` (4 cases) |
+
+The validation surface is distributed across three packages — `com.bombermenx.core.net` (wire), `com.bombermenx.server.net` plus `com.bombermenx.server.match` (session), and `com.bombermenx.core.sim.GameWorld` (gameplay). The JC↔SK boundary falls at the call from `MatchSession.applyInput` into the `PlayerInput` slot; that seam is also the audit boundary. Every byte crossing it has passed wire and session validation; every byte coming out has passed gameplay-rule validation. The pipeline therefore answers NFR-04 and NFR-05: the server is the sole authority, and the only way to influence its state is through a frame that has survived all three layers.

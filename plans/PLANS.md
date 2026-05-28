@@ -1,44 +1,217 @@
 # Plans
 
-> Our plan for BomberMen-X. We are in **Week 7 of 8** and currently **building the prototype**.
+**Date:** 28 May 2026 · Week 7 of 8 — Prototype
 
-## Programme shape
+> Combined descriptive, prescriptive, and sprint plans for BomberMen-X.
+> The team is in **Week 7** of an 8-week M.Sc. programme. The build window
+> closes at the end of Week 7; Week 8 is reserved for defence preparation
+> and the final report.
 
-The programme is 8 weeks. The build window inside it is 6 weeks (W2 to W7). Week 1 was analysis and planning; Week 8 is reserved for defence preparation and the final write-up.
+## 1. Programme shape
 
-| Week | Focus |
-|---|---|
-| 1 | Analysis, planning, project poster, repo scaffolding |
-| 2 to 3 | Multi-module Maven layout, Docker stack, CI skeleton |
-| 4 to 5 | Deterministic 60 Hz core; Netty WebSocket server; wire protocol |
-| 6 | JavaFX client + mandala HUD; bot AI; pickups |
-| **7 (now)** | **Prototype hardening; deliverables pack; tests; security scan** |
-| 8 | Defence preparation, final report, presentation |
+The programme is eight weeks. Week 1 was analysis and planning; Weeks 2–7
+form the six-week build window; Week 8 is the defence sprint. The team
+holds three architects, each carrying a lane and signing off on every
+cross-module change.
 
-## Team
+| Architect | Initials | Lane |
+|---|---|---|
+| Abhilash Anuku | AA | Delivery, planning, architecture spec, requirements traceability, build & deploy |
+| Simranjot Kaur | SK | UI / UX, gameplay engine (movement, bomb, scoring), HUD |
+| Jithendra Chittomothu | JC | Networking, server lifecycle, bot AI, deploy pipeline |
 
-Three architects, each carrying a lane. All three sign off on every cross-module change.
+## 2. Timeline (Gantt)
 
-- **Abhilash Anuku (AA)** -- delivery, planning, architecture spec.
-- **Simranjot Kaur (SK)** -- UI / UX, gameplay engine.
-- **Jithendra Chittomothu (JC)** -- networking, deployment.
+```mermaid
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat W%-V
+    title BomberMen-X — 8-week programme (M.Sc. SAD, SRH Stuttgart)
 
-## Scope at Week 7
+    section W1 · Analysis
+    Brief intake + Lastenheft read    :done, w1a, 2026-04-13, 3d
+    Requirements specification         :done, w1b, after w1a, 4d
 
-**In the prototype:** deterministic 60 Hz simulation, Netty WebSocket server, JavaFX desktop client with the mandala renderer, gamepad support, bot AI with 3 personality profiles, FFA + KING_OF_GRID + LEVELS + TEAMS game modes, 6 power-ups (EXTRA_BOMB, BOMB_POWER, SPEED, KICK, THROW, SHIELD), age gate, profanity filter, CI on GitHub Actions, Docker images, Cloud Run deploy workflow.
+    section W2-3 · Foundations
+    Multi-module Maven layout          :done, w2a, 2026-04-20, 4d
+    Docker stack + CI skeleton         :done, w2b, after w2a, 4d
+    Architecture spec (arc42)          :done, w3a, after w2b, 5d
 
-**Deferred:** Android Unity client; Kryo binary wire format (JSON for now); persistent ranking math (real-time data only); spectator mode polish; replay viewer UI (the deterministic seed-plus-inputs guarantee is in place; no UI consumes it yet).
+    section W4-5 · Core
+    Deterministic 60 Hz simulation     :done, w4a, 2026-05-04, 6d
+    Netty WebSocket server             :done, w4b, after w4a, 5d
+    Wire protocol (JSON)               :done, w4c, after w4b, 3d
 
-## Rituals
+    section W6 · Client + AI
+    JavaFX client + mandala renderer   :done, w6a, 2026-05-18, 5d
+    Bot AI + power-ups + scoring       :done, w6b, after w6a, 4d
 
-- 15-minute morning standup; three questions; no shared screens.
-- Async decision log in the repository -- every architectural call landed there before the code.
-- Single GitHub Projects board; every issue has an owner, a module label, and a week label.
-- Docker Compose stack stays up on every architect laptop.
+    section W7 (NOW) · Hardening
+    Test green + CodeQL                :active, w7a, 2026-05-25, 4d
+    Defence-pack documentation         :active, w7b, 2026-05-25, 6d
+    UI/UX polish (HUD, kill feed)      :active, w7c, 2026-05-27, 3d
 
-## Next (Week 7 to Week 8)
+    section W8 · Defence
+    Final report + rehearsal           :w8a, 2026-06-01, 5d
+    Defence submission                 :milestone, m1, 2026-06-05, 0d
+```
 
-- Close the remaining bugs found in playtests.
-- Finalise the six defence-pack documents (linked from the portal).
-- Rehearse the defence against the requirements-traceability matrix (FR-01 to FR-86).
-- Write up the final report.
+## 3. Descriptive plan — what was actually built
+
+The build followed the Lastenheft (Becker / Frank) and the requirements
+specification (Klinaku) week by week.
+
+**Weeks 1–3 — Foundations.** AA opened the decision log and produced the
+project poster, the multi-module Maven layout, and the architecture
+specification. JC stood up the Docker Compose stack (server + Postgres +
+Redis) and the first GitHub Actions workflow. The arc42 specification was
+written against the 22-section template from the SAD lecture.
+
+**Weeks 4–5 — Core.** SK and JC moved together. SK landed the deterministic
+60 Hz simulation in `bomberman-core` and reached parity with the
+requirements specification (FR-25..FR-62). JC brought up the Netty
+WebSocket server, framed the JSON envelope, and froze the `MessageType`
+enum. The first end-to-end round-trip went through a single bot match by
+end of W5.
+
+**Week 6 — Client and AI.** SK shipped the JavaFX client with the mandala
+renderer, the HUD, gamepad support via JInput, and the age gate. JC's bot
+controller (`BotController`) added three personality profiles. Power-ups,
+the bonus hierarchy, and the scoring counters were all live by end of W6.
+
+**Week 7 (current) — Hardening and submission.** AA owns the deliverables
+pack (this folder), the requirements traceability matrix, and the final
+defence rehearsal. SK is closing remaining UI bugs and polishing the HUD
+(kill feed, score flash, match-end overlay). JC is re-running CodeQL and
+running the nightly soak harness against the deployed Cloud Run revision.
+All three sign off on the architecture report (`architecture-report-en.html`).
+
+The team intentionally **does not implement** client-side prediction or
+reconciliation. The client is a pure server-authoritative snapshot
+renderer; the description in the defence pack reflects this honestly.
+
+## 4. Prescriptive plan — recommendations for the next iteration
+
+If a successor team continued this project, the order of work is:
+
+1. **Persistent ranking math.** Schema exists, writes happen, the read path
+   returns canned rows. Replace `RankingsView`'s sample data with a real
+   query against the `/v1/rankings` endpoint backed by Postgres.
+2. **Replay viewer.** The deterministic seed + ordered input log already
+   reproduces a match byte-for-byte (`GameWorldTest#deterministicGenerationWithSameSeed`).
+   Build a JavaFX viewer that consumes the stored input log and steps
+   `GameWorld.tick()` at the user's chosen rate.
+3. **Spectator mode polish.** The wire already broadcasts snapshots to all
+   subscribed sessions, including dead players. A `SpectatorView` would
+   reuse `ArenaRenderer` against a frozen player-id.
+4. **Voice-channel moderation.** `VoiceFrame` is on the wire and chat is
+   filtered via `ProfanityFilter`, but no automated voice moderation runs
+   yet. Pick a transcription provider, gate it on the existing chat
+   moderation policy in `docs/SAFETY.md`.
+5. **Android Unity client.** The wire is JSON over WebSocket and already
+   speaks to a browser client (`play.html` previously); a Unity client
+   wiring `MessageType` over `System.Net.WebSockets` is a known-shape job.
+6. **Kryo binary wire.** Optional. Halves the bandwidth and parse time but
+   loses the in-browser debuggability that JSON gave the team for free
+   during development.
+
+## 5. Sprint plan — Week 7 day by day
+
+| Day | Owner | Deliverable |
+|---|---|---|
+| Mon 26 May | AA + SK + JC | Restructure to `src/` + `infra/` layout; `mvn clean test` green on the new tree. |
+| Tue 27 May | SK | UI/UX polish — HUD kill feed, score flash, end-of-match overlay. |
+| Tue 27 May | JC | CodeQL re-run; nightly soak rerun against deployed revision. |
+| Wed 28 May | AA | Deliverables rebuild — game design, input validation, server-client communication, glossary, SAD-theory + roles, plans with Gantt. |
+| Wed 28 May | SK | Mandala palette retune (Indian festival colours) + radial line-art rebuild. |
+| Thu 29 May | AA + SK + JC | Defence rehearsal pass 1 — walk the FR-01..FR-86 traceability matrix. |
+| Fri 30 May | AA + SK + JC | Defence rehearsal pass 2 — Q & A drill (architecture decisions, quality scenarios). |
+| Sat 31 May | AA | Final pass on the six defence-pack documents + arc42 spec. |
+| Sun 1 Jun | AA | Final commit + final exports regeneration. |
+
+## 6. Per-section status checklist
+
+Status legend: ✓ done · ⌛ in progress · • planned
+
+| Area | Status | Notes |
+|---|---|---|
+| **Code** | | |
+| `bomberman-core` deterministic simulation | ✓ | 60 Hz tick, byte-identical with same seed (`GameWorldTest`) |
+| `bomberman-server` Netty WebSocket gateway | ✓ | Matchmaking, 4 game modes, bot AI, profanity filter |
+| `bomberman-client` JavaFX desktop client | ✓ | Mandala renderer, gamepad via JInput, age gate |
+| **Tests** | | |
+| `GameWorldTest` (core) | ✓ | 5 cases — movement, fuse, explosion, chain, determinism |
+| `WireCodecTest` (core) | ✓ | 2 cases — HELLO + INPUT round trip |
+| `ProfanityFilterTest` (server) | ✓ | 4 cases — name + chat moderation |
+| Broader test coverage (abilities, KOTG, sudden death) | • | Defence-question risk; covered by integration smoke |
+| **Infrastructure** | | |
+| Docker Compose dev stack | ✓ | `infra/docker-compose.yml` |
+| CI workflow (`ci.yml`) | ✓ | Build, tests, SpotBugs/PMD, Docker, Trivy, integration smoke |
+| CodeQL workflow | ✓ | Last pass needs re-run after restructure |
+| Cloud Run deploy (`deploy-cloudrun.yml`) | ✓ | Free-tier sizing applied |
+| Release workflow + Windows jpackage | ✓ | Signed image + Windows EXE |
+| Nightly soak (256-bot loadtest) | ✓ | `nightly.yml` |
+| **Deliverables (this pack)** | | |
+| Architecture report (en) | ✓ | `architecture-report-en.html`, dated 28 May 2026 |
+| arc42 specification | ✓ | 22-section template, matches the lecture material |
+| Requirements traceability (FR-01..FR-86) | ✓ | Every requirement mapped to a Java class + file |
+| Systems architecture | ✓ | Twelve named systems with three-way ownership |
+| Code walk-through | ✓ | Consolidated tour of all three modules |
+| Game design | ✓ | New for W7 — gameplay rules, modes, scoring, sudden death |
+| Server-client communication | ✓ | New for W7 — protocol, sequence diagrams, thread model |
+| Input validation | ✓ | New for W7 — FR-82..FR-86 mapped to validation code |
+| SAD theory and roles | ✓ | New for W7 — lecture concepts × code × architect ownership |
+| Glossary | ✓ | New for W7 — Bomberman + network + SAD + theme terms |
+| Plans (this document) | ✓ | Updated W7 with Gantt + checklists |
+| Build & run guide | ✓ | `BUILD_AND_RUN.md` |
+| Project report | ✓ | `report/REPORT.md`, dated 28 May 2026 |
+| **Diagrams** | | |
+| Architecture overview SVG | ✓ | `diagrams/architecture.svg` |
+| Sequence diagrams (match start, bomb) | ✓ | `diagrams/sequence-*.svg` |
+| Deployment view | ✓ | `diagrams/deployment.svg` |
+| UML class diagrams (3 modules) | ✓ | `uml/class-diagram-{core,server,client}.svg` |
+| Package diagram | ✓ | `uml/package-diagram.svg` |
+| Use-case diagram | ✓ | `uml/use-case.svg` |
+| Match lifecycle activity | ✓ | `uml/activity-match-lifecycle.svg` |
+| **Other** | | |
+| Slide deck (presentation) | ✓ | `presentation/slides.html` — self-contained |
+| Exports (6 DOCX + 6 PDF) | ✓ | `exports/` — regenerable via `infra/scripts/export-docs.py` |
+| **Open risks** | | |
+| Voice-channel moderation | ⌛ | See prescriptive plan #4 |
+| Persistent ranking math | ⌛ | See prescriptive plan #1 |
+| Replay viewer UI | • | Determinism in place; UI deferred |
+| Spectator mode polish | • | Working prototype; needs view layer |
+
+## 7. Rituals that earned their keep
+
+- A fifteen-minute morning standup. Three questions. No shared screens.
+- An asynchronous decision log in the repository. Every architectural call
+  landed there before it landed in code.
+- A single GitHub Projects board. Every issue carries an owner, a module
+  label, and a week label.
+- A Docker Compose stack that stays up on every architect's laptop. The
+  cost of "is the database running?" went to zero.
+
+Rituals tried and dropped: a separate Friday retro (folded into the
+end-of-day demo on day seven), and a design-review channel (folded into
+the decision log).
+
+## 8. Risk register at end of Week 7
+
+| ID | Risk | Mitigation | Owner |
+|---|---|---|---|
+| R-01 | Defence-question on test coverage (11 tests vs 86 FRs) | Integration smoke + acceptance table in `requirements-traceability.md` | AA |
+| R-02 | CodeQL stale after restructure | Re-run before submission | JC |
+| R-03 | Voice moderation gap | Documented as deferred; chat filter active | SK |
+| R-04 | Persistent ranking returns canned rows | Documented in prescriptive plan + arc42 risks | AA |
+| R-05 | Mandala renderer too heavy on integrated GPUs | All stroke-based, no PNG / SVG; tested 60 FPS on Intel UHD | SK |
+| R-06 | Cloud Run cold start | Min instances 0 with session affinity on; cold start ≈ 4 s | JC |
+
+## 9. Next (Week 7 → Week 8)
+
+1. Close the remaining UI bugs found in W7 playtests (SK).
+2. Re-run CodeQL on the restructured tree (JC).
+3. Final pass on the six defence-pack documents (AA).
+4. Rehearse the defence end-to-end against the requirements-traceability
+   matrix and the SAD lecture material (AA + SK + JC).
+5. Write up the final report and submit (AA).

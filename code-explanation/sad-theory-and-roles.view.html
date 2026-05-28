@@ -1,0 +1,325 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Software Architecture and Development — Theory and Roles for BomberMen-X - BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Code Explanation</span>
+    <span class="sep">/</span>
+    <span class="title">Software Architecture and Development — Theory and Roles for BomberMen-X</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">Defence Pack</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="meta">Source: <code>sad-theory-and-roles.md</code></div>
+  <article id="content"></article>
+</main>
+
+<footer class="footer">
+  <div>Team &mdash; <span class="team">Abhilash Anuku (AA)</span> &middot; <span class="team">Simranjot Kaur (SK)</span> &middot; <span class="team">Jithendra Chittomothu (JC)</span></div>
+  <div class="src">Rendered from <code>sad-theory-and-roles.md</code></div>
+</footer>
+
+<script type="text/markdown" id="md-src">
+# Software Architecture and Development — Theory and Roles for BomberMen-X
+
+**Date:** 28 May 2026 · Week 7 of 8 — Prototype
+**Module:** Software Architecture and Development (SAD), M.Sc. Applied Computer Science, SRH University Stuttgart
+**Instructor:** Prof. Dr. Floriment Klinaku
+**Project sponsors (Lastenheft):** Prof. Steffen Becker, M. Frank
+**Team architects:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC)
+
+---
+
+This document maps the SAD lecture material onto the BomberMen-X codebase at the end of Week 7. It uses Week 3 ("Specifying Software Architecture") and Week 4 ("Architecture Styles") as the theoretical lens and attributes every element to the responsible architect. Line-by-line requirement coverage lives in `deliverables/code-explanation/requirements-traceability.md`.
+
+## 1. Architectural styles
+
+Week 4 of the lecture enumerates the canonical architectural styles: Pipe-and-Filter, Client-Server, Model-View-Controller (MVC), Event-Driven, Layered, and Peer-to-Peer (P2P). For BomberMen-X the dominant style is **Client-Server with a server-authoritative simulation**, overlaid by an **event-broadcast** sub-style on the downlink.
+
+Justification:
+
+- **Client-Server** keeps canonical state on a single trusted process. `bomberman-server` runs `GameServer` and `WebSocketServer`; clients connect through `GameClient`. This matches the lecture's definition of the style.
+- **Event-driven overlay.** Once a tick completes, `MatchSession.broadcast` pushes `WorldSnapshot`, `GameEvent`, and `KillFeedEntry` to every client. Clients are pure subscribers; they only originate `InputFrame` and `AbilityRequest` on the uplink.
+- **P2P was rejected.** A peer-to-peer mesh exposes the simulation to client tampering and demands distributed reconciliation that the eight-week timebox cannot absorb.
+- **Microservices were rejected** for the same timebox reason: additional hops, discovery, and observability would exceed the MVP scope in the Lastenheft.
+- **MVC and Layered styles remain internally** — the client follows MVC (`ArenaView`/`HudOverlay` as views, `GameClient` as controller, `WorldSnapshot` as projected model) and the server is layered (`net` → `match` → `core.sim`).
+
+## 2. Viewpoints and views
+
+Week 3 of the lecture follows Clements et al. and groups architectural views into three viewpoint categories:
+
+1. **Module and Data viewpoint** — what the code is decomposed into.
+2. **Component-and-Connector (C&C) viewpoint** — what runs at runtime and how it talks.
+3. **Allocation viewpoint** — how runtime elements map to deployment units.
+
+The primary lens is the **C&C viewpoint** because runtime interaction between the match session and clients dominates behaviour. A supporting **class-level decomposition view** (Module viewpoint) covers the `core.sim` package, where deterministic simulation logic lives. Allocation is covered by `architecture-spec-arc42.md`.
+
+```mermaid
+flowchart LR
+    subgraph CL[Game Client]
+      UI[ArenaView / HudOverlay]
+      CN[GameClient<br/>WebSocket]
+    end
+    subgraph SV[Game Server]
+      WS[WebSocketServer]
+      GH[GameServerHandler]
+      SR[SessionRegistry]
+      MM[MatchManager]
+      MS[MatchSession]
+      GW[GameWorld<br/>simulation]
+      CR[ChatRouter]
+      AR[AuthRegistry]
+      PF[ProfanityFilter]
+    end
+    UI -- input events --> CN
+    CN <-- WebSocket frames --> WS
+    WS --> GH
+    GH --> SR
+    GH --> AR
+    GH --> MM
+    MM --> MS
+    MS --> GW
+    GH --> CR
+    CR --> PF
+    MS -- broadcast --> CN
+    CN -- snapshot --> UI
+```
+
+## 3. Components, connectors, configurations
+
+Following the Week 3 vocabulary:
+
+- A **component** is a unit of computation with explicit interfaces.
+- A **connector** is a runtime channel that carries interaction between components.
+- A **configuration** is a topology of component instances wired through connectors.
+
+### Components in BomberMen-X
+
+| Component | Code location (under `src/`) |
+| --- | --- |
+| `GameClient` | `bomberman-client/.../client/net/GameClient.java` |
+| `WebSocketServer` | `bomberman-server/.../server/net/WebSocketServer.java` |
+| `GameServerHandler` | `bomberman-server/.../server/net/GameServerHandler.java` |
+| `MatchManager` | `bomberman-server/.../server/match/MatchManager.java` |
+| `MatchSession` | `bomberman-server/.../server/match/MatchSession.java` |
+| `SessionRegistry` | `bomberman-server/.../server/session/SessionRegistry.java` |
+| `MovementValidator` (logical role inside `GameWorld#applyPlayerInputs`) | `bomberman-core/.../core/sim/GameWorld.java` |
+| `BombManager` (`GameWorld#tickBombs`) | `bomberman-core/.../core/sim/GameWorld.java` |
+| `ExplosionManager` (`GameWorld#detonate`) | `bomberman-core/.../core/sim/GameWorld.java` |
+| `BonusManager` (`GameWorld#collectPickups`) | `bomberman-core/.../core/sim/GameWorld.java` |
+| `ScoreManager` (`Score` and its mutation sites) | `bomberman-core/.../core/entity/Score.java` |
+| `ChatRouter` | `bomberman-server/.../server/chat/ChatRouter.java` |
+| `AuthRegistry` | `bomberman-server/.../server/auth/AuthRegistry.java` |
+| `ProfanityFilter` | `bomberman-server/.../server/moderation/ProfanityFilter.java` |
+
+### Connectors
+
+| Connector | Realisation |
+| --- | --- |
+| WebSocket request/response | Uplink `InputFrame`, `AbilityRequest`, `ChatMessage`, `AuthRequest` |
+| Event broadcast | `MatchSession.broadcast(...)` pushing `WorldSnapshot`, `GameEvent`, `KillFeedEntry`, `MatchEnd` |
+| In-process method call | Calls between `GameServerHandler`, `MatchManager`, `MatchSession`, and `GameWorld` inside the JVM |
+
+### Canonical configuration (MVP)
+
+- 2 to 4 clients on Wi-Fi or LAN.
+- 1 server process.
+- 1 active `MatchSession` per `Match`.
+- 1 `Arena` per match.
+- `N` bot controllers (`BotController`) injected by `MatchManager` to fill empty slots when fewer than four human players join.
+
+## 4. Quality attribute scenarios
+
+The Week 3 template for quality attribute scenarios — *stimulus, source, environment, response, measure* — is applied to the seven attributes that drive BomberMen-X design.
+
+| Attribute | Stimulus | Source | Environment | Response | Measure | Design choice |
+| --- | --- | --- | --- | --- | --- | --- |
+| Performance | Player presses move key | Local input | Active match, 4 players | Server applies input within one tick and broadcasts snapshot | < 50 ms median client-perceived latency on LAN | Fixed-step `GameWorld.tick`, snapshot delta via `Snapshotter` |
+| Consistency | Two clients place bombs on the same tile in the same tick | Two human players | Active match | Server orders inputs deterministically, only one bomb resolves | Server log shows single `Bomb` instance | Server-authoritative `GameWorld#applyPlayerInputs` |
+| Fairness | Modified client sends impossible input | Tampered `GameClient` | Active match | Server rejects move silently | Player position unchanged | `MovementValidator` role inside `GameWorld#applyPlayerInputs` |
+| Reliability | A client disconnects mid-match | Network drop | Active match | `MatchSession` continues, slot becomes bot-controlled if configured | Match does not abort | `SessionRegistry` keep-alive + `MatchManager` re-slot |
+| Maintainability | New developer adds a power-up | Engineer | Build time | Add a `Bonus` subclass and a `PowerUpType` enum entry | Single-file change | `Bonus` hierarchy in `core.world` |
+| Testability | CI runs unit suite | Build agent | Maven build | `GameWorld` and `WireCodec` exercised headlessly | Test goal green on every push | `core` module has zero UI or socket dependency |
+| Extensibility | New chat moderation rule | Product owner | Runtime | Swap `ProfanityFilter` implementation | No change to `ChatRouter` | Interface-based moderation seam |
+
+## 5. Architecture Decision Records
+
+Each ADR uses the headings recommended in the SAD lecture's architecture template.
+
+### ADR-01 — Client-Server architecture
+
+- **Context.** A LAN-friendly arena game with up to four players requires authoritative state to prevent cheating.
+- **Decision.** Adopt a single-server topology with thin clients communicating over WebSocket.
+- **Status.** Accepted, in force.
+- **Consequences.** Single point of failure during a match (mitigated by short match length), simpler reconciliation, no NAT traversal burden on clients.
+
+### ADR-02 — Server-authoritative state
+
+- **Context.** Clients cannot be trusted with the authoritative `GameWorld`.
+- **Decision.** Only the server mutates `GameWorld`; clients render `WorldSnapshot` projections.
+- **Status.** Accepted.
+- **Consequences.** Slightly higher perceived input latency, but tamper resistance and deterministic replay.
+
+### ADR-03 — Component separation by responsibility
+
+- **Context.** A monolithic match loop would entangle networking, moderation, and simulation.
+- **Decision.** Separate `net`, `match`, `chat`, `auth`, `moderation`, `session`, and `core.sim` packages.
+- **Status.** Accepted.
+- **Consequences.** More inter-package calls but isolated unit tests and clear ownership boundaries.
+
+### ADR-04 — Event-based downstream updates
+
+- **Context.** Polling would waste bandwidth on a low-event tick.
+- **Decision.** Use `MatchSession.broadcast` for snapshots and discrete `GameEvent`s only on state change.
+- **Status.** Accepted.
+- **Consequences.** Clients tolerate out-of-order arrival via `Envelope` sequence numbers; bandwidth scales with event rate.
+
+## 6. Cross-cutting concerns
+
+- **Server-authoritative state** — already mandated by ADR-02; enforced because no client class has a writable `GameWorld` field.
+- **Validation before state change** — `GameWorld#applyPlayerInputs` checks tile walkability, bomb count limits, and ability cooldown before committing any mutation.
+- **Separation of responsibilities** — package layout in section 3 makes ownership explicit; no class spans more than one of {network, match orchestration, simulation, moderation, auth}.
+- **Determinism** — given the same seed and the same ordered input stream, `GameWorld` produces a byte-identical state. This invariant is guarded by `GameWorldTest#deterministicGenerationWithSameSeed` in `src/bomberman-core/src/test/java/com/bombermenx/core/sim/GameWorldTest.java`.
+- **Event broadcasting** — uniformly handled by `MatchSession.broadcast`, which is the only fan-out point in the server, simplifying observability.
+
+## 7. Traceability
+
+Two summary mappings are reproduced here. The line-by-line source is `deliverables/code-explanation/requirements-traceability.md`.
+
+### Domain model to architecture component
+
+| Domain entity (Lastenheft) | Implemented in | Lives inside component |
+| --- | --- | --- |
+| Bomberman | `core.entity.Bomberman`, `core.entity.Player` | `GameWorld` |
+| Bomb | `core.entity.Bomb` | `BombManager` role |
+| Explosion | `core.entity.Explosion` | `ExplosionManager` role |
+| Power-up | `core.entity.PowerUpItem`, `core.world.Bonus` hierarchy | `BonusManager` role |
+| Arena and Tile | `core.world.Arena`, `core.world.Tile`, `core.world.TileType` | `GameWorld` |
+| Score | `core.entity.Score` | `ScoreManager` role |
+| Match | `server.match.Match`, `server.match.MatchSession` | `MatchManager`, `MatchSession` |
+| Chat message | `core.net.dto.ChatMessage` | `ChatRouter`, `ProfanityFilter` |
+| Authentication | `core.net.dto.AuthRequest`, `core.net.dto.AuthResult` | `AuthRegistry` |
+
+### Requirement range to architecture component
+
+| Requirement range | Theme | Owning component(s) |
+| --- | --- | --- |
+| FR-01 to FR-12 | Authentication, lobby entry | `AuthRegistry`, `LobbyService` |
+| FR-13 to FR-30 | Match lifecycle, arena setup | `MatchManager`, `MatchSession`, `Arena` |
+| FR-31 to FR-50 | Gameplay loop (movement, bombs, explosions) | `GameWorld` (movement, bomb, explosion roles) |
+| FR-51 to FR-62 | Power-ups and scoring | `BonusManager` role, `Score` |
+| FR-63 to FR-72 | Chat, moderation, age gate | `ChatRouter`, `ProfanityFilter`, `AgeGate` |
+| FR-73 to FR-80 | Bots and match fill | `BotController`, `MatchManager` |
+| FR-81 to FR-86 | Observability and metrics | `MetricsHandler`, `MatchSession` logging |
+
+## 8. Implementation by role
+
+The three architects own non-overlapping vertical slices of the system. The mindmap below summarises ownership, the table that follows lists every component with files, tests, and status.
+
+```mermaid
+mindmap
+  root((BomberMen-X<br/>architects))
+    AA[Abhilash Anuku]
+      Architecture spec arc42
+      Requirements traceability
+      Build and deploy
+      Core domain entities
+      GameWorld determinism guard
+    SK[Simranjot Kaur]
+      ArenaView and HudOverlay
+      Gameplay engine wiring
+      Power-up Bonus hierarchy
+      Score and kill feed
+      Lobby UI and Mandala theme
+    JC[Jithendra Chittomothu]
+      WebSocketServer
+      GameServerHandler
+      MatchManager and MatchSession
+      BotController
+      Deploy pipeline and metrics
+```
+
+```mermaid
+classDiagram
+    class GameWorld {
+      +tick(dtMs)
+      +applyPlayerInputs(inputs)
+      +tickBombs()
+      +detonate(bomb)
+      +collectPickups()
+    }
+    class MatchSession {
+      +start()
+      +ingest(envelope)
+      +broadcast(payload)
+    }
+    class MatchManager {
+      +createMatch(players)
+      +endMatch(matchId)
+    }
+    class GameServerHandler {
+      +onConnect(session)
+      +onMessage(envelope)
+      +onClose(session)
+    }
+    GameServerHandler --> MatchManager
+    MatchManager --> MatchSession
+    MatchSession --> GameWorld
+```
+
+| System / component | Files under `src/` | Architect | Tests | Status @ W7 |
+| --- | --- | --- | --- | --- |
+| `GameClient` | `bomberman-client/.../client/net/GameClient.java` | JC | Manual smoke | Stable |
+| `ArenaView`, `HudOverlay`, `LobbyView`, `MainMenuView`, `RankingsView`, `SceneRouter`, `MandalaTheme` | `bomberman-client/.../client/ui/*.java` | SK | Manual smoke | Stable |
+| `ArenaRenderer`, `CameraShake`, `ParticleSystem`, `PostFx` | `bomberman-client/.../client/render/*.java` | SK | Manual smoke | Stable |
+| `WebSocketServer` | `bomberman-server/.../server/net/WebSocketServer.java` | JC | Integration | Stable |
+| `GameServerHandler` | `bomberman-server/.../server/net/GameServerHandler.java` | JC | Integration | Stable |
+| `MatchManager`, `Match` | `bomberman-server/.../server/match/MatchManager.java`, `Match.java` | JC | Integration | Stable |
+| `MatchSession` | `bomberman-server/.../server/match/MatchSession.java` | JC | Integration | Stable |
+| `SessionRegistry`, `ClientSession` | `bomberman-server/.../server/session/*.java` | JC | Integration | Stable |
+| `GameWorld` (movement, bomb, explosion, bonus roles) | `bomberman-core/.../core/sim/GameWorld.java` | AA (entities and determinism), SK (bonus and scoring sites) | `GameWorldTest` | Stable |
+| `Score` | `bomberman-core/.../core/entity/Score.java` | SK | Covered via `GameWorldTest` | Stable |
+| `Bomb`, `Explosion`, `Bomberman`, `Player`, `PowerUpItem` | `bomberman-core/.../core/entity/*.java` | AA | Covered via `GameWorldTest` | Stable |
+| `Bonus` hierarchy (`ExtraBombBonus`, `FlameBonus`, `KickBonus`, `LifeBonus`, `SpeedBonus`, `ThrowBonus`, `ArmorBonus`) | `bomberman-core/.../core/world/*.java` | SK | Covered via `GameWorldTest` | Stable |
+| `Arena`, `ArenaTheme`, `Tile`, `TileType` | `bomberman-core/.../core/world/*.java` | AA | Covered via `GameWorldTest` | Stable |
+| `WireCodec`, `Envelope`, `MessageType`, DTOs | `bomberman-core/.../core/net/**` | AA | `WireCodecTest` | Stable |
+| `ChatRouter` | `bomberman-server/.../server/chat/ChatRouter.java` | JC | Manual | Stable |
+| `ProfanityFilter` | `bomberman-server/.../server/moderation/ProfanityFilter.java` | AA | `ProfanityFilterTest` | Stable |
+| `AuthRegistry`, `DevAuthProvider`, `GoogleAuthProvider` | `bomberman-server/.../server/auth/*.java` | JC | Manual | Stable |
+| `BotController` | `bomberman-server/.../server/ai/BotController.java` | JC | Manual | In progress |
+| `LobbyService`, `CosmeticsCatalog`, `Cosmetic`, `LobbyPlayer` | `bomberman-server/.../server/lobby/*.java` | SK | Manual | Stable |
+| `MetricsHandler` | `bomberman-server/.../server/net/MetricsHandler.java` | JC | Manual | Stable |
+| `AudioBus`, `SpatialAudio`, `HapticsService`, `GamepadPoller` | `bomberman-client/.../client/audio/**`, `client/input/**` | SK | Manual | Stable |
+| `AgeGate` | `bomberman-client/.../client/safety/AgeGate.java` | AA | Manual | Stable |
+| `BombServerApplication`, `GameServer`, `ServerConfig`, `ClientLauncher` | server roots and `bomberman-client/.../ClientLauncher.java` | AA (build wiring), JC (server bootstrap) | Manual | Stable |
+
+## 9. Risks and technical debt
+
+- **Voice-channel moderation is open.** The `VoiceFrame` DTO exists but no pipeline analyses audio. Owner: JC.
+- **Spectator mode is unpolished.** `MatchSession` accepts non-player observers but the client lacks a dedicated spectator camera. Owner: SK.
+- **CodeQL has not been re-run after the Week 6 package restructure.** The previous clean baseline therefore no longer applies; a re-scan is scheduled before final submission. Owner: AA.
+- **Persistent ranking math is deferred.** `RankingsView` shows session-only data; Elo-style aggregation is post-MVP. Owner: SK.
+
+## 10. Lecture references
+
+- Prof. Dr. Floriment Klinaku, *Software Architecture and Development*, SRH University Stuttgart, M.Sc. Applied Computer Science, Summer Semester 2026.
+  - Week 3, *Specifying Software Architecture* — viewpoints, views, components, connectors, configurations, quality attribute scenarios, ADR template.
+  - Week 4, *Architecture Styles* — Pipe-and-Filter, Client-Server, MVC, Event-Driven, Layered, Peer-to-Peer; selection criteria.
+- Prof. Steffen Becker, M. Frank, *BomberMen-X Lastenheft*, project specification document.
+- Companion deliverables in this repository: `architecture-spec-arc42.md`, `requirements-traceability.md`, `systems-architecture.md`, `code-walkthrough.md`.
+
+</script>
+</body>
+</html>
