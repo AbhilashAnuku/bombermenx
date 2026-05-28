@@ -1,7 +1,7 @@
 # Glossary
 
 **Project:** BomberMen-X
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This glossary collects the terminology used across the deliverables. It is organised into four families: Bomberman gameplay terms, network and distributed-systems terms, SAD theory terms, and Indian-theme terms used in the visual style. The intent is that any single reader can find the definition of any term used in any other document, without consulting a search engine.
 

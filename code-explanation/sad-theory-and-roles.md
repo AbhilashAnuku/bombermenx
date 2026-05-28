@@ -3,7 +3,7 @@
 **Module:** Software Architecture & Design, M.Sc. Applied Computer Science
 **Supervisor:** the course supervisor, SRH University Stuttgart
 **Architects:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This document maps the theoretical content of the SAD module — views, tactics, styles, and decision discipline — onto concrete artefacts in the BomberMen-X codebase. The intent is to show that the prototype is not merely "an application that happens to compile" but a realisation of the lecture material from weeks three and four. The document also formalises the ownership matrix among the three architects, so that the panel can ask "who decided this, and on what authority?" and get a precise answer.
 

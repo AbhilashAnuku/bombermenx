@@ -2,7 +2,7 @@
 
 **Module:** Software Architecture & Design (SAD), M.Sc. Applied Computer Science
 **Institution:** SRH University Stuttgart
-**Date:** 28 May 2026 — Week 7 of 8 (Prototype submission)
+**Date:** 29 May 2026 — Week 8 of 8 (Final submission)
 **Final submission:** Tuesday, 02 June 2026 (Final report + presentation + viva)
 
 ---
@@ -14,7 +14,7 @@ gantt
     title BomberMen-X — 8-Week Capstone Roadmap
     dateFormat  YYYY-MM-DD
     axisFormat  %d %b
-    todayMarker stroke:#ffc107,stroke-width:3px,opacity:0.9
+    todayMarker stroke:#e85a1c,stroke-width:3px,opacity:0.9
 
     section Bootstrapping
     Maven 3-module reactor                :done,   b1, 2026-04-13, 7d
@@ -65,7 +65,7 @@ JC delivered the production wire protocol: an `Envelope` record with a `MessageT
 
 SK led the JavaFX client. `ClientLauncher` is the JavaFX `Application`; `SceneRouter` swaps between `MainMenuView`, `LobbyView`, `ArenaView`, and `RankingsView`. `MandalaArt` and `MandalaTheme` apply the Indian-festival palette (teal #008080 / turmeric #ffc107 / henna #ec407a / gold #daa520 on aubergine #150a1f) consistently across the UI. `ArenaRenderer` paints the tile grid onto a `Canvas`; `HudOverlay` shows lives, bomb count, flame range, score. AA wired `GameClient` over `java.net.http.WebSocket`, with the same `WireCodec` used on the server, so DTO drift is structurally impossible.
 
-### W6 – W7 — Hardening (18 May – 28 May 2026)
+### W6 – W7 — Hardening (18 May – 29 May 2026)
 
 JC implemented `BotController` so empty match slots can be filled by AI opponents — useful for both demos and stress tests. AA added `ProfanityFilter` (covered by `ProfanityFilterTest`) and `AgeGate` on the client. `PostFx`, `CameraShake`, `ParticleSystem`, and `SpatialAudio` were sketched for v0.3 polish but kept stub-clean so they would not delay the prototype. SK assembled the deliverables portal under `deliverables/index.html` — 33+ HTML pages cross-linked, with the arc42 view in `architecture-report-en.html`, code-explanation docs under `code-explanation/`, and diagrams under `diagrams/` and `uml/`.
 
@@ -116,7 +116,7 @@ If the prototype passes, the team intends to harden BomberMen-X into a publishab
 
 ---
 
-## 5. Where we are on 28 May 2026
+## 5. Where we are on 29 May 2026
 
 ### What works today
 
@@ -166,4 +166,4 @@ A submission is "done" when, and only when, every item below is checked:
 - [ ] Slides rehearsed end-to-end inside 12 minutes.
 - [ ] Repository tagged `v0.2.0-prototype` after the viva.
 
-The three architects sign off jointly. The plan is intentionally conservative — Week 7 has already produced everything load-bearing; Week 8 is rehearsal and polish.
+The three architects sign off jointly. The plan is intentionally conservative — Week 7 already produced everything load-bearing; Week 8 (current) is rehearsal, polish and defence.

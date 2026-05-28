@@ -3,7 +3,7 @@
 **Module:** Software Architecture & Design, M.Sc. Applied Computer Science
 **Supervisor:** the course supervisor, SRH University Stuttgart
 **Author:** Abhilash Anuku (AA), with input from Simranjot Kaur (SK) and Jithendra Chittomothu (JC)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 ## Purpose
 

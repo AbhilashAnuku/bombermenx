@@ -5,7 +5,7 @@
 **Supervisor:** the course supervisor
 **Cohort:** Summer term 2026
 **Team:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC)
-**Date:** 28 May 2026 — Week 7 of 8
+**Date:** 29 May 2026 — Week 8 of 8
 
 ## What the prototype is, in the language of the module
 
@@ -54,7 +54,7 @@ The module ran weekly from mid-March to mid-May 2026. The mapping below identifi
 
 **Week 6 — ADRs and architectural significance.** The three ADRs in the arc42 spec respond to this week, and the framing of "architecturally significant requirement" used in this very document comes from week six.
 
-**Week 7 (current) — Prototype demos and dry runs.** The deliverables portal, the run guide, and the learning guide are produced in this week to support the demo.
+**Week 7 — Prototype demos and dry runs.** The deliverables portal, the run guide, and the learning guide were produced this week to support the demo. **Week 8 (current) — Final report, defence rehearsal, viva.**
 
 **Week 8 — Final report, presentation deck, defence.** The presentation deck (separate deliverable) and the defence Q&A preparation (`LEARNING_GUIDE.md`) are produced in this week.
 

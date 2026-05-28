@@ -2,7 +2,7 @@
 
 **Project:** BomberMen-X
 **Owner:** Jithendra Chittomothu (JC), with wire-protocol authorship by Abhilash Anuku (AA)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This document specifies the wire protocol between the BomberMen-X client and server. It covers the transport, the envelope format, the message types, the connection lifecycle, the tick loop, and the rules for handling out-of-order or invalid traffic. The protocol is small enough to be read in one sitting and is the single point at which the two modules `bomberman-client` and `bomberman-server` meet.
 

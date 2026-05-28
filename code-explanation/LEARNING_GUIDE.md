@@ -4,7 +4,7 @@
 **Supervisor:** the course supervisor, SRH University Stuttgart
 **Audience:** Defence panel, 2 June 2026
 **Authors:** AA, SK, JC
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This document collects twenty questions the supervisor and panel may ask during the prototype defence, each paired with a prepared answer that an architect should be able to deliver in under ninety seconds. The answers are written for vocal delivery — short sentences, clear logical structure, named artefacts — and are calibrated to the level of detail the course supervisor has expected in week-by-week tutorials.
 

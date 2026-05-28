@@ -3,7 +3,7 @@
 **Project:** BomberMen-X
 **Design lead:** Simranjot Kaur (SK)
 **Co-authors:** AA (rules formalisation), JC (mode balance)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This document specifies the rules of BomberMen-X with sufficient precision that the simulation in `GameWorld` can be checked against them. It covers the arena and tile system, player state and lifecycle, bombs and explosions, power-ups, scoring, win conditions, and the three supported match modes. Visual style notes follow the rules; this is intentional because the rules are stable and the visual style is decorative.
 

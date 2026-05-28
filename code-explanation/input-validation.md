@@ -2,7 +2,7 @@
 
 **Project:** BomberMen-X
 **Owner:** Jithendra Chittomothu (JC), with codec authorship by Abhilash Anuku (AA)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This document specifies the input validation pipeline that protects the server from malformed, malicious, or accidentally-invalid traffic. The pipeline realises requirements FR-82 through FR-86 and is the structural anti-cheat mechanism for the system. The document also discusses why server-side authority is the only valid approach for a real-time multiplayer game of this shape, and lists the validation classes by responsibility.
 

@@ -4,7 +4,7 @@
 **Institution:** SRH University Stuttgart
 **Supervisor:** the course supervisor
 **Document version:** 1.0
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 ## Purpose and scope
 

@@ -5,7 +5,7 @@
 **Supervisor:** the course supervisor
 **Architects:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC)
 **Document version:** 1.0
-**Date:** 28 May 2026 — Week 7 of 8, prototype submission window
+**Date:** 29 May 2026 — Week 8 of 8, final submission window
 
 ---
 

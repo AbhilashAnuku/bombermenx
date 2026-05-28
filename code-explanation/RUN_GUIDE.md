@@ -2,7 +2,7 @@
 
 **Project:** BomberMen-X
 **Maintainer:** Abhilash Anuku (delivery and build), with input from JC (server) and SK (client)
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This guide takes a reviewer from a clean checkout to a running client connected to a running server. The procedure is tested on Windows 11 (the primary examiner platform) and on Ubuntu 22.04. The guide covers prerequisites, a native run, a Docker-based run, the port layout, environment variables, and the small but important set of troubleshooting steps that have caught us during demonstration rehearsals.
 

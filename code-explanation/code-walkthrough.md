@@ -3,7 +3,7 @@
 **Project:** BomberMen-X
 **Repository root:** `F:\Bomber Man X\BomberMan-X`
 **Module layout:** three Maven modules — `bomberman-core`, `bomberman-server`, `bomberman-client`
-**Date:** 28 May 2026
+**Date:** 29 May 2026
 
 This walkthrough tours the codebase module by module, naming the principal classes and stating the role of each. The intent is to give a reader a map dense enough to navigate without reading every file, but not so dense that the architecture is obscured. Each class entry is a single sentence. The walkthrough opens with a dependency diagram so the reader has the high-level shape in mind before descending into the modules.
 

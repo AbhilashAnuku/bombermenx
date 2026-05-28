@@ -1,6 +1,6 @@
 # Deliverables Pack
 
-**Date:** 28 May 2026 · Week 7 of 8 — Prototype
+**Date:** 29 May 2026 · Week 8 of 8 — Final
 
 This is the capstone deliverables pack for **BomberMen-X** (SAD module, M.Sc. Applied Computer Science, SRH University Stuttgart). Open `index.html` in any browser to start.
 

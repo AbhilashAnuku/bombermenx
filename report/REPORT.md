@@ -4,7 +4,7 @@
 **Programme:** M.Sc. Applied Computer Science
 **Institution:** SRH University Stuttgart
 **Supervisor:** the course supervisor
-**Report date:** 28 May 2026 — Week 7 of 8 (Prototype)
+**Report date:** 29 May 2026 — Week 8 of 8 (Final)
 **Final submission:** Tuesday, 02 June 2026
 
 ---
@@ -97,7 +97,7 @@ Every frame on the wire is a JSON `Envelope` with a `MessageType` tag and a type
 
 ### 5.1 Test output
 
-A clean run of `mvn clean test` on 28 May 2026 produces:
+A clean run of `mvn clean test` on 29 May 2026 produces:
 
 ```
 [INFO] Reactor Summary for BomberMen-X (parent) 0.1.0-SNAPSHOT:

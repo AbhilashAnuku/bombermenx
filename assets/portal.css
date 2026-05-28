@@ -76,12 +76,12 @@ code, pre, kbd {
   font-size: 0.92em;
 }
 
-/* ---------- HERO BANNER ---------- */
+/* ---------- HERO BANNER (uses hero-dark.png — dramatic dark backdrop) ---------- */
 .hero {
   position: relative;
   padding: 80px 0 64px;
   background:
-    linear-gradient(180deg, rgba(15,37,92,0.85) 0%, rgba(79,12,23,0.92) 100%),
+    linear-gradient(180deg, rgba(15,37,92,0.78) 0%, rgba(79,12,23,0.88) 100%),
     url("banners/hero-dark.png") center/cover no-repeat;
   color: #fff;
   text-align: center;
@@ -91,11 +91,7 @@ code, pre, kbd {
 .hero::before {
   content: "";
   position: absolute; inset: 0;
-  background-image: url("banners/arena-elements.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  opacity: 0.08;
+  background-image: none;
   pointer-events: none;
 }
 .hero > .container { position: relative; z-index: 1; }
@@ -374,6 +370,92 @@ code, pre, kbd {
   margin-bottom: 10px;
 }
 .timeline-week p { margin: 0; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+
+/* ---------- ARENA SHOWCASE (uses arena-elements.png — gaming feature banner) ---------- */
+.arena-showcase {
+  position: relative;
+  margin: 56px 0 16px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f255c 0%, #4f0c17 100%);
+  box-shadow: var(--elev-3);
+  border: 2px solid var(--gold);
+}
+.arena-showcase .banner-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #0f255c;
+}
+.arena-showcase .banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(15,37,92,0.85) 0%, rgba(15,37,92,0.05) 50%, rgba(79,12,23,0.85) 100%);
+  pointer-events: none;
+}
+.arena-showcase .banner-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.arena-showcase .banner-caption h3 {
+  color: #ffd87a;
+  font-size: clamp(18px, 2.2vw, 24px);
+  margin: 0;
+  font-family: "Cinzel", serif;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.arena-showcase .banner-caption p { color: #f4e7c7; font-size: 13px; margin: 4px 0 0; max-width: 60ch; }
+.arena-showcase .banner-caption .pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--flame), var(--saffron));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: var(--elev-1);
+  flex-shrink: 0;
+}
+
+/* ---------- LIGHT BAND (uses hero-light.png — warm secondary backdrop) ---------- */
+.light-band {
+  position: relative;
+  margin: 56px -24px 24px;
+  padding: 56px 24px;
+  background:
+    linear-gradient(180deg, rgba(251,246,236,0.55) 0%, rgba(251,246,236,0.92) 100%),
+    url("banners/hero-light.png") center/cover no-repeat;
+  border-top: 4px solid var(--gold);
+  border-bottom: 4px solid var(--gold);
+  text-align: center;
+}
+.light-band h2 {
+  color: var(--maroon-deep);
+  font-family: "Cinzel", serif;
+  font-size: clamp(22px, 3vw, 28px);
+  margin: 0 0 10px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+.light-band p {
+  color: var(--ink-soft);
+  max-width: 70ch;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.65;
+}
+@media (min-width: 992px) {
+  .light-band { margin-left: calc(-1 * ((100vw - 100%) / 2)); margin-right: calc(-1 * ((100vw - 100%) / 2)); border-radius: 0; }
+}
 
 /* ---------- FOOTER ---------- */
 .portal-foot {

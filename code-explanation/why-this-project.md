@@ -1,7 +1,7 @@
 # Why this project — context, choices, and learning outcomes
 
 **Module:** Software Architecture and Development (SAD), M.Sc. Applied Computer Science, SRH University Stuttgart.
-**Date:** 28 May 2026 — Week 7 of 8 (Prototype submission). **Final:** Tuesday 2 June 2026.
+**Date:** 29 May 2026 — Week 8 of 8 (Final submission). **Final:** Tuesday 2 June 2026.
 **Architects:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC).
 
 This document is the one-page answer to questions a reviewer or examiner is likely to ask before diving into the technical artefacts: *what is software architecture and development, why Java, what are we supposed to learn, why a Bomberman game, why this stack, and why did we declare libraries we did not ship*.
@@ -111,7 +111,7 @@ Drawing this line is itself an architecture decision and is recorded as such in 
 
 A common viva question: *the parent `pom.xml` once declared Kryo and Lombok — why?*
 
-**Kryo (5.6.2).** Kryo is a fast binary serialisation library. The original design considered using JSON for the lobby/auth/match-control path and switching to Kryo for the high-volume in-match `WorldSnapshot` stream, where 60 Hz × N players × payload would dominate the bandwidth budget. The team decided to ship the prototype with **JSON-only on every path** for two reasons: every byte is inspectable on the wire (a major debugging advantage during the 7-week build) and every demonstration of the protocol fits on a slide. Kryo was kept declared in `pom.xml` as a "we will turn this on if telemetry shows we need it" placeholder. In the pre-demo audit on 28 May 2026 we confirmed no source file imported it, and the dependency was removed. If v0.3 needs it, we add it back with an ADR and a measured-need justification.
+**Kryo (5.6.2).** Kryo is a fast binary serialisation library. The original design considered using JSON for the lobby/auth/match-control path and switching to Kryo for the high-volume in-match `WorldSnapshot` stream, where 60 Hz × N players × payload would dominate the bandwidth budget. The team decided to ship the prototype with **JSON-only on every path** for two reasons: every byte is inspectable on the wire (a major debugging advantage during the 7-week build) and every demonstration of the protocol fits on a slide. Kryo was kept declared in `pom.xml` as a "we will turn this on if telemetry shows we need it" placeholder. In the pre-demo audit on 29 May 2026 we confirmed no source file imported it, and the dependency was removed. If v0.3 needs it, we add it back with an ADR and a measured-need justification.
 
 **Lombok (1.18.36).** Lombok auto-generates `@Getter`, `@Setter`, `@ToString`, `@EqualsAndHashCode` boilerplate. It was declared early in week 1 in case the team ended up writing entity classes with heavy getter/setter ceremony. By week 4 the entities had been refactored into Java 17 `record`s (no boilerplate needed) and small plain classes with explicit constructors (deliberate, for clarity). Lombok was never imported in any source file. The audit confirmed this, and the dependency was removed — keeping the toolchain minimal and the IDE setup zero-config.
 
