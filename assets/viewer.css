@@ -1,0 +1,126 @@
+/* Doc viewer styling — used by every .view.html that renders a markdown doc.
+   Shares the Indian-festival palette with portal.css. */
+
+@import url("portal.css");
+
+main.viewer {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+nav.crumbs {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin-bottom: 24px;
+}
+nav.crumbs a { color: var(--vayu-hi); }
+nav.crumbs .sep { color: var(--ink-dim); padding: 0 6px; }
+
+#content {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-primary);
+}
+#content h1, #content h2, #content h3, #content h4 {
+  color: var(--agni);
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  line-height: 1.25;
+}
+#content h1 { font-size: 30px; border-bottom: 1px solid rgba(218,165,32,0.25); padding-bottom: 8px; }
+#content h2 { font-size: 22px; }
+#content h3 { font-size: 18px; color: var(--vayu-hi); }
+#content h4 { font-size: 15px; color: var(--henna); }
+
+#content p, #content li { color: var(--ink-primary); }
+#content code {
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  font-size: 13px;
+  background: rgba(0,128,128,0.16);
+  border: 1px solid rgba(0,128,128,0.35);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #b6f0e8;
+}
+#content pre {
+  background: #0c0716;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: inset 0 0 14px rgba(0,0,0,0.55);
+}
+#content pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #e8ddc0;
+}
+#content blockquote {
+  margin: 16px 0;
+  padding: 10px 18px;
+  border-left: 4px solid var(--henna);
+  background: rgba(236,64,122,0.06);
+  border-radius: 0 6px 6px 0;
+  color: var(--ink-muted);
+}
+#content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 18px 0;
+  font-size: 14px;
+}
+#content th, #content td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+}
+#content th { background: rgba(218,165,32,0.12); color: var(--agni); }
+#content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+#content hr {
+  border: 0;
+  border-top: 1px solid rgba(218,165,32,0.22);
+  margin: 32px 0;
+}
+
+/* Pre-render: hide raw text until mermaid renders */
+#content .mermaid:not([data-processed="true"]) { color: transparent; min-height: 60px; }
+#content .mermaid {
+  margin: 28px auto;
+  padding: 22px;
+  background: rgba(8,9,13,0.55);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* Force visibility — portal.js IntersectionObserver runs before #content is built */
+#content, #content * { opacity: 1 !important; transform: none !important; }
+
+/* 3D depth on every diagram shape */
+#content .mermaid svg .node rect,
+#content .mermaid svg .node circle,
+#content .mermaid svg .node ellipse,
+#content .mermaid svg .node polygon,
+#content .mermaid svg .actor,
+#content .mermaid svg .cluster rect,
+#content .mermaid svg g.task,
+#content .mermaid svg .mindmap-node {
+  filter: drop-shadow(2px 4px 5px rgba(0,0,0,0.65))
+          drop-shadow(0 0 6px rgba(218,165,32,0.22));
+}
+#content .mermaid svg .messageLine0,
+#content .mermaid svg .messageLine1,
+#content .mermaid svg .edgePath path,
+#content .mermaid svg .flowchart-link {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.55));
+}
+#content img, .frame img, main img, img.diagram, img[src$=".svg"] {
+  filter: drop-shadow(4px 6px 8px rgba(0,0,0,0.55))
+          drop-shadow(0 0 10px rgba(218,165,32,0.18));
+  max-width: 100%;
+  height: auto;
+}

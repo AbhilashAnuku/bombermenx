@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BomberMen-X — UML Diagrams</title>
+  <style>
+    body { margin:0; background:radial-gradient(ellipse at top,#21133a,#150a1f); color:#fff8e7; font-family:-apple-system,"Segoe UI",Roboto,sans-serif; min-height:100vh; }
+    .crumbs { padding:18px 32px; font-size:13px; color:#9a8d75; }
+    .crumbs a { color:#1abc9c; text-decoration:none; }
+    main { max-width:1400px; margin:0 auto; padding:8px 32px 64px; }
+    h1 { color:#ffc107; font-size:28px; margin:0 0 8px; }
+    .intro { color:#d2c3a8; margin-bottom:32px; max-width:78ch; }
+    figure { margin:36px 0; padding:16px; background:rgba(8,9,13,0.5); border:1px solid #5a3a18; border-radius:12px; }
+    figure img { display:block; width:100%; height:auto; filter: drop-shadow(4px 6px 9px rgba(0,0,0,0.6)) drop-shadow(0 0 12px rgba(218,165,32,0.18)); }
+    figcaption { color:#9a8d75; font-size:13px; margin-top:10px; padding-top:8px; border-top:1px solid rgba(218,165,32,0.18); }
+    h2 { color:#daa520; font-size:20px; margin-top:32px; }
+    code { background:rgba(8,9,13,0.6); padding:2px 6px; border-radius:4px; color:#3affb5; font-size:13px; }
+    .nav-links { display:flex; gap:14px; flex-wrap:wrap; margin:18px 0 8px; }
+    .nav-links a { color:#1abc9c; text-decoration:none; padding:6px 14px; border:1px solid rgba(26,188,156,0.35); border-radius:6px; font-size:13px; }
+    .nav-links a:hover { background:rgba(26,188,156,0.1); }
+  </style>
+</head>
+<body>
+  <nav class="crumbs">
+    <a href="../index.html">← Deliverables portal</a> &nbsp;/&nbsp; <span>uml</span>
+  </nav>
+  <main>
+    <h1>UML Diagrams</h1>
+    <p class="intro">
+      Structural and behavioural UML views of BomberMen-X for the SAD module. Three class diagrams cover the
+      core domain, the server, and the JavaFX client. A package diagram shows module boundaries and import
+      directions. The use-case and activity diagrams capture user goals and the match-lifecycle control flow.
+    </p>
+
+    <div class="nav-links">
+      <a href="#class-core">Class — core</a>
+      <a href="#class-server">Class — server</a>
+      <a href="#class-client">Class — client</a>
+      <a href="#package">Package</a>
+      <a href="#use-case">Use case</a>
+      <a href="#activity">Activity</a>
+      <a href="../diagrams/architecture.html">Architecture</a>
+    </div>
+
+    <h2 id="class-core">Class diagram — bomberman-core</h2>
+    <figure>
+      <img src="class-diagram-core.svg" alt="Class diagram of the bomberman-core module: Bomberman, Player, Bomb, Explosion, Arena, Tile, Score, PowerUpItem, Bonus and seven concrete subclasses, GameWorld, Snapshotter">
+      <figcaption>
+        Figure 5 — Core domain. <code>GameWorld</code> composes the entities; the abstract
+        <code>Bonus</code> is specialised by seven concrete power-up classes; <code>Snapshotter</code>
+        produces the delta-encoded <code>WorldSnapshot</code> consumed by both clients.
+      </figcaption>
+    </figure>
+
+    <h2 id="class-server">Class diagram — server</h2>
+    <figure>
+      <img src="class-diagram-server.svg" alt="Class diagram of the server module: GameServer, WebSocketServer, GameServerHandler, MatchManager, MatchSession, LobbyService, AuthRegistry with providers, SessionRegistry, ClientSession, BotController, ChatRouter, ProfanityFilter">
+      <figcaption>
+        Figure 6 — Server module. <code>GameServer</code> is the façade composed of the Netty pipeline,
+        lobby, matchmaker and auth registry. <code>MatchSession</code> is the per-match aggregate root
+        owning a <code>GameWorld</code>. <code>AuthRegistry</code> routes verification through a chain of
+        providers (<code>DevAuthProvider</code>, <code>GoogleAuthProvider</code>).
+      </figcaption>
+    </figure>
+
+    <h2 id="class-client">Class diagram — JavaFX client</h2>
+    <figure>
+      <img src="class-diagram-client.svg" alt="Class diagram of the JavaFX client module: ClientLauncher, SceneRouter, MainMenuView, LobbyView, ArenaView, RankingsView, ArenaRenderer, HudOverlay, ParticleSystem, PostFx, GameClient, MandalaArt, MandalaTheme, GamepadPoller, SpatialAudio">
+      <figcaption>
+        Figure 7 — Client module. <code>ClientLauncher</code> boots <code>SceneRouter</code>, which
+        switches between view classes. <code>ArenaView</code> composes <code>ArenaRenderer</code>,
+        <code>HudOverlay</code>, <code>ParticleSystem</code> and <code>PostFx</code>. <code>GameClient</code>
+        is the WebSocket transport adapter shared across views.
+      </figcaption>
+    </figure>
+
+    <h2 id="package">Package diagram</h2>
+    <figure>
+      <img src="package-diagram.svg" alt="Package diagram showing com.bombermenx subpackages grouped by Maven module: core (domain, sim, net, dto, util), server (net, lobby, match, auth, bot, chat, persistence) and client (app, view, render, input, audio, theme, net)">
+      <figcaption>
+        Figure 8 — Package layout. The graph is acyclic: <code>bomberman-server</code> and
+        <code>bomberman-client</code> both depend on <code>bomberman-core</code>, but never on each
+        other. <code>core</code> has no internal dependencies and uses only JDK 17.
+      </figcaption>
+    </figure>
+
+    <h2 id="use-case">Use-case diagram</h2>
+    <figure>
+      <img src="use-case.svg" alt="Use case diagram with actors Player, Spectator, Admin and Google OIDC outside the system boundary, and use cases including Sign in, Browse Lobby, Buy Cosmetic, Join Match, Place Bomb, Throw Bomb, Pick Up Power-up, Chat, View Rankings, Spectate, Configure Server, Ban Player, View Metrics">
+      <figcaption>
+        Figure 9 — Use cases. The <strong>Player</strong> is the primary actor; <strong>Spectator</strong>
+        has read-only access; <strong>Admin</strong> drives moderation and operations; <strong>Google OIDC</strong>
+        is a secondary actor consulted during sign-in.
+      </figcaption>
+    </figure>
+
+    <h2 id="activity">Activity diagram — match lifecycle</h2>
+    <figure>
+      <img src="activity-match-lifecycle.svg" alt="Activity diagram for a single match: start, seed arena, broadcast MatchStart, enter tick loop (collect input, validate, simulate, settle explosions, build snapshot, broadcast, check end condition), broadcast MatchEnd, persist score, return to lobby">
+      <figcaption>
+        Figure 10 — Match lifecycle. The 60 Hz tick loop drains the input queue, validates intents,
+        advances <code>GameWorld</code>, settles explosions, encodes a delta snapshot and broadcasts
+        it. On end-condition (one player alive, timeout, or forfeit) the session broadcasts
+        <code>MatchEnd</code>, persists <code>Score</code>, and returns roster control to the lobby.
+      </figcaption>
+    </figure>
+  </main>
+</body>
+</html>

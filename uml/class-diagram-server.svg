@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1180" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">UML Class Diagram — Server</title>
+  <desc id="desc">Server-side classes: GameServer, WebSocketServer, GameServerHandler, MatchManager, MatchSession, LobbyService, AuthRegistry, SessionRegistry, ClientSession, BotController, ChatRouter, ProfanityFilter.</desc>
+  <defs>
+    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/>
+      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
+      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
+                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
+        <feDistantLight azimuth="-45" elevation="65"/>
+      </feSpecularLighting>
+      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
+      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
+      <feMerge>
+        <feMergeNode in="dropshadow"/>
+        <feMergeNode in="litPaint"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
+    </pattern>
+    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
+    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
+    <marker id="arrInherit" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="13" markerHeight="13" orient="auto"><path d="M0,0 L14,7 L0,14 z" fill="#11141c" stroke="#daa520" stroke-width="1.5"/></marker>
+    <marker id="arrCompose" viewBox="0 0 16 8" refX="15" refY="4" markerWidth="14" markerHeight="8" orient="auto"><path d="M0,4 L8,0 L16,4 L8,8 z" fill="#daa520"/></marker>
+  </defs>
+  <style>
+    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .title { font-weight: 700; font-size: 22px; }
+    .ttl { font-weight: 700; font-size: 13px; }
+    .sub { font-size: 11px; fill: #cbd5e1; }
+    .edge { font-size: 11px; fill: #daa520; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
+    .conn { fill: none; stroke-width: 1.8; stroke: #daa520; }
+  </style>
+  <rect x="0" y="0" width="1600" height="1180" fill="#08090d"/>
+  <rect x="0" y="0" width="1600" height="1180" fill="url(#grid)"/>
+
+  <text x="40" y="42" class="title" fill="#daa520">UML Class Diagram — Server (bomberman-server)</text>
+  <text x="40" y="64" class="sub">Netty edge · session registry · match orchestration · chat · bots</text>
+
+  <!-- ROW 1 -->
+  <!-- GameServer (1) -->
+  <rect x="40" y="100" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="100" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="40" y="116" width="280" height="10"             fill="#2a0d20"/>
+  <text x="180" y="118" text-anchor="middle" class="ttl" fill="#ff3ad9">GameServer  «main»</text>
+  <line x1="40" y1="156" x2="320" y2="156" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="148" class="sub">- ws: WebSocketServer</text>
+  <text x="52" y="170" class="sub">- matches: MatchManager</text>
+  <text x="52" y="188" class="sub">- lobby: LobbyService</text>
+  <text x="52" y="206" class="sub">- auth: AuthRegistry</text>
+  <text x="52" y="224" class="sub">- sessions: SessionRegistry</text>
+  <text x="52" y="242" class="sub">- chat: ChatRouter</text>
+  <line x1="40" y1="252" x2="320" y2="252" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="270" class="sub">+ start(): void</text>
+  <text x="52" y="288" class="sub">+ shutdown(): void</text>
+
+  <!-- WebSocketServer (2) -->
+  <rect x="380" y="100" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="100" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="380" y="116" width="280" height="10"             fill="#2a0d20"/>
+  <text x="520" y="118" text-anchor="middle" class="ttl" fill="#ff3ad9">WebSocketServer</text>
+  <line x1="380" y1="156" x2="660" y2="156" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="148" class="sub">- bossGroup: EventLoopGroup</text>
+  <text x="392" y="170" class="sub">- workerGroup: EventLoopGroup</text>
+  <text x="392" y="188" class="sub">- bootstrap: ServerBootstrap</text>
+  <text x="392" y="206" class="sub">- handler: GameServerHandler</text>
+  <text x="392" y="224" class="sub">- port: int</text>
+  <line x1="380" y1="252" x2="660" y2="252" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="270" class="sub">+ bind(port): void</text>
+  <text x="392" y="288" class="sub">+ stop(): void</text>
+
+  <!-- GameServerHandler (3) -->
+  <rect x="720" y="100" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="100" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="720" y="116" width="280" height="10"             fill="#2a0d20"/>
+  <text x="860" y="118" text-anchor="middle" class="ttl" fill="#ff3ad9">GameServerHandler</text>
+  <line x1="720" y1="156" x2="1000" y2="156" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="148" class="sub">- codec: WireCodec</text>
+  <text x="732" y="170" class="sub">- sessions: SessionRegistry</text>
+  <text x="732" y="188" class="sub">- matches: MatchManager</text>
+  <text x="732" y="206" class="sub">- chat: ChatRouter</text>
+  <line x1="720" y1="216" x2="1000" y2="216" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="234" class="sub">+ channelRead(ctx, frame)</text>
+  <text x="732" y="252" class="sub">+ onHello(env): void</text>
+  <text x="732" y="270" class="sub">+ onInput(env): void</text>
+  <text x="732" y="288" class="sub">+ onDisconnect(): void</text>
+
+  <!-- MatchManager (4) -->
+  <rect x="1060" y="100" width="240" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="100" width="240" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="1060" y="116" width="240" height="10"             fill="#2a0d20"/>
+  <text x="1180" y="118" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchManager</text>
+  <line x1="1060" y1="156" x2="1300" y2="156" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="148" class="sub">- active: Map&lt;UUID, MatchSession&gt;</text>
+  <text x="1072" y="170" class="sub">- queue: Deque&lt;PlayerId&gt;</text>
+  <text x="1072" y="188" class="sub">- scheduler: ExecutorService</text>
+  <line x1="1060" y1="198" x2="1300" y2="198" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="216" class="sub">+ create(players): MatchSession</text>
+  <text x="1072" y="234" class="sub">+ end(matchId): void</text>
+  <text x="1072" y="252" class="sub">+ tickAll(): void</text>
+  <text x="1072" y="270" class="sub">+ getById(id): MatchSession</text>
+  <text x="1072" y="288" class="sub">+ size(): int</text>
+
+  <!-- MatchSession (5) -->
+  <rect x="1320" y="100" width="240" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1320" y="100" width="240" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="1320" y="116" width="240" height="10"             fill="#2a0d20"/>
+  <text x="1440" y="118" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
+  <line x1="1320" y1="156" x2="1560" y2="156" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="148" class="sub">- id: UUID</text>
+  <text x="1332" y="170" class="sub">- world: GameWorld</text>
+  <text x="1332" y="188" class="sub">- snap: Snapshotter</text>
+  <text x="1332" y="206" class="sub">- subscribers: Set&lt;ClientSession&gt;</text>
+  <text x="1332" y="224" class="sub">- tickIntervalMs: int = 50</text>
+  <line x1="1320" y1="234" x2="1560" y2="234" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="252" class="sub">+ tick(dt): void</text>
+  <text x="1332" y="270" class="sub">+ broadcast(env): void</text>
+  <text x="1332" y="288" class="sub">+ apply(input): void</text>
+
+  <!-- ROW 2 -->
+  <!-- LobbyService (6) -->
+  <rect x="40" y="370" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="370" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="40" y="386" width="280" height="10"             fill="#2a0d20"/>
+  <text x="180" y="388" text-anchor="middle" class="ttl" fill="#ff3ad9">LobbyService</text>
+  <line x1="40" y1="426" x2="320" y2="426" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="418" class="sub">- waiting: List&lt;PlayerId&gt;</text>
+  <text x="52" y="440" class="sub">- ready: Set&lt;PlayerId&gt;</text>
+  <text x="52" y="458" class="sub">- sessions: SessionRegistry</text>
+  <text x="52" y="476" class="sub">- mm: MatchManager</text>
+  <line x1="40" y1="486" x2="320" y2="486" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="504" class="sub">+ join(playerId): void</text>
+  <text x="52" y="522" class="sub">+ markReady(id): void</text>
+  <text x="52" y="540" class="sub">+ snapshot(): LobbySnapshot</text>
+  <text x="52" y="558" class="sub">+ tryPair(): void</text>
+
+  <!-- AuthRegistry (7) -->
+  <rect x="380" y="370" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="370" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="380" y="386" width="280" height="10"             fill="#2a0d20"/>
+  <text x="520" y="388" text-anchor="middle" class="ttl" fill="#ff3ad9">AuthRegistry</text>
+  <line x1="380" y1="426" x2="660" y2="426" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="418" class="sub">- providers: List&lt;AuthProvider&gt;</text>
+  <text x="392" y="440" class="sub">- accounts: AccountRepo</text>
+  <text x="392" y="458" class="sub">- tokens: TokenCache</text>
+  <line x1="380" y1="468" x2="660" y2="468" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="486" class="sub">+ register(provider): void</text>
+  <text x="392" y="504" class="sub">+ validate(token): PlayerId</text>
+  <text x="392" y="522" class="sub">+ issue(account): String</text>
+  <text x="392" y="540" class="sub">+ revoke(token): void</text>
+
+  <!-- SessionRegistry (8) -->
+  <rect x="720" y="370" width="280" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="370" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="720" y="386" width="280" height="10"             fill="#2a0d20"/>
+  <text x="860" y="388" text-anchor="middle" class="ttl" fill="#ff3ad9">SessionRegistry</text>
+  <line x1="720" y1="426" x2="1000" y2="426" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="418" class="sub">- byPlayer: Map&lt;PlayerId, ClientSession&gt;</text>
+  <text x="732" y="440" class="sub">- byChannel: Map&lt;Channel, ClientSession&gt;</text>
+  <line x1="720" y1="450" x2="1000" y2="450" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="468" class="sub">+ attach(ch, player): ClientSession</text>
+  <text x="732" y="486" class="sub">+ detach(ch): void</text>
+  <text x="732" y="504" class="sub">+ get(player): ClientSession?</text>
+  <text x="732" y="522" class="sub">+ sendTo(player, env): void</text>
+  <text x="732" y="540" class="sub">+ broadcast(env): void</text>
+  <text x="732" y="558" class="sub">+ size(): int</text>
+
+  <!-- ClientSession (9) -->
+  <rect x="1060" y="370" width="240" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="370" width="240" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="1060" y="386" width="240" height="10"             fill="#2a0d20"/>
+  <text x="1180" y="388" text-anchor="middle" class="ttl" fill="#ff3ad9">ClientSession</text>
+  <line x1="1060" y1="426" x2="1300" y2="426" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="418" class="sub">- channel: Channel</text>
+  <text x="1072" y="440" class="sub">- playerId: PlayerId</text>
+  <text x="1072" y="458" class="sub">- matchId: UUID?</text>
+  <text x="1072" y="476" class="sub">- connectedAt: long</text>
+  <text x="1072" y="494" class="sub">- lastInputTick: int</text>
+  <line x1="1060" y1="504" x2="1300" y2="504" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="522" class="sub">+ send(env): void</text>
+  <text x="1072" y="540" class="sub">+ ping(): void</text>
+  <text x="1072" y="558" class="sub">+ close(): void</text>
+
+  <!-- BotController (10) -->
+  <rect x="1320" y="370" width="240" height="200" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1320" y="370" width="240" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="1320" y="386" width="240" height="10"             fill="#2a0d20"/>
+  <text x="1440" y="388" text-anchor="middle" class="ttl" fill="#ff3ad9">BotController</text>
+  <line x1="1320" y1="426" x2="1560" y2="426" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="418" class="sub">- match: MatchSession</text>
+  <text x="1332" y="440" class="sub">- difficulty: int</text>
+  <text x="1332" y="458" class="sub">- ai: BehaviourTree</text>
+  <text x="1332" y="476" class="sub">- rng: Random</text>
+  <line x1="1320" y1="486" x2="1560" y2="486" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="504" class="sub">+ stepTick(): Input</text>
+  <text x="1332" y="522" class="sub">+ choosePath(): Path</text>
+  <text x="1332" y="540" class="sub">+ chooseTarget(): Player</text>
+  <text x="1332" y="558" class="sub">+ release(): void</text>
+
+  <!-- ROW 3 -->
+  <!-- ChatRouter (11) -->
+  <rect x="40" y="640" width="280" height="180" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="40" y="640" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="40" y="656" width="280" height="10"             fill="#2a0d20"/>
+  <text x="180" y="658" text-anchor="middle" class="ttl" fill="#ff3ad9">ChatRouter</text>
+  <line x1="40" y1="696" x2="320" y2="696" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="688" class="sub">- filter: ProfanityFilter</text>
+  <text x="52" y="710" class="sub">- sessions: SessionRegistry</text>
+  <text x="52" y="728" class="sub">- rateLimit: TokenBucket</text>
+  <line x1="40" y1="738" x2="320" y2="738" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="52" y="756" class="sub">+ onChat(env): void</text>
+  <text x="52" y="774" class="sub">+ broadcast(scope, msg): void</text>
+  <text x="52" y="792" class="sub">+ mute(player, ms): void</text>
+
+  <!-- ProfanityFilter (12) -->
+  <rect x="380" y="640" width="280" height="180" rx="10" fill="#11141c" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="640" width="280" height="26" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
+  <rect x="380" y="656" width="280" height="10"             fill="#2a0d20"/>
+  <text x="520" y="658" text-anchor="middle" class="ttl" fill="#ff3ad9">ProfanityFilter</text>
+  <line x1="380" y1="696" x2="660" y2="696" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="688" class="sub">- wordList: Set&lt;String&gt;</text>
+  <text x="392" y="710" class="sub">- replacement: String = "*"</text>
+  <text x="392" y="728" class="sub">- locale: Locale</text>
+  <line x1="380" y1="738" x2="660" y2="738" stroke="#ff3ad9" stroke-width="0.8" opacity="0.5"/>
+  <text x="392" y="756" class="sub">+ sanitize(text): String</text>
+  <text x="392" y="774" class="sub">+ flag(text): boolean</text>
+  <text x="392" y="792" class="sub">+ reload(): void</text>
+
+  <!-- AccountRepo (13) -->
+  <rect x="720" y="640" width="280" height="180" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="640" width="280" height="26" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.6"/>
+  <rect x="720" y="656" width="280" height="10"             fill="#3a2810"/>
+  <text x="860" y="658" text-anchor="middle" class="ttl" fill="#ffb53a">AccountRepo  «JDBC»</text>
+  <line x1="720" y1="696" x2="1000" y2="696" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="688" class="sub">- ds: DataSource</text>
+  <text x="732" y="710" class="sub">- cache: Caffeine</text>
+  <line x1="720" y1="720" x2="1000" y2="720" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
+  <text x="732" y="738" class="sub">+ findById(id): Account?</text>
+  <text x="732" y="756" class="sub">+ findByEmail(email): Account?</text>
+  <text x="732" y="774" class="sub">+ create(acc): PlayerId</text>
+  <text x="732" y="792" class="sub">+ updateScore(id, score)</text>
+
+  <!-- TokenCache (14) -->
+  <rect x="1060" y="640" width="240" height="180" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <rect x="1060" y="640" width="240" height="26" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.6"/>
+  <rect x="1060" y="656" width="240" height="10"             fill="#3a2810"/>
+  <text x="1180" y="658" text-anchor="middle" class="ttl" fill="#ffb53a">TokenCache  «Redis»</text>
+  <line x1="1060" y1="696" x2="1300" y2="696" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="688" class="sub">- redis: RedisClient</text>
+  <text x="1072" y="710" class="sub">- ttl: Duration = 1 h</text>
+  <line x1="1060" y1="720" x2="1300" y2="720" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
+  <text x="1072" y="738" class="sub">+ put(token, player)</text>
+  <text x="1072" y="756" class="sub">+ get(token): PlayerId?</text>
+  <text x="1072" y="774" class="sub">+ remove(token)</text>
+  <text x="1072" y="792" class="sub">+ size(): long</text>
+
+  <!-- AuthProvider (15) interface -->
+  <rect x="1320" y="640" width="240" height="180" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.6" stroke-dasharray="5 3" filter="url(#bx-3d-bevel)"/>
+  <rect x="1320" y="640" width="240" height="26" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.6"/>
+  <rect x="1320" y="656" width="240" height="10"             fill="#2a2110"/>
+  <text x="1440" y="658" text-anchor="middle" class="ttl" fill="#daa520">«interface» AuthProvider</text>
+  <line x1="1320" y1="696" x2="1560" y2="696" stroke="#daa520" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="710" class="sub">+ supports(scheme): boolean</text>
+  <text x="1332" y="728" class="sub">+ verify(token): PlayerId?</text>
+  <line x1="1320" y1="738" x2="1560" y2="738" stroke="#daa520" stroke-width="0.8" opacity="0.5"/>
+  <text x="1332" y="756" class="sub">implementations:</text>
+  <text x="1332" y="774" class="sub" fill="#daa520">DevAuthProvider</text>
+  <text x="1332" y="792" class="sub" fill="#daa520">GoogleAuthProvider</text>
+
+  <!-- ROW 4: Implementations -->
+  <rect x="40"  y="870" width="280" height="120" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="40"  y="870" width="280" height="24" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
+  <rect x="40"  y="886" width="280" height="8"             fill="#2a2110"/>
+  <text x="180" y="887" text-anchor="middle" class="ttl" fill="#daa520">DevAuthProvider</text>
+  <text x="52" y="918" class="sub">- staticAccounts: Map&lt;String,Account&gt;</text>
+  <line x1="40" y1="928" x2="320" y2="928" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
+  <text x="52" y="946" class="sub">+ supports("dev"): true</text>
+  <text x="52" y="964" class="sub">+ verify(token): PlayerId?</text>
+  <text x="52" y="982" class="sub" fill="#94a3b8">dev / test env</text>
+
+  <rect x="380" y="870" width="280" height="120" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="380" y="870" width="280" height="24" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
+  <rect x="380" y="886" width="280" height="8"             fill="#2a2110"/>
+  <text x="520" y="887" text-anchor="middle" class="ttl" fill="#daa520">GoogleAuthProvider</text>
+  <text x="392" y="918" class="sub">- googleKeys: JwkSet</text>
+  <line x1="380" y1="928" x2="660" y2="928" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
+  <text x="392" y="946" class="sub">+ supports("google"): true</text>
+  <text x="392" y="964" class="sub">+ verify(idToken): PlayerId?</text>
+  <text x="392" y="982" class="sub" fill="#94a3b8">OIDC id_token</text>
+
+  <!-- Note: tick scheduler -->
+  <rect x="720" y="870" width="840" height="120" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <rect x="720" y="870" width="840" height="24" rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.4"/>
+  <rect x="720" y="886" width="840" height="8"             fill="#0c2c44"/>
+  <text x="1140" y="887" text-anchor="middle" class="ttl" fill="#3aedff">Tick scheduler  (cross-cutting)</text>
+  <text x="732" y="918" class="sub">ScheduledExecutorService inside MatchManager · fires at 20 Hz · drains all MatchSession.tick(dt) inside one worker pool.</text>
+  <text x="732" y="938" class="sub">Backpressure: if a tick is &gt; 50 ms, the next tick is skipped and a warning is logged. BotController.stepTick() and ClientSession.send() run on the same loop.</text>
+  <text x="732" y="958" class="sub">Hot path is allocation-free: snapshots are produced into pooled buffers; WireCodec serialises into Netty ByteBufs.</text>
+  <text x="732" y="978" class="sub" fill="#94a3b8">Stateless across pods — match-id is sticky at the load balancer.</text>
+
+  <!-- ============ CONNECTIONS ============ -->
+  <!-- GameServer composes WebSocketServer, MatchManager, LobbyService, AuthRegistry, SessionRegistry, ChatRouter -->
+  <!-- Same-row composition: GameServer -> WebSocketServer (200,200) -> (380,200) -->
+  <path class="conn" d="M 320,200 H 380" marker-start="url(#arrCompose)"/>
+  <text x="350" y="194" text-anchor="middle" class="edge">1</text>
+
+  <!-- GameServer composes MatchManager (above top, trunk) -->
+  <path class="conn" d="M 180,100 V 80 H 1180 V 100" marker-start="url(#arrCompose)"/>
+  <text x="680" y="74" text-anchor="middle" class="edge">1  MatchManager</text>
+
+  <!-- GameServer composes LobbyService (left side dropdown) -->
+  <path class="conn" d="M 180,300 V 370" marker-start="url(#arrCompose)"/>
+  <text x="220" y="338" class="edge">1  LobbyService</text>
+
+  <!-- WebSocketServer -> GameServerHandler (in chain) -->
+  <path class="conn" d="M 660,170 H 720" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="690" y="164" text-anchor="middle" class="edge" fill="#ff3ad9">handler</text>
+
+  <!-- GameServerHandler -> SessionRegistry (down) -->
+  <path class="conn" d="M 860,300 V 370" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="900" y="338" class="edge" fill="#ff3ad9">uses</text>
+
+  <!-- GameServerHandler -> MatchManager (right) -->
+  <path class="conn" d="M 1000,200 H 1060" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="1030" y="194" text-anchor="middle" class="edge" fill="#ff3ad9">routes</text>
+
+  <!-- MatchManager composes MatchSession (right) -->
+  <path class="conn" d="M 1300,200 H 1320" marker-start="url(#arrCompose)"/>
+  <text x="1310" y="194" text-anchor="middle" class="edge">*</text>
+
+  <!-- MatchSession -> BotController (down) -->
+  <path class="conn" d="M 1440,300 V 370" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="1480" y="338" class="edge" fill="#ff3ad9">uses</text>
+
+  <!-- LobbyService -> MatchManager (up and right) -->
+  <path class="conn" d="M 180,370 V 340 H 1180 V 300" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="660" y="334" text-anchor="middle" class="edge" fill="#ff3ad9">tryPair → create()</text>
+
+  <!-- LobbyService -> SessionRegistry (right) -->
+  <path class="conn" d="M 320,440 H 720" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="520" y="434" text-anchor="middle" class="edge" fill="#ff3ad9">snapshot broadcast</text>
+
+  <!-- AuthRegistry composes AccountRepo (down) -->
+  <path class="conn" d="M 520,570 V 640" marker-start="url(#arrCompose)"/>
+  <text x="560" y="608" class="edge">1  AccountRepo</text>
+
+  <!-- AuthRegistry composes TokenCache (down/right) -->
+  <path class="conn" d="M 600,570 V 610 H 1180 V 640" marker-start="url(#arrCompose)"/>
+  <text x="880" y="604" text-anchor="middle" class="edge">1  TokenCache</text>
+
+  <!-- AuthRegistry composes 0..n AuthProvider (right/down) -->
+  <path class="conn" d="M 660,460 H 1320" marker-start="url(#arrCompose)"/>
+  <text x="990" y="454" text-anchor="middle" class="edge">0..*  AuthProvider</text>
+
+  <!-- AuthProvider is implemented by DevAuthProvider and GoogleAuthProvider (inheritance via trunk) -->
+  <path class="conn" d="M 1440,820 V 845 H 180 V 870" marker-start="url(#arrInherit)"/>
+  <text x="780" y="839" text-anchor="middle" class="edge">implements AuthProvider</text>
+  <!-- second drop -->
+  <path class="conn" d="M 520,845 V 870"/>
+
+  <!-- SessionRegistry composes ClientSession (right) -->
+  <path class="conn" d="M 1000,440 H 1060" marker-start="url(#arrCompose)"/>
+  <text x="1030" y="434" text-anchor="middle" class="edge">*</text>
+
+  <!-- ChatRouter composes ProfanityFilter (right) -->
+  <path class="conn" d="M 320,720 H 380" marker-start="url(#arrCompose)"/>
+  <text x="350" y="714" text-anchor="middle" class="edge">1</text>
+
+  <!-- ChatRouter -> SessionRegistry (up) -->
+  <path class="conn" d="M 180,640 V 605 H 860 V 570" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="520" y="599" text-anchor="middle" class="edge" fill="#ff3ad9">broadcast(chat)</text>
+
+  <!-- Legend -->
+  <rect x="40" y="1030" width="1520" height="60" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
+  <text x="60" y="1052" class="ttl" fill="#daa520">Legend</text>
+  <line x1="60" y1="1068" x2="120" y2="1068" stroke="#daa520" stroke-width="1.8" marker-start="url(#arrCompose)"/>
+  <text x="130" y="1072" class="sub">composition</text>
+  <line x1="260" y1="1068" x2="320" y2="1068" stroke="#daa520" stroke-width="1.8" marker-end="url(#arrInherit)"/>
+  <text x="330" y="1072" class="sub">implements / extends</text>
+  <line x1="510" y1="1068" x2="570" y2="1068" stroke="#ff3ad9" stroke-width="1.8" marker-end="url(#arrPink)"/>
+  <text x="580" y="1072" class="sub">uses / depends</text>
+  <text x="800" y="1072" class="sub" fill="#94a3b8">pink = runtime · amber = persistence · gold dashed = interface boundary</text>
+</svg>

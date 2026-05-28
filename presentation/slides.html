@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BomberMen-X — Capstone Prototype Slides</title>
+<style>
+  :root {
+    --teal: #008080;
+    --turmeric: #ffc107;
+    --henna: #ec407a;
+    --gold: #daa520;
+    --aubergine: #150a1f;
+    --ink: #f7eedd;
+    --ink-muted: #c9bfae;
+    --border: rgba(218,165,32,0.35);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--aubergine);
+    color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh; width: 100vw;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100vh;
+    padding: 6vh 9vw 8vh;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    background: radial-gradient(circle at 80% -20%, rgba(0,128,128,0.18), transparent 60%),
+                radial-gradient(circle at 10% 110%, rgba(236,64,122,0.16), transparent 55%),
+                var(--aubergine);
+  }
+  .slide.active { display: flex; }
+  h1.slide-title { color: var(--gold); font-size: 44px; margin: 0 0 16px; letter-spacing: 0.02em; }
+  h2.slide-title { color: var(--gold); font-size: 32px; margin: 0 0 24px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  h3.subtitle { color: var(--turmeric); font-size: 20px; margin: 0 0 12px; font-weight: 500; }
+  .meta { color: var(--ink-muted); font-size: 16px; margin: 4px 0; }
+  ul { font-size: 19px; line-height: 1.7; padding-left: 28px; }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--turmeric); }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 17px; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: rgba(218,165,32,0.12); color: var(--gold); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .card {
+    background: rgba(8,9,13,0.55);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .card h4 { color: var(--henna); margin: 0 0 10px; font-size: 18px; }
+  .center { text-align: center; }
+  .title-block { text-align: center; }
+  .title-block .accent { color: var(--henna); }
+  .footer-strip {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: rgba(8,9,13,0.65);
+    border-top: 1px solid var(--border);
+    color: var(--ink-muted);
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  body:hover .footer-strip { opacity: 1; }
+  code { color: var(--turmeric); background: rgba(8,9,13,0.5); padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
+  img.diagram { max-width: 100%; max-height: 60vh; object-fit: contain; display: block; margin: 8px auto 0; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 10px; }
+  blockquote { color: var(--ink-muted); border-left: 3px solid var(--henna); margin: 10px 0; padding: 6px 16px; font-style: italic; }
+  .big-q { font-size: 64px; color: var(--turmeric); margin: 30px 0 20px; text-align: center; }
+  .roadmap-line { font-size: 18px; margin: 8px 0; color: var(--ink); }
+  .roadmap-line .when { color: var(--gold); display: inline-block; min-width: 140px; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- Slide 1 — Title -->
+  <section class="slide active">
+    <div class="title-block">
+      <h1 class="slide-title">BomberMen-X</h1>
+      <p class="meta">Capstone Prototype &middot; Week 7 of 8</p>
+      <p class="meta">28 May 2026</p>
+      <p class="meta accent">M.Sc. Applied Computer Science &middot; SRH University Stuttgart</p>
+      <p class="meta">Software Architecture and Design module &middot; Dr. Floriment Klinaku</p>
+      <p class="meta">Architects: Abhilash Anuku &middot; Simranjot Kaur &middot; Jithendra Chittomothu</p>
+    </div>
+  </section>
+
+  <!-- Slide 2 — The team -->
+  <section class="slide">
+    <h2 class="slide-title">The team</h2>
+    <table>
+      <thead><tr><th>Architect</th><th>Responsibility envelope</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Abhilash Anuku (AA)</strong></td><td>Delivery, planning, architecture specification, requirements traceability, build and deploy pipeline.</td></tr>
+        <tr><td><strong>Simranjot Kaur (SK)</strong></td><td>UI / UX, gameplay engine (movement, bomb, scoring), HUD overlay, Mandala visual identity.</td></tr>
+        <tr><td><strong>Jithendra Chittomothu (JC)</strong></td><td>Networking, server lifecycle, bot AI, deploy pipeline, metrics endpoint.</td></tr>
+      </tbody>
+    </table>
+    <p class="meta" style="margin-top:18px;">Three peer architects &middot; weekly review with the supervisor &middot; Friday sprint handovers.</p>
+  </section>
+
+  <!-- Slide 3 — Problem -->
+  <section class="slide">
+    <h2 class="slide-title">Problem</h2>
+    <h3 class="subtitle">A distributed multiplayer arena, built as a capstone</h3>
+    <ul>
+      <li>Build a Bomberman-style real-time game that exercises every architectural concern: domain modelling, authoritative simulation, lossy state replication, real-time UI, deployment.</li>
+      <li>Conform to Dr. Klinaku's entity specification agreed at the Week 3 review (12 entities).</li>
+      <li>Stand up locally with one command and on a containerised target.</li>
+      <li>Document the decisions in arc42 shape, defend them in a 15-minute viva on Tuesday 02 June 2026.</li>
+      <li><strong>Constraint:</strong> eight calendar weeks &middot; three architects &middot; no prior real-time multiplayer experience.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 4 — Approach -->
+  <section class="slide">
+    <h2 class="slide-title">Approach</h2>
+    <h3 class="subtitle">Three-tier client / server with a shared core</h3>
+    <div class="two-col">
+      <div class="card">
+        <h4>Shared core</h4>
+        <p><code>bomberman-core</code> holds every domain entity, the wire DTOs, and the codec. Compile-time guarantees that server and client cannot drift apart.</p>
+      </div>
+      <div class="card">
+        <h4>Authoritative server</h4>
+        <p><code>bomberman-server</code> owns the only mutable <code>GameWorld</code>, ticks at 60 Hz, emits <code>WorldSnapshot</code> frames. No client prediction.</p>
+      </div>
+      <div class="card">
+        <h4>JavaFX client</h4>
+        <p><code>bomberman-client</code> renders snapshots on a single <code>Canvas</code>; HUD reads the same snapshots. Mandala palette throughout.</p>
+      </div>
+      <div class="card">
+        <h4>Conservative scope</h4>
+        <p>No persistence, no client prediction, no 3D spectator in v0.2. Each deferral was agreed with the supervisor at the Week 3 review.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5 — Architecture diagram -->
+  <section class="slide">
+    <h2 class="slide-title">Architecture (containers)</h2>
+    <img class="diagram" src="../diagrams/architecture.svg" alt="BomberMen-X containers and wire protocol"/>
+    <p class="meta center" style="margin-top:14px;">Three Maven modules, one wire protocol, two deployment targets.</p>
+  </section>
+
+  <!-- Slide 6 — Building blocks -->
+  <section class="slide">
+    <h2 class="slide-title">Building blocks</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>Modules</h4>
+        <ul>
+          <li><code>bomberman-core</code> &mdash; entities, DTOs, codec, sim</li>
+          <li><code>bomberman-server</code> &mdash; Netty, ws://:8080, metrics :9091</li>
+          <li><code>bomberman-client</code> &mdash; JavaFX, <code>Canvas</code>, Mandala palette</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Key entities (12)</h4>
+        <ul>
+          <li><code>Bomberman</code>, <code>Player</code>, <code>Score</code></li>
+          <li><code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code></li>
+          <li><code>Arena</code>, <code>Tile</code></li>
+          <li><code>Bonus</code> (abstract) &middot; 7 concrete subclasses</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7 — Runtime -->
+  <section class="slide">
+    <h2 class="slide-title">Runtime</h2>
+    <h3 class="subtitle">60 Hz authoritative tick, snapshot stream</h3>
+    <ul>
+      <li><strong>Tick.</strong> <code>MatchSession</code> drains <code>INPUT_FRAME</code> queue, applies inputs to <code>GameWorld</code>, advances bomb fuses and explosions, processes pickups.</li>
+      <li><strong>Snapshot.</strong> <code>Snapshotter</code> derives an immutable <code>WorldSnapshot</code> from the world; <code>WireCodec</code> serialises once and the server broadcasts to all match clients.</li>
+      <li><strong>Bots.</strong> <code>BotController</code> is stepped just before input drain &mdash; structurally indistinguishable from a human at the server boundary.</li>
+      <li><strong>Events.</strong> <code>KILL_FEED</code> and <code>GAME_EVENT</code> are emitted as they happen; the kill feed appears in <code>HudOverlay</code>.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 8 — Wire protocol -->
+  <section class="slide">
+    <h2 class="slide-title">Wire protocol</h2>
+    <h3 class="subtitle">One envelope, one enum, one codec</h3>
+    <ul>
+      <li><strong>Transport:</strong> WebSocket over TCP, JSON payloads, Jackson serialisation.</li>
+      <li><strong>Discriminator:</strong> <code>MessageType</code> &mdash; 24 values: auth (4), lobby (8), match (2), gameplay (5), social (3), snapshot family (4).</li>
+      <li><strong>Choke point:</strong> <code>com.bombermenx.core.net.WireCodec</code> &mdash; single producer and consumer of JSON.</li>
+      <li><strong>Test:</strong> <code>WireCodecTest</code> round-trips every payload type; any DTO change that breaks parity fails the build.</li>
+      <li><strong>Why JSON:</strong> text-frame readability accelerates weekly demos; per-frame compression keeps bandwidth acceptable; a future binary swap is a single-module change.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 9 — Quality attributes -->
+  <section class="slide">
+    <h2 class="slide-title">Quality attributes</h2>
+    <table>
+      <thead><tr><th>Attribute</th><th>Target</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Performance</td><td>60 Hz tick, &lt;16 ms frame</td><td>Authoritative tick; <code>Canvas</code> renderer under 4 ms.</td></tr>
+        <tr><td>Availability</td><td>Restart &lt; 5 s</td><td>Stateless server image; in-memory state acceptable for prototype.</td></tr>
+        <tr><td>Security</td><td>Server-authoritative; moderated chat</td><td>Single mutable <code>GameWorld</code>; <code>ProfanityFilter</code>; <code>AuthRegistry</code> SPI.</td></tr>
+        <tr><td>Usability</td><td>Large HUD glyphs, gamepad-ready</td><td><code>MandalaTheme</code>; <code>HudOverlay</code>; <code>GamepadPoller</code> stub.</td></tr>
+        <tr><td>Maintainability</td><td>Per-module ownership; one codec</td><td>Three Maven modules; <code>WireCodec</code> as single choke point.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Slide 10 — Decisions (ADRs) -->
+  <section class="slide">
+    <h2 class="slide-title">Decisions (three ADRs)</h2>
+    <div class="card">
+      <h4>ADR-1: JSON over WebSocket</h4>
+      <p>Text-frame readability accelerated debugging. <code>WireCodec</code> as single producer keeps a future binary swap to one module.</p>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <h4>ADR-2: Server-authoritative simulation, no client prediction</h4>
+      <p>The server holds the only mutable <code>GameWorld</code>. Clients render snapshots. Bots reuse the same input path as humans.</p>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <h4>ADR-3: JavaFX desktop client (no browser target)</h4>
+      <p>Team has Java expertise. <code>Canvas</code> renderer; <code>SceneRouter</code> for view changes; shaded fat-jar for distribution.</p>
+    </div>
+  </section>
+
+  <!-- Slide 11 — What works (week 7) -->
+  <section class="slide">
+    <h2 class="slide-title">What works (Week 7)</h2>
+    <ul>
+      <li><code>mvn clean test</code> green &mdash; 3 tests pass: <code>WireCodecTest</code>, <code>GameWorldTest</code>, <code>ProfanityFilterTest</code>.</li>
+      <li>Server boots on <code>ws://localhost:8080</code>, metrics on <code>http://localhost:9091/metrics</code> within 1.2 seconds.</li>
+      <li>JavaFX client connects, walks <code>MainMenuView</code> &rarr; <code>LobbyView</code> &rarr; <code>ArenaView</code>, renders live <code>WorldSnapshot</code> stream.</li>
+      <li><code>BotController</code> fills empty slots &mdash; credible 90-second demo against one bot.</li>
+      <li><code>docker compose -f infra/docker-compose.yml up</code> stands up the server image cleanly.</li>
+      <li>Deliverables portal published locally and mirrored to <code>https://abhilashanuku.github.io/bombermenx/</code> &mdash; 33+ HTML pages cross-linked.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 12 — Deferred to v0.3 -->
+  <section class="slide">
+    <h2 class="slide-title">Deferred to v0.3</h2>
+    <ul>
+      <li><strong>3D spectator view.</strong> <code>SubScene</code> sketch retained; 2D <code>ArenaRenderer</code> is the demonstrable surface.</li>
+      <li><strong>Persistence.</strong> <code>RankingsRepository</code> interface and PostgreSQL backing land in v0.3.</li>
+      <li><strong>Full anti-cheat.</strong> Rolling-window plausibility check and kick policy added on top of current server-authority.</li>
+      <li><strong>OAuth.</strong> <code>GoogleAuthProvider</code> wired against real OIDC; <code>DevAuthProvider</code> demoted to test scope.</li>
+      <li><strong>Audio.</strong> Sample bank bundled; <code>AudioBus</code> and <code>SpatialAudio</code> wired into the renderer.</li>
+      <li><strong>Client tests.</strong> TestFX coverage for menu, lobby, and HUD.</li>
+    </ul>
+    <blockquote>Every deferral was raised and accepted at the Week 3 scope review.</blockquote>
+  </section>
+
+  <!-- Slide 13 — Roadmap to week 8 -->
+  <section class="slide">
+    <h2 class="slide-title">Roadmap to Week 8</h2>
+    <h3 class="subtitle">Documentation polish, rehearsal, submission</h3>
+    <p class="roadmap-line"><span class="when">Thu 29 May 2026</span> Freeze architecture report; export DOCX + PDF; record demo capture; run Compose end-to-end.</p>
+    <p class="roadmap-line"><span class="when">Fri 30 May 2026</span> Rehearsal 1 &mdash; full slide walk-through, all three architects, no stopwatch.</p>
+    <p class="roadmap-line"><span class="when">Sat 31 May 2026</span> Buffer day &mdash; bug-fix only, no new features.</p>
+    <p class="roadmap-line"><span class="when">Sun 01 June 2026</span> Rehearsal 2 with stopwatch &mdash; 12 minutes presentation + 3 minutes Q&A.</p>
+    <p class="roadmap-line"><span class="when">Tue 02 June 2026</span> Upload PDF + DOCX + slides + repo link by 09:00; viva at assigned slot; tag <code>v0.2.0-prototype</code> after.</p>
+  </section>
+
+  <!-- Slide 14 — Q&A -->
+  <section class="slide">
+    <div class="title-block">
+      <div class="big-q">?</div>
+      <h1 class="slide-title">Q &amp; A</h1>
+      <p class="meta">Open the deliverables portal &mdash; <code>index.html</code></p>
+      <p class="meta">Repository &middot; <code>../src/</code></p>
+      <p class="meta">Live mirror &middot; <a href="https://abhilashanuku.github.io/bombermenx/" style="color:var(--turmeric);">https://abhilashanuku.github.io/bombermenx/</a></p>
+      <p class="meta accent" style="margin-top:24px;">Thank you, Dr. Klinaku.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer-strip">
+  <span>BomberMen-X &middot; Capstone Prototype &middot; 28 May 2026</span>
+  <span id="counter">1 / 14</span>
+</div>
+
+<script>
+(function () {
+  var slides = document.querySelectorAll('.slide');
+  var counter = document.getElementById('counter');
+  var idx = 0;
+  function show(i) {
+    if (i < 0) i = 0;
+    if (i >= slides.length) i = slides.length - 1;
+    slides[idx].classList.remove('active');
+    idx = i;
+    slides[idx].classList.add('active');
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(idx + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(idx - 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') return;
+    if (e.clientX > window.innerWidth / 2) show(idx + 1); else show(idx - 1);
+  });
+})();
+</script>
+</body>
+</html>

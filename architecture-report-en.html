@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BomberMen-X — Architecture Report (Week 7 of 8 — Prototype)</title>
+<link rel="stylesheet" href="assets/portal.css"/>
+<style>
+  main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1, h2, h3 { color: var(--agni); }
+  h1 { font-size: 32px; border-bottom: 1px solid rgba(218,165,32,0.3); padding-bottom: 12px; }
+  h2 { font-size: 22px; margin-top: 2em; }
+  h3 { font-size: 17px; color: var(--vayu-hi); }
+  p, li { line-height: 1.7; }
+  .meta-card { background: rgba(8,9,13,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+  th { background: rgba(218,165,32,0.12); color: var(--agni); }
+  blockquote { border-left: 3px solid var(--henna); margin: 16px 0; padding: 8px 18px; color: var(--ink-muted); background: rgba(236,64,122,0.06); }
+  ol.adr-list > li { margin-bottom: 14px; }
+  .section-label { display: inline-block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--vayu-hi); margin-top: 32px; }
+</style>
+</head>
+<body>
+<header class="portal-head">
+  <h1>BomberMen-X — Architecture Report</h1>
+  <p class="meta">Week 7 of 8 — Prototype submission &middot; 28 May 2026</p>
+  <p class="meta">M.Sc. Applied Computer Science &middot; SRH University Stuttgart &middot; SAD module (Dr. Floriment Klinaku)</p>
+</header>
+<main>
+
+<div class="meta-card">
+  <strong>Repository:</strong> <code>../src/</code><br/>
+  <strong>Live deliverables mirror:</strong> <a href="https://abhilashanuku.github.io/bombermenx/">https://abhilashanuku.github.io/bombermenx/</a><br/>
+  <strong>Reactor:</strong> Maven 3-module, Java 17, <code>com.bombermenx:bombermenx-parent:0.1.0-SNAPSHOT</code><br/>
+  <strong>Status:</strong> Prototype feature-complete &middot; final report and viva on Tuesday 02 June 2026.
+</div>
+
+<h2>1. Overview and goals</h2>
+<p>
+BomberMen-X is a server-authoritative, distributed multiplayer arena game built as the capstone deliverable for the Software Architecture and Design (SAD) module of the M.Sc. Applied Computer Science programme at SRH University Stuttgart. The system is realised as a Maven three-module Java 17 reactor: <code>bomberman-core</code> (shared library), <code>bomberman-server</code> (Netty WebSocket server, port 8080), and <code>bomberman-client</code> (JavaFX desktop). The visual identity follows an Indian-festival mandala palette: teal (#008080), turmeric (#ffc107), henna (#ec407a), and gold (#daa520) on an aubergine (#150a1f) ground.
+</p>
+<p>
+The architecture pursues five explicit qualities. <strong>Determinism</strong>: the server holds the only mutable <code>GameWorld</code> and advances it on a fixed 60 Hz tick, so the same input sequence produces the same outcome on any host. <strong>Fairness</strong>: clients render snapshots; they never simulate ahead of the server, removing both desync and a class of cheats. <strong>Clarity</strong>: every message on the wire is a typed <code>Envelope</code> with a <code>MessageType</code> discriminator and a Jackson-serialised payload, and the codec lives in exactly one place — <code>com.bombermenx.core.net.WireCodec</code>. <strong>Portability</strong>: build and run require only a JDK 17 and Maven 3.9, both available as zero-install portable drops. <strong>Demonstrability</strong>: the entire system stands up locally with one command via <code>docker compose -f infra/docker-compose.yml up</code>, and the JavaFX client connects without further configuration.
+</p>
+<p>
+Within these qualities, the prototype intentionally constrains scope. There is no persistence layer; the 3D spectator view is deferred; OAuth is stubbed. Each deferral is documented in section 8 and was agreed with the supervisor at the Week 3 review.
+</p>
+
+<h2>2. Stakeholders and context</h2>
+<table>
+  <thead><tr><th>Stakeholder</th><th>Interest in BomberMen-X</th></tr></thead>
+  <tbody>
+    <tr><td>Player (end user)</td><td>Low-latency multiplayer match against humans and bots; readable HUD; consistent UI palette.</td></tr>
+    <tr><td>Match administrator</td><td>Boot a match server; observe metrics; kick disruptive clients; reset state.</td></tr>
+    <tr><td>Examiner — Dr. Floriment Klinaku</td><td>Evidence that the team can identify and defend architectural decisions; conformance to the agreed entity specification; clean arc42-shaped report.</td></tr>
+    <tr><td>Examination board (SRH)</td><td>A graded artefact submitted by Tuesday 02 June 2026.</td></tr>
+    <tr><td>Future maintainer (v0.3 team)</td><td>A clean seam at the wire codec, three independently testable modules, and a documented deferral list.</td></tr>
+  </tbody>
+</table>
+<p>
+The context is the SAD module's prototype gate. Each team is expected to defend its architecture against the rubric of arc42: overview, constraints, context, solution strategy, building blocks, runtime, deployment, cross-cutting concepts, decisions, quality, and risks. This report addresses each of these in sequence.
+</p>
+
+<h2>3. Solution strategy</h2>
+<p>
+BomberMen-X adopts a <strong>three-tier client/server topology with a shared core library</strong>. The shared library, <code>bomberman-core</code>, is the only place where domain entities and wire DTOs are declared, so the server and the client cannot drift apart at compile time. The server is authoritative — it owns the only mutable instance of <code>GameWorld</code>, applies <code>PlayerInput</code> on tick boundaries, and emits a stream of <code>WorldSnapshot</code> objects derived by <code>Snapshotter</code>. The client renders snapshots and forwards local input frames; it never simulates predictively.
+</p>
+<p>
+This strategy is deliberately conservative. A predictive client would reduce perceived input latency but introduces rollback, reconciliation, and divergence-handling concerns that have no place in an eight-week capstone. The 60 Hz authoritative tick is fast enough for the 13&times;11-tile arena and slow enough that the JSON wire format remains comfortable; profiling on the demo laptop shows the codec consuming under 3 percent of CPU during a match with four players and one bot.
+</p>
+<p>
+The chosen wire format is <strong>JSON over WebSocket</strong>. Binary formats such as Protobuf were considered and rejected: the wire volume is dominated by snapshots whose redundancy collapses under WebSocket per-frame compression, and the readability of JSON has accelerated debugging during every weekly demo. <code>WireCodec</code> is the single Jackson entrypoint; every DTO that crosses the wire is exercised by <code>WireCodecTest</code>.
+</p>
+
+<h2>4. Building blocks</h2>
+<p>
+The reactor decomposes into three Maven modules and a fourth infrastructure tree.
+</p>
+
+<h3>4.1 <code>bomberman-core</code> (shared library)</h3>
+<p>
+Domain entities live under <code>com.bombermenx.core.entity</code> (<code>Bomberman</code>, <code>Player</code>, <code>Score</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>) and <code>com.bombermenx.core.world</code> (<code>Arena</code>, <code>Tile</code>, <code>TileType</code>, <code>ArenaTheme</code>, the abstract <code>Bonus</code>, and its seven concrete subclasses <code>ArmorBonus</code>, <code>ExtraBombBonus</code>, <code>FlameBonus</code>, <code>KickBonus</code>, <code>LifeBonus</code>, <code>SpeedBonus</code>, <code>ThrowBonus</code>). Geometry primitives — <code>TilePos</code>, <code>Direction</code> — live under <code>com.bombermenx.core.geom</code>. The simulation lives under <code>com.bombermenx.core.sim</code> (<code>GameWorld</code>, <code>GameState</code>, <code>GameMode</code>, <code>Snapshotter</code>). The wire protocol — <code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>, and 24 DTOs — lives under <code>com.bombermenx.core.net</code> and <code>com.bombermenx.core.net.dto</code>.
+</p>
+
+<h3>4.2 <code>bomberman-server</code> (Netty WebSocket server)</h3>
+<p>
+<code>BombServerApplication</code> is the JVM entrypoint; <code>WebSocketServer</code> wires the Netty pipeline; <code>GameServerHandler</code> dispatches inbound frames by <code>MessageType</code>. <code>MatchManager</code>, <code>Match</code>, and <code>MatchSession</code> hold the authoritative simulation and drive the 60 Hz tick. <code>LobbyService</code> manages the pre-match flow and is fed by <code>CosmeticsCatalog</code>. Authentication routes through <code>AuthRegistry</code>, with <code>DevAuthProvider</code> for offline play and a stubbed <code>GoogleAuthProvider</code> ready for v0.3. <code>ChatRouter</code> and <code>ProfanityFilter</code> moderate text chat. <code>BotController</code> drives AI-filled slots through the same <code>INPUT_FRAME</code> path as a human. <code>MetricsHandler</code> exposes a Prometheus-style scrape on port 9091. <code>SessionRegistry</code> is the single source of truth for connected <code>ClientSession</code> objects.
+</p>
+
+<h3>4.3 <code>bomberman-client</code> (JavaFX desktop)</h3>
+<p>
+<code>ClientLauncher</code> bootstraps the JavaFX <code>Application</code>; <code>SceneRouter</code> swaps the active <code>Scene</code> between <code>MainMenuView</code>, <code>LobbyView</code>, <code>ArenaView</code>, and <code>RankingsView</code>. The painter is <code>ArenaRenderer</code>, working on a single JavaFX <code>Canvas</code>; the HUD is <code>HudOverlay</code>. <code>MandalaArt</code> and <code>MandalaTheme</code> apply the festival palette consistently across all four scenes. <code>GameClient</code> wraps the standard <code>java.net.http.WebSocket</code> and uses the same <code>WireCodec</code> as the server, eliminating any structural risk of DTO drift. <code>AgeGate</code> guards adult content. <code>AudioBus</code>, <code>SpatialAudio</code>, <code>HapticsService</code>, <code>GamepadPoller</code>, <code>PostFx</code>, <code>CameraShake</code>, and <code>ParticleSystem</code> are present as compile-clean stubs ready for v0.3.
+</p>
+
+<h3>4.4 <code>infra/</code> (deployment tree)</h3>
+<p>
+<code>infra/Dockerfile.server</code> produces a slim runtime image of the server jar over <code>eclipse-temurin:17-jre-jammy</code>. <code>infra/Dockerfile.client-build</code> is a builder image that produces the client fat-jar in CI without polluting the developer machine. <code>infra/docker-compose.yml</code> stands up the server with ports 8080 (WebSocket) and 9091 (metrics). Helper scripts live under <code>infra/scripts/</code>.
+</p>
+
+<h2>5. Runtime</h2>
+<p>
+A typical match lifecycle proceeds as follows. A client connects to <code>ws://localhost:8080</code>. <code>WebSocketServer</code> accepts the handshake and binds a <code>ClientSession</code> in <code>SessionRegistry</code>. The client sends an <code>AUTH_REQUEST</code>; <code>AuthRegistry</code> consults the active <code>AuthProvider</code> and returns an <code>AUTH_RESULT</code>. The client then sends <code>LOBBY_HELLO</code>; <code>LobbyService</code> assigns a lobby slot, broadcasts <code>LOBBY_STATE</code> to peers, and replies with <code>LOBBY_WELCOME</code>. The player equips cosmetics through <code>LOBBY_BUY</code> and <code>LOBBY_EQUIP</code>; the lobby periodically pushes <code>LOBBY_SNAPSHOT</code> frames.
+</p>
+<p>
+When the lobby reaches a quorum, <code>MatchManager</code> creates a <code>Match</code> and a <code>MatchSession</code>, broadcasts <code>MATCH_START</code>, and begins the 60 Hz tick. Each tick the session drains pending <code>INPUT_FRAME</code> frames, applies them to the <code>GameWorld</code>, advances bomb fuses and explosions, processes pickups, and asks <code>Snapshotter</code> for the current <code>WorldSnapshot</code>. The snapshot is serialised once by <code>WireCodec</code> and fan-out broadcast to every connected client in the match. Gameplay events (<code>KILL_FEED</code>, <code>GAME_EVENT</code>) are emitted as they happen. Bots are stepped by <code>BotController</code> immediately before input drain, so the rest of the tick treats them identically to humans.
+</p>
+<p>
+The match ends when a victory condition fires (last Bomberman alive, score cap reached, or time-out). <code>MATCH_END</code> is broadcast; the <code>MatchSession</code> is reaped; players return to <code>LobbyView</code>. The whole lifecycle is observable through <code>MetricsHandler</code>, which exposes counters for connections, ticks, frames in, frames out, and match starts.
+</p>
+
+<h2>6. Deployment</h2>
+<p>
+Two deployment targets are supported.
+</p>
+<p>
+<strong>Local desktop.</strong> The team's primary target for the prototype. Server is launched as a fat-jar (<code>java -jar bomberman-server-0.1.0-SNAPSHOT.jar</code>); client is launched via <code>mvn javafx:run</code> or its shaded fat-jar. This is the configuration that will be demonstrated on Tuesday 02 June 2026.
+</p>
+<p>
+<strong>Cloud Run option (v0.3).</strong> <code>infra/Dockerfile.server</code> already produces a Cloud Run-compatible image (single port, stateless except for in-memory match state, sub-256 MB). The prototype does not require this path, but the deployment view in the slide deck calls it out so the examiners can see the architecture extends without rework.
+</p>
+
+<h2>7. Quality requirements</h2>
+<table>
+  <thead><tr><th>Attribute</th><th>Target</th><th>How achieved</th></tr></thead>
+  <tbody>
+    <tr><td>Performance</td><td>60 Hz tick &middot; &lt; 16 ms client frame</td><td>Authoritative server tick; <code>Canvas</code>-based <code>ArenaRenderer</code> below 4 ms on demo hardware.</td></tr>
+    <tr><td>Availability</td><td>Restart in &lt; 5 seconds</td><td>Stateless server image; in-memory match state is acceptable for prototype scope.</td></tr>
+    <tr><td>Security</td><td>Server-authoritative; chat moderated; auth pluggable</td><td><code>GameWorld</code> only mutable on the server; <code>ProfanityFilter</code>; <code>AuthRegistry</code> SPI.</td></tr>
+    <tr><td>Usability</td><td>Mandala palette, large HUD glyphs, gamepad-ready</td><td><code>MandalaTheme</code>, <code>HudOverlay</code>, <code>GamepadPoller</code> stub for v0.3.</td></tr>
+    <tr><td>Maintainability</td><td>One choke point for serialisation; per-module ownership</td><td><code>WireCodec</code>; module READMEs document the owner per Maven module.</td></tr>
+    <tr><td>Portability</td><td>Build on any JDK 17 host with no admin rights</td><td>Portable Red Hat JDK + Maven 3.9; no machine-level dependencies.</td></tr>
+  </tbody>
+</table>
+
+<h2>8. Decisions and risks</h2>
+<p>The three load-bearing architecture decisions for the prototype are recorded as compact ADRs below.</p>
+
+<ol class="adr-list">
+  <li>
+    <strong>ADR-1: JSON over WebSocket as the wire format.</strong>
+    Context: a single full-duplex channel per client is required; the protocol must be debuggable by hand during weekly demos. Decision: WebSocket over TCP, JSON payloads via Jackson, single <code>WireCodec</code> entrypoint. Consequences: text-frame readability accelerates debugging; per-frame compression keeps bandwidth acceptable; future binary upgrade is a single-module change because <code>WireCodec</code> is the only producer.
+  </li>
+  <li>
+    <strong>ADR-2: Server-authoritative simulation, no client prediction.</strong>
+    Context: cheating risk and a tight prototype budget. Decision: the server holds the only mutable <code>GameWorld</code> and ticks at 60 Hz; clients render <code>WorldSnapshot</code> objects exclusively. Consequences: input latency is one round-trip; rollback and reconciliation are not needed; <code>BotController</code> reuses the same <code>INPUT_FRAME</code> path, so the bot is structurally indistinguishable from a human at the server boundary.
+  </li>
+  <li>
+    <strong>ADR-3: JavaFX desktop client, no browser target.</strong>
+    Context: the team has Java expertise and no web-frontend bandwidth. Decision: JavaFX 17 over a single <code>Canvas</code>, <code>SceneRouter</code> for view changes. Consequences: native-quality rendering on the developer's host OS; binary distribution via a shaded fat-jar; no DOM/CSS rabbit holes; a future browser target would have to reimplement the client but could reuse <code>bomberman-core</code> verbatim if compiled to a JavaScript runtime.
+  </li>
+</ol>
+
+<table>
+  <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+  <tbody>
+    <tr><td>No persistence — rankings reset on restart</td><td>Documented; v0.3 introduces <code>RankingsRepository</code> and PostgreSQL.</td></tr>
+    <tr><td>3D spectator view deferred</td><td>2D <code>ArenaRenderer</code> is the demonstrable surface; <code>SubScene</code> sketch retained for v0.3.</td></tr>
+    <tr><td>Only three automated tests; client untested</td><td>Manual smoke checklist in <code>deliverables/build/BUILD_AND_RUN.md</code>; v0.3 adds TestFX coverage.</td></tr>
+    <tr><td>Demo machine network constraints (SRH lab)</td><td><code>--port=18080</code> override tested; client respects <code>BOMBERMENX_SERVER_URL</code>.</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+The prototype is feature-complete against the scope agreed with Dr. Klinaku at the Week 3 review. Week 8 produces only documentation polish, rehearsal, and the final submission on Tuesday 02 June 2026.
+</blockquote>
+
+<h2>9. Team and authorship</h2>
+<table>
+  <thead><tr><th>Architect</th><th>Responsibility envelope</th></tr></thead>
+  <tbody>
+    <tr><td>Abhilash Anuku (AA)</td><td>Delivery, planning, architecture specification, requirements traceability, build and deploy pipeline.</td></tr>
+    <tr><td>Simranjot Kaur (SK)</td><td>UI / UX, gameplay engine (movement, bomb, scoring), HUD, visual identity (Mandala).</td></tr>
+    <tr><td>Jithendra Chittomothu (JC)</td><td>Networking, server lifecycle, bot AI, deploy pipeline, metrics endpoint.</td></tr>
+  </tbody>
+</table>
+
+</main>
+<footer class="portal-foot">
+  <p>BomberMen-X &middot; Capstone Prototype &middot; M.Sc. Applied Computer Science &middot; SRH University Stuttgart</p>
+  <p>Compiled 28 May 2026 &middot; Final submission Tuesday 02 June 2026</p>
+</footer>
+</body>
+</html>

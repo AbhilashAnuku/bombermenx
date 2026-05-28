@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BomberMen-X — Deployment &amp; Sequence Diagrams</title>
+  <style>
+    body { margin:0; background:radial-gradient(ellipse at top,#21133a,#150a1f); color:#fff8e7; font-family:-apple-system,"Segoe UI",Roboto,sans-serif; min-height:100vh; }
+    .crumbs { padding:18px 32px; font-size:13px; color:#9a8d75; }
+    .crumbs a { color:#1abc9c; text-decoration:none; }
+    main { max-width:1400px; margin:0 auto; padding:8px 32px 64px; }
+    h1 { color:#ffc107; font-size:28px; margin:0 0 8px; }
+    .intro { color:#d2c3a8; margin-bottom:32px; max-width:78ch; }
+    figure { margin:36px 0; padding:16px; background:rgba(8,9,13,0.5); border:1px solid #5a3a18; border-radius:12px; }
+    figure img { display:block; width:100%; height:auto; filter: drop-shadow(4px 6px 9px rgba(0,0,0,0.6)) drop-shadow(0 0 12px rgba(218,165,32,0.18)); }
+    figcaption { color:#9a8d75; font-size:13px; margin-top:10px; padding-top:8px; border-top:1px solid rgba(218,165,32,0.18); }
+    h2 { color:#daa520; font-size:20px; margin-top:32px; }
+    code { background:rgba(8,9,13,0.6); padding:2px 6px; border-radius:4px; color:#3affb5; font-size:13px; }
+    .nav-links { display:flex; gap:18px; flex-wrap:wrap; margin:18px 0 8px; }
+    .nav-links a { color:#1abc9c; text-decoration:none; padding:6px 14px; border:1px solid rgba(26,188,156,0.35); border-radius:6px; font-size:13px; }
+    .nav-links a:hover { background:rgba(26,188,156,0.1); }
+  </style>
+</head>
+<body>
+  <nav class="crumbs">
+    <a href="../index.html">← Deliverables portal</a> &nbsp;/&nbsp; <span>diagrams</span>
+  </nav>
+  <main>
+    <h1>Deployment &amp; Sequence Diagrams</h1>
+    <p class="intro">
+      Operational and behavioural views of the BomberMen-X system: where the bits run, and how key
+      interactions unfold in time. The deployment diagram shows the Cloud Run topology and CI/CD path;
+      the two sequence diagrams trace the most important live flows — bomb lifecycle and match start.
+    </p>
+    <div class="nav-links">
+      <a href="architecture.html">High-level architecture</a>
+      <a href="#deployment">Deployment topology</a>
+      <a href="#sequence-bomb">Bomb sequence</a>
+      <a href="#sequence-match-start">Match-start sequence</a>
+      <a href="../uml/uml.html">UML diagrams</a>
+    </div>
+
+    <h2 id="deployment">Deployment topology</h2>
+    <figure>
+      <img src="deployment.svg" alt="Cloud Run deployment topology with Postgres, Redis, JavaFX client and GitHub Actions CI/CD pipeline">
+      <figcaption>
+        Figure 2 — Deployment topology on Google Cloud Run (Frankfurt). Player traffic enters via HTTPS/WSS,
+        terminates at a Cloud Run service running the <code>bomberman-server</code> container, which talks to
+        Cloud SQL (Postgres 16) for durable state and Memorystore (Redis 7) for ephemeral state. CI/CD on the
+        right pushes signed images to GHCR and deploys via <code>gcloud run deploy</code>.
+      </figcaption>
+    </figure>
+
+    <h2 id="sequence-bomb">Sequence — bomb placement to explosion</h2>
+    <figure>
+      <img src="sequence-bomb.svg" alt="Sequence diagram showing PlaceBomb intent travelling from client through Netty handler to MatchSession and GameWorld, ending with the WorldSnapshot broadcast">
+      <figcaption>
+        Figure 3 — A single bomb's lifecycle. The client only sends a <code>PlaceBomb</code> intent;
+        the server validates, mutates <code>GameWorld</code>, advances the fuse on each tick, and finally
+        broadcasts the snapshot containing the spawned <code>Explosion</code> and any resulting
+        <code>KillFeedEntry</code>.
+      </figcaption>
+    </figure>
+
+    <h2 id="sequence-match-start">Sequence — Hello to MatchStart</h2>
+    <figure>
+      <img src="sequence-match-start.svg" alt="Sequence diagram of the handshake from client Hello through AuthRegistry verification, Welcome, LobbyService.join, and MatchManager.create to MatchStart broadcast">
+      <figcaption>
+        Figure 4 — Connection handshake and matchmaking. After WebSocket upgrade, the client's
+        <code>Hello</code> is verified by the <code>AuthRegistry</code> provider chain. Once the lobby
+        is full or the ready timer fires, <code>MatchManager.create</code> instantiates a
+        <code>MatchSession</code> and broadcasts <code>MatchStart</code> to every participating client.
+      </figcaption>
+    </figure>
+  </main>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BomberMen-X — Deliverables Portal</title>
+<meta name="description" content="BomberMen-X capstone deliverables — architecture, plans, diagrams, defence pack. M.Sc. Applied Computer Science, SRH University Stuttgart."/>
+<link rel="stylesheet" href="assets/portal.css"/>
+</head>
+<body>
+
+<header class="portal-head">
+  <h1>BomberMen-X</h1>
+  <p class="meta">Software Architecture &amp; Development — M.Sc. Applied Computer Science · SRH University Stuttgart</p>
+  <p class="meta">Module instructor: Dr. Floriment Klinaku · Date: <strong>28 May 2026</strong></p>
+  <span class="badge">Week 7 of 8 — Prototype submission</span>
+  <span class="badge">Three architects: AA · SK · JC</span>
+</header>
+
+<main>
+
+<section class="portal-section">
+  <h2>Start here</h2>
+  <p class="intro">If you read nothing else, open the architecture report. It is the submission document and links into every supporting doc.</p>
+  <div class="card-grid">
+    <a class="card" href="architecture-report-en.html" data-reveal>
+      <span class="tag">Submission</span>
+      <h3>Architecture Report</h3>
+      <p>Single-page report covering goals, constraints, runtime view, deployment, quality and risks. The canonical document for grading.</p>
+    </a>
+    <a class="card" href="code-explanation/RUN_GUIDE.view.html" data-reveal>
+      <span class="tag">Reproduce</span>
+      <h3>Build &amp; Run Guide</h3>
+      <p>Maven commands, ports, environment variables. Reproduces the prototype from a clean clone in under five minutes.</p>
+    </a>
+    <a class="card" href="presentation/slides.html" data-reveal>
+      <span class="tag">Defence</span>
+      <h3>Slide Deck</h3>
+      <p>Self-contained HTML deck used for the Tuesday 2 June walkthrough. Same colour scheme as the in-game UI.</p>
+    </a>
+  </div>
+</section>
+
+<section class="portal-section">
+  <h2>Architecture specification</h2>
+  <p class="intro">The arc42 spec is the heart of the defence pack. Requirements traceability maps every FR / NFR / UC / BR to the Java class that implements it.</p>
+  <div class="card-grid">
+    <a class="card" href="code-explanation/architecture-spec-arc42.view.html" data-reveal>
+      <span class="tag">arc42</span>
+      <h3>Architecture Specification</h3>
+      <p>22-section arc42 spec — context, constraints, building blocks, runtime, deployment, cross-cutting, decisions, risks.</p>
+    </a>
+    <a class="card" href="code-explanation/requirements-traceability.view.html" data-reveal>
+      <span class="tag">Traceability</span>
+      <h3>Requirements Traceability</h3>
+      <p>FR-01..FR-86, NFRs, use cases and business rules mapped row-by-row to Java classes and source files under <code>src/</code>.</p>
+    </a>
+    <a class="card" href="code-explanation/systems-architecture.view.html" data-reveal>
+      <span class="tag">Systems</span>
+      <h3>Systems Architecture</h3>
+      <p>Twelve named systems (auth, lobby, match, sim, snapshot, chat, AI, render, audio, input, persistence, ops) with three-way ownership.</p>
+    </a>
+    <a class="card" href="code-explanation/sad-theory-and-roles.view.html" data-reveal>
+      <span class="tag">Theory</span>
+      <h3>SAD Theory &amp; Roles</h3>
+      <p>How the SAD lecture concepts (views, tactics, ADRs) map onto our code, and which architect owns which slice.</p>
+    </a>
+  </div>
+</section>
+
+<section class="portal-section">
+  <h2>Code walk-through</h2>
+  <p class="intro">For the defence: read each of these before the viva. Each is also exported as DOCX and PDF under <code>exports/</code>.</p>
+  <div class="card-grid">
+    <a class="card" href="code-explanation/code-walkthrough.view.html" data-reveal>
+      <span class="tag">Tour</span>
+      <h3>Code Walk-through</h3>
+      <p>Module-by-module tour of <code>bomberman-core</code>, <code>bomberman-server</code>, <code>bomberman-client</code> with named entry points.</p>
+    </a>
+    <a class="card" href="code-explanation/game-design.view.html" data-reveal>
+      <span class="tag">Design</span>
+      <h3>Game Design</h3>
+      <p>Rules, modes, scoring, power-ups, win conditions. Five Mermaid diagrams covering the player and match lifecycles.</p>
+    </a>
+    <a class="card" href="code-explanation/server-client-communication.view.html" data-reveal>
+      <span class="tag">Protocol</span>
+      <h3>Server ↔ Client Communication</h3>
+      <p>JSON wire protocol over WebSocket, 60&nbsp;Hz authoritative tick, snapshot stream. Four Mermaid sequence/state diagrams.</p>
+    </a>
+    <a class="card" href="code-explanation/input-validation.view.html" data-reveal>
+      <span class="tag">Hardening</span>
+      <h3>Input Validation</h3>
+      <p>FR-82..FR-86 mapped to the validation code paths — bounds, rate limits, profanity, replay protection.</p>
+    </a>
+    <a class="card" href="code-explanation/glossary.view.html" data-reveal>
+      <span class="tag">Reference</span>
+      <h3>Glossary</h3>
+      <p>Bomberman terms, network terms, SAD terms, and Indian-theme terms used across the code base. Mermaid mind-map at the top.</p>
+    </a>
+    <a class="card" href="code-explanation/LEARNING_GUIDE.view.html" data-reveal>
+      <span class="tag">Prep</span>
+      <h3>Learning Guide</h3>
+      <p>Twenty likely defence questions with prepared answers. The night-before-defence cheat-sheet.</p>
+    </a>
+  </div>
+</section>
+
+<section class="portal-section">
+  <h2>Plans &amp; report</h2>
+  <p class="intro">Descriptive + prescriptive + sprint plans in one document, plus the consolidated team report.</p>
+  <div class="card-grid">
+    <a class="card" href="plans/PLANS.view.html" data-reveal>
+      <span class="tag">Planning</span>
+      <h3>Project Plans</h3>
+      <p>Descriptive (what shipped), prescriptive (what's next), per-sprint checklist, Mermaid Gantt across weeks 1–8.</p>
+    </a>
+    <a class="card" href="report/REPORT.view.html" data-reveal>
+      <span class="tag">Report</span>
+      <h3>Team Report</h3>
+      <p>Consolidated report — what was built, by whom, against which requirements, with results from <code>mvn test</code>.</p>
+    </a>
+    <a class="card" href="build/BUILD_AND_RUN.view.html" data-reveal>
+      <span class="tag">Build</span>
+      <h3>Build &amp; Run</h3>
+      <p>How the prototype builds (Maven 3-module reactor) and runs (server on 8080, JavaFX client on the desktop).</p>
+    </a>
+  </div>
+</section>
+
+<section class="portal-section">
+  <h2>Diagrams</h2>
+  <p class="intro">All diagrams render with 3D depth — drop-shadow + specular bevel — so they read as raised cards over the dark canvas.</p>
+  <div class="card-grid">
+    <a class="card" href="diagrams/architecture.html" data-reveal>
+      <span class="tag">SVG</span>
+      <h3>System Architecture</h3>
+      <p>Three-tier view: clients · WebSocket · server · sidecars. The shared <code>bomberman-core</code> ring sits between client and server.</p>
+    </a>
+    <a class="card" href="diagrams/diagrams.html" data-reveal>
+      <span class="tag">SVG</span>
+      <h3>Sequence &amp; Deployment</h3>
+      <p>Bomb-throw sequence, match-start handshake, and deployment topology (Cloud Run + Postgres + Redis).</p>
+    </a>
+    <a class="card" href="uml/uml.html" data-reveal>
+      <span class="tag">UML</span>
+      <h3>UML — class, package, use case, activity</h3>
+      <p>Class diagrams per module, package overview, use cases for player and admin, activity for match lifecycle.</p>
+    </a>
+  </div>
+</section>
+
+<section class="portal-section">
+  <h2>Exports &amp; downloads</h2>
+  <p class="intro">DOCX + PDF copies of the core defence-pack documents — regenerated from the markdown sources by <code>infra/scripts/export-docs.py</code>.</p>
+  <div class="card-grid">
+    <a class="card" href="exports/" data-reveal>
+      <span class="tag">Files</span>
+      <h3>Open the exports folder</h3>
+      <p>arc42 spec, requirements traceability, run guide, learning guide, code walk-through — DOCX and PDF side by side.</p>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="portal-foot">
+  Source code lives in <code>../src/</code> (Maven modules: bomberman-core, bomberman-server, bomberman-client).<br/>
+  Licensed under MIT · <span>BomberMen-X &copy; 2026 · Abhilash Anuku (AA) · Simranjot Kaur (SK) · Jithendra Chittomothu (JC)</span><br/>
+  <!--BUILD-INFO-->
+</footer>
+
+<script src="assets/portal.js"></script>
+</body>
+</html>

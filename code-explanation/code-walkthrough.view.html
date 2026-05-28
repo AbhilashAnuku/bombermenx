@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Code Walk-through — BomberMen-X</title>
+<link rel="stylesheet" href="../assets/viewer.css"/>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<main class="viewer">
+  <nav class="crumbs">
+    <a href="../index.html">Portal</a>
+    <span class="sep">·</span>
+    <span>Code Walk-through</span>
+  </nav>
+  <article id="content">Loading…</article>
+</main>
+<script src="../assets/md-render.js"></script>
+<script>
+  fetch("code-walkthrough.md").then(r => r.text()).then(md => {
+    document.getElementById("content").innerHTML = window.renderMarkdown(md);
+    if (window.mermaid) {
+      window.mermaid.initialize({
+        startOnLoad: false,
+        theme: "dark",
+        themeVariables: {
+          background: "#150a1f",
+          primaryColor: "#1f1230",
+          primaryTextColor: "#fff8e7",
+          primaryBorderColor: "#daa520",
+          lineColor: "#1abc9c",
+          secondaryColor: "#2a1842",
+          tertiaryColor: "#3a1f4a",
+          actorBkg: "#1f1230",
+          actorBorder: "#ec407a",
+          actorTextColor: "#fff8e7",
+          signalColor: "#1abc9c",
+          signalTextColor: "#fff8e7",
+          labelBoxBkgColor: "#2a1842",
+          labelBoxBorderColor: "#daa520",
+          labelTextColor: "#ffc107",
+          noteBkgColor: "#3a1f4a",
+          noteBorderColor: "#daa520",
+          noteTextColor: "#fff8e7",
+          activationBorderColor: "#daa520",
+          activationBkgColor: "#1f1230"
+        }
+      });
+      window.mermaid.run({ querySelector: "#content .mermaid" });
+    }
+  }).catch(e => {
+    document.getElementById("content").innerHTML = "<p style='color:#ec407a'>Failed to load: " + e + "</p>";
+  });
+</script>
+</body>
+</html>

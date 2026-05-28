@@ -1,0 +1,145 @@
+/* BomberMen-X deliverables portal — Indian-festival palette
+   teal · turmeric · henna pink · gold on deep aubergine */
+
+:root {
+  --bg-deep:      #150a1f;
+  --bg-card:      #1f1230;
+  --bg-card-hi:   #2a1842;
+  --ink-primary:  #fff8e7;
+  --ink-muted:    #d2c3a8;
+  --ink-dim:      #9a8d75;
+  --vayu:         #008080;
+  --vayu-hi:      #1abc9c;
+  --agni:         #ffc107;
+  --henna:        #ec407a;
+  --gold:         #daa520;
+  --border:       #5a3a18;
+  --shadow:       0 8px 24px rgba(0,0,0,0.55), 0 0 32px rgba(218,165,32,0.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(ellipse at top, #21133a 0%, var(--bg-deep) 60%, #0a0512 100%);
+  color: var(--ink-primary);
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+a { color: var(--vayu-hi); text-decoration: none; }
+a:hover { color: var(--agni); text-decoration: underline; }
+
+header.portal-head {
+  padding: 56px 24px 40px;
+  text-align: center;
+  border-bottom: 1px solid rgba(218,165,32,0.18);
+  background: linear-gradient(180deg, rgba(236,64,122,0.08) 0%, transparent 80%);
+}
+header.portal-head h1 {
+  margin: 0 0 8px;
+  font-size: 44px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, var(--agni), var(--henna), var(--vayu-hi));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.55));
+}
+header.portal-head .meta {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+header.portal-head .badge {
+  display: inline-block;
+  margin: 14px 6px 0;
+  padding: 4px 12px;
+  background: rgba(218,165,32,0.15);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--agni);
+  letter-spacing: 0.5px;
+}
+
+main { max-width: 1160px; margin: 0 auto; padding: 32px 24px 64px; }
+
+section.portal-section { margin: 40px 0; }
+section.portal-section > h2 {
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  color: var(--agni);
+  margin: 0 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(218,165,32,0.25);
+}
+section.portal-section > p.intro {
+  color: var(--ink-muted);
+  margin-top: 0;
+  max-width: 78ch;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+a.card {
+  display: block;
+  padding: 18px 20px;
+  background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-hi) 100%);
+  border: 1px solid rgba(218,165,32,0.25);
+  border-radius: 12px;
+  color: var(--ink-primary);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+a.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--agni);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.65), 0 0 36px rgba(255,193,7,0.15);
+  text-decoration: none;
+}
+a.card .tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  background: rgba(0,128,128,0.18);
+  border: 1px solid var(--vayu);
+  border-radius: 6px;
+  color: var(--vayu-hi);
+  text-transform: uppercase;
+}
+a.card h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: var(--ink-primary);
+}
+a.card p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+footer.portal-foot {
+  margin-top: 80px;
+  padding: 24px;
+  border-top: 1px solid rgba(218,165,32,0.18);
+  text-align: center;
+  color: var(--ink-dim);
+  font-size: 13px;
+}
+footer.portal-foot code {
+  color: var(--vayu-hi);
+  background: rgba(0,128,128,0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}

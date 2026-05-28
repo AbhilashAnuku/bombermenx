@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1080" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">UML Activity Diagram — Match Lifecycle</title>
+  <desc id="desc">Match lifecycle: matchmaking, seed arena, tick loop (input, sim, snapshot, broadcast, end check), end and return to lobby.</desc>
+  <defs>
+    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/>
+      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
+      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
+                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
+        <feDistantLight azimuth="-45" elevation="65"/>
+      </feSpecularLighting>
+      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
+      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
+      <feMerge>
+        <feMergeNode in="dropshadow"/>
+        <feMergeNode in="litPaint"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
+    </pattern>
+    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
+    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
+    <marker id="arrAmber" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ffb53a"/></marker>
+    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+  </defs>
+  <style>
+    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .title { font-weight: 700; font-size: 22px; }
+    .ttl { font-weight: 700; font-size: 13px; }
+    .sub { font-size: 11px; fill: #94a3b8; }
+    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
+    .conn { fill: none; stroke-width: 2; stroke: #3aedff; }
+  </style>
+  <rect x="0" y="0" width="1500" height="1080" fill="#08090d"/>
+  <rect x="0" y="0" width="1500" height="1080" fill="url(#grid)"/>
+
+  <text x="40" y="42" class="title" fill="#daa520">UML Activity Diagram — Match Lifecycle</text>
+  <text x="40" y="64" class="sub">Server-side perspective · matchmaking · 20 Hz tick loop · end-condition · cleanup</text>
+
+  <!-- ============ START NODE ============ -->
+  <circle cx="200" cy="130" r="14" fill="#3affb5" filter="url(#bx-3d-bevel)"/>
+  <text x="230" y="135" class="ttl" fill="#3affb5">start</text>
+
+  <!-- ============ Activity boxes ============ -->
+  <!-- Column 1 (matchmaking + seed) at x_center=200, w=240 -->
+  <rect x="80" y="180" width="240" height="60" rx="30" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="205" text-anchor="middle" class="ttl" fill="#3affb5">A1. Match queue ready</text>
+  <text x="200" y="223" text-anchor="middle" class="sub">4 players or 30 s timeout</text>
+
+  <rect x="80" y="280" width="240" height="60" rx="30" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="305" text-anchor="middle" class="ttl" fill="#3affb5">A2. Allocate MatchSession</text>
+  <text x="200" y="323" text-anchor="middle" class="sub">spawn GameWorld · seed RNG</text>
+
+  <rect x="80" y="380" width="240" height="60" rx="30" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="405" text-anchor="middle" class="ttl" fill="#3affb5">A3. Build Arena · spawn players</text>
+  <text x="200" y="423" text-anchor="middle" class="sub">place destructible blocks + bonuses</text>
+
+  <rect x="80" y="480" width="240" height="60" rx="30" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="505" text-anchor="middle" class="ttl" fill="#3affb5">A4. Broadcast MatchStart</text>
+  <text x="200" y="523" text-anchor="middle" class="sub">DTO to all subscribers</text>
+
+  <!-- ============ TICK LOOP (column 2) ============ -->
+  <!-- Loop nodes at x_center=620, top y=180 -->
+  <rect x="500" y="180" width="240" height="60" rx="30" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="205" text-anchor="middle" class="ttl" fill="#ff3ad9">T1. Collect inputs</text>
+  <text x="620" y="223" text-anchor="middle" class="sub">drain per-player buffers</text>
+
+  <rect x="500" y="280" width="240" height="60" rx="30" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="305" text-anchor="middle" class="ttl" fill="#ff3ad9">T2. Validate &amp; apply inputs</text>
+  <text x="620" y="323" text-anchor="middle" class="sub">reject illegal moves</text>
+
+  <rect x="500" y="380" width="240" height="60" rx="30" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="405" text-anchor="middle" class="ttl" fill="#ff3ad9">T3. GameWorld.tick(50 ms)</text>
+  <text x="620" y="423" text-anchor="middle" class="sub">bombs · explosions · pickups</text>
+
+  <rect x="500" y="480" width="240" height="60" rx="30" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="505" text-anchor="middle" class="ttl" fill="#ff3ad9">T4. Snapshotter.capture()</text>
+  <text x="620" y="523" text-anchor="middle" class="sub">WorldSnapshot DTO</text>
+
+  <rect x="500" y="580" width="240" height="60" rx="30" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="605" text-anchor="middle" class="ttl" fill="#ff3ad9">T5. Broadcast snapshot</text>
+  <text x="620" y="623" text-anchor="middle" class="sub">to all ClientSessions</text>
+
+  <!-- Decision (diamond): end? at y_center=720 -->
+  <polygon points="620,680 760,760 620,840 480,760" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.8" filter="url(#bx-3d-bevel)"/>
+  <text x="620" y="755" text-anchor="middle" class="ttl" fill="#ffb53a">end condition?</text>
+  <text x="620" y="775" text-anchor="middle" class="sub">≤ 1 alive  OR  time-out</text>
+
+  <!-- Column 3 (end phase) x_center=1100 -->
+  <rect x="980" y="180" width="240" height="60" rx="30" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="205" text-anchor="middle" class="ttl" fill="#ffb53a">E1. Compute winner</text>
+  <text x="1100" y="223" text-anchor="middle" class="sub">last-alive · score · K/D</text>
+
+  <rect x="980" y="280" width="240" height="60" rx="30" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="305" text-anchor="middle" class="ttl" fill="#ffb53a">E2. Broadcast MatchEnd</text>
+  <text x="1100" y="323" text-anchor="middle" class="sub">winner · podium · stats</text>
+
+  <rect x="980" y="380" width="240" height="60" rx="30" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="405" text-anchor="middle" class="ttl" fill="#ffb53a">E3. Persist scores</text>
+  <text x="1100" y="423" text-anchor="middle" class="sub">JDBC write match_history</text>
+
+  <rect x="980" y="480" width="240" height="60" rx="30" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="505" text-anchor="middle" class="ttl" fill="#ffb53a">E4. Cleanup MatchSession</text>
+  <text x="1100" y="523" text-anchor="middle" class="sub">dispose · unsubscribe</text>
+
+  <rect x="980" y="580" width="240" height="60" rx="30" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="605" text-anchor="middle" class="ttl" fill="#ffb53a">E5. Return players → Lobby</text>
+  <text x="1100" y="623" text-anchor="middle" class="sub">enqueue for rematch</text>
+
+  <!-- ============ END NODE ============ -->
+  <circle cx="1100" cy="730" r="14" fill="none" stroke="#ffb53a" stroke-width="3"/>
+  <circle cx="1100" cy="730" r="7" fill="#ffb53a"/>
+  <text x="1130" y="735" class="ttl" fill="#ffb53a">end</text>
+
+  <!-- ============ ARROWS / FLOW ============ -->
+  <!-- start -> A1 -->
+  <path class="conn" d="M 200,144 V 180" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+
+  <!-- A1 -> A2 -->
+  <path class="conn" d="M 200,240 V 280" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+
+  <!-- A2 -> A3 -->
+  <path class="conn" d="M 200,340 V 380" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+
+  <!-- A3 -> A4 -->
+  <path class="conn" d="M 200,440 V 480" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+
+  <!-- A4 -> T1 (horizontal hop into loop) -->
+  <path class="conn" d="M 320,510 H 410 V 210 H 500" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+  <text x="410" y="200" class="edge" fill="#3affb5">enter loop  20 Hz</text>
+
+  <!-- T1 -> T2 -> T3 -> T4 -> T5 -> Diamond -->
+  <path class="conn" d="M 620,240 V 280" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <path class="conn" d="M 620,340 V 380" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <path class="conn" d="M 620,440 V 480" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <path class="conn" d="M 620,540 V 580" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <path class="conn" d="M 620,640 V 680" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+
+  <!-- Diamond [no] -> back to T1 (loop via left trunk) -->
+  <path class="conn" d="M 480,760 H 400 V 210 H 500" marker-end="url(#arrPink)" stroke="#ff3ad9"/>
+  <text x="410" y="780" class="edge" fill="#ff3ad9">[no]  next tick · sleep(50ms)</text>
+
+  <!-- Diamond [yes] -> E1 -->
+  <path class="conn" d="M 760,760 H 870 V 210 H 980" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+  <text x="870" y="200" class="edge" fill="#ffb53a">[yes]</text>
+
+  <!-- E1 -> E2 -> E3 -> E4 -> E5 -->
+  <path class="conn" d="M 1100,240 V 280" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+  <path class="conn" d="M 1100,340 V 380" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+  <path class="conn" d="M 1100,440 V 480" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+  <path class="conn" d="M 1100,540 V 580" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+
+  <!-- E5 -> end node -->
+  <path class="conn" d="M 1100,640 V 716" marker-end="url(#arrAmber)" stroke="#ffb53a"/>
+
+  <!-- ============ SWIMLANE / Side notes ============ -->
+  <!-- Tick budget note -->
+  <rect x="80" y="600" width="240" height="140" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="624" text-anchor="middle" class="ttl" fill="#3aedff">Tick budget</text>
+  <line x1="92" y1="634" x2="308" y2="634" stroke="#3aedff" stroke-width="0.6" opacity="0.5"/>
+  <text x="92" y="652" class="sub">·  Period:  50 ms</text>
+  <text x="92" y="670" class="sub">·  Sim budget:  &lt; 5 ms</text>
+  <text x="92" y="688" class="sub">·  Snapshot:  &lt; 2 ms</text>
+  <text x="92" y="706" class="sub">·  Broadcast:  &lt; 4 ms</text>
+  <text x="92" y="724" class="sub">·  Headroom:  &gt; 35 ms</text>
+
+  <!-- Failure note -->
+  <rect x="80" y="770" width="240" height="160" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <text x="200" y="794" text-anchor="middle" class="ttl" fill="#daa520">Disconnects</text>
+  <line x1="92" y1="804" x2="308" y2="804" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
+  <text x="92" y="822" class="sub">·  Player drop: replaced</text>
+  <text x="92" y="840" class="sub">   by BotController.</text>
+  <text x="92" y="858" class="sub">·  Bot inputs feed the</text>
+  <text x="92" y="876" class="sub">   same T2 step.</text>
+  <text x="92" y="894" class="sub">·  Match continues if</text>
+  <text x="92" y="912" class="sub">   ≥ 2 humans remain.</text>
+
+  <!-- End condition note -->
+  <rect x="980" y="770" width="240" height="160" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <text x="1100" y="794" text-anchor="middle" class="ttl" fill="#daa520">End conditions</text>
+  <line x1="992" y1="804" x2="1208" y2="804" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
+  <text x="992" y="822" class="sub">·  ≤ 1 player alive  →  win</text>
+  <text x="992" y="840" class="sub">·  10-min timer expired</text>
+  <text x="992" y="858" class="sub">·  All disconnect  →  abort</text>
+  <text x="992" y="876" class="sub">·  Server SIGTERM  →  drain</text>
+  <text x="992" y="894" class="sub">   (finish current match)</text>
+
+  <!-- ============ LANE LABELS ============ -->
+  <rect x="40"  y="960" width="280" height="40" rx="6" fill="#11141c" stroke="#3affb5" stroke-width="1.4"/>
+  <text x="180" y="985" text-anchor="middle" class="ttl" fill="#3affb5">SETUP  (A1–A4)</text>
+
+  <rect x="500" y="960" width="240" height="40" rx="6" fill="#11141c" stroke="#ff3ad9" stroke-width="1.4"/>
+  <text x="620" y="985" text-anchor="middle" class="ttl" fill="#ff3ad9">TICK LOOP  (T1–T5)</text>
+
+  <rect x="980" y="960" width="240" height="40" rx="6" fill="#11141c" stroke="#ffb53a" stroke-width="1.4"/>
+  <text x="1100" y="985" text-anchor="middle" class="ttl" fill="#ffb53a">TEARDOWN  (E1–E5)</text>
+
+  <!-- Legend -->
+  <rect x="40" y="1020" width="1420" height="40" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
+  <text x="60" y="1042" class="ttl" fill="#daa520">Legend</text>
+  <circle cx="60" cy="1042" r="6" fill="#3affb5"/>
+  <text x="76" y="1046" class="sub">activity (rounded box) · diamond = decision · open circle = end</text>
+  <text x="600" y="1046" class="sub">Green flow = setup · Pink flow = tick loop · Amber flow = teardown · Loop back goes through the diamond [no] branch.</text>
+</svg>

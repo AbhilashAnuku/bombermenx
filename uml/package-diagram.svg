@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 920" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">UML Package Diagram — com.bombermenx.*</title>
+  <desc id="desc">Maven modules and packages, with import dependencies. core is depended on by server and client.</desc>
+  <defs>
+    <filter id="bx-3d-bevel" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+      <feOffset in="blur" dx="3" dy="4" result="dropshadowAlpha"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/>
+      <feComposite in2="dropshadowAlpha" operator="in" result="dropshadow"/>
+      <feSpecularLighting in="blur" surfaceScale="2.4" specularConstant="0.55"
+                          specularExponent="22" lighting-color="#fff8e7" result="specOut">
+        <feDistantLight azimuth="-45" elevation="65"/>
+      </feSpecularLighting>
+      <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2"/>
+      <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
+      <feMerge>
+        <feMergeNode in="dropshadow"/>
+        <feMergeNode in="litPaint"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
+    </pattern>
+    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
+    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
+    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+  </defs>
+  <style>
+    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .title { font-weight: 700; font-size: 22px; }
+    .ttl { font-weight: 700; font-size: 13px; }
+    .sub { font-size: 11px; fill: #94a3b8; }
+    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
+    .conn { fill: none; stroke-width: 2; }
+    .tab  { stroke-width: 1.4; }
+  </style>
+  <rect x="0" y="0" width="1500" height="920" fill="#08090d"/>
+  <rect x="0" y="0" width="1500" height="920" fill="url(#grid)"/>
+
+  <text x="40" y="42" class="title" fill="#daa520">UML Package Diagram — com.bombermenx.*</text>
+  <text x="40" y="64" class="sub">Three Maven modules · UML «folder» packages · "import" dependencies between them</text>
+
+  <!-- ============ CLIENT MODULE (left) ============ -->
+  <!-- Folder tab -->
+  <path d="M 40,100 H 200 V 120 H 480 V 720 H 40 Z" fill="#11141c" stroke="#3affb5" class="tab" filter="url(#bx-3d-bevel)"/>
+  <text x="260" y="148" text-anchor="middle" class="ttl" fill="#3affb5">bomberman-client</text>
+  <text x="260" y="166" text-anchor="middle" class="sub">JavaFX desktop client</text>
+
+  <!-- Child packages (8 small folder shapes, 2 cols × 4 rows) -->
+  <!-- col x: 70 / 270 ; w=180 ; row y: 200 / 320 / 440 / 560 -->
+  <g>
+    <path d="M 70,200 H 130 V 215 H 250 V 290 H 70 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="160" y="240" text-anchor="middle" class="ttl" fill="#3affb5">app</text>
+    <text x="160" y="260" text-anchor="middle" class="sub">ClientLauncher</text>
+    <text x="160" y="278" text-anchor="middle" class="sub">SceneRouter</text>
+  </g>
+  <g>
+    <path d="M 270,200 H 330 V 215 H 450 V 290 H 270 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="360" y="240" text-anchor="middle" class="ttl" fill="#3affb5">view</text>
+    <text x="360" y="260" text-anchor="middle" class="sub">MainMenuView</text>
+    <text x="360" y="278" text-anchor="middle" class="sub">LobbyView · ArenaView</text>
+  </g>
+  <g>
+    <path d="M 70,320 H 130 V 335 H 250 V 410 H 70 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="160" y="360" text-anchor="middle" class="ttl" fill="#3affb5">render</text>
+    <text x="160" y="380" text-anchor="middle" class="sub">ArenaRenderer</text>
+    <text x="160" y="398" text-anchor="middle" class="sub">SpriteAtlas · Camera</text>
+  </g>
+  <g>
+    <path d="M 270,320 H 330 V 335 H 450 V 410 H 270 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="360" y="360" text-anchor="middle" class="ttl" fill="#3affb5">fx</text>
+    <text x="360" y="380" text-anchor="middle" class="sub">HudOverlay</text>
+    <text x="360" y="398" text-anchor="middle" class="sub">KillFeedWidget</text>
+  </g>
+  <g>
+    <path d="M 70,440 H 130 V 455 H 250 V 530 H 70 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="160" y="480" text-anchor="middle" class="ttl" fill="#3affb5">input</text>
+    <text x="160" y="500" text-anchor="middle" class="sub">InputController</text>
+    <text x="160" y="518" text-anchor="middle" class="sub">GamepadPoller</text>
+  </g>
+  <g>
+    <path d="M 270,440 H 330 V 455 H 450 V 530 H 270 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="360" y="480" text-anchor="middle" class="ttl" fill="#3affb5">audio</text>
+    <text x="360" y="500" text-anchor="middle" class="sub">SpatialAudio</text>
+    <text x="360" y="518" text-anchor="middle" class="sub">AudioMixer</text>
+  </g>
+  <g>
+    <path d="M 70,560 H 130 V 575 H 250 V 650 H 70 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="160" y="600" text-anchor="middle" class="ttl" fill="#3affb5">theme</text>
+    <text x="160" y="620" text-anchor="middle" class="sub">MandalaTheme</text>
+    <text x="160" y="638" text-anchor="middle" class="sub">MandalaArt</text>
+  </g>
+  <g>
+    <path d="M 270,560 H 330 V 575 H 450 V 650 H 270 Z" fill="#0d2823" stroke="#3affb5" class="tab"/>
+    <text x="360" y="600" text-anchor="middle" class="ttl" fill="#3affb5">net</text>
+    <text x="360" y="620" text-anchor="middle" class="sub">GameClient</text>
+    <text x="360" y="638" text-anchor="middle" class="sub">WSTransport</text>
+  </g>
+
+  <!-- ============ CORE MODULE (center) ============ -->
+  <path d="M 600,100 H 760 V 120 H 1020 V 720 H 600 Z" fill="#11141c" stroke="#3aedff" class="tab" filter="url(#bx-3d-bevel)"/>
+  <text x="810" y="148" text-anchor="middle" class="ttl" fill="#3aedff">bomberman-core</text>
+  <text x="810" y="166" text-anchor="middle" class="sub">Shared library (no I/O)</text>
+
+  <!-- 5 sub-packages stacked -->
+  <g>
+    <path d="M 630,200 H 690 V 215 H 990 V 280 H 630 Z" fill="#0a2030" stroke="#3aedff" class="tab"/>
+    <text x="810" y="240" text-anchor="middle" class="ttl" fill="#3aedff">domain</text>
+    <text x="810" y="260" text-anchor="middle" class="sub">Bomberman · Player · Bomb · Explosion · Arena · Tile · Score · Bonus + 7</text>
+  </g>
+  <g>
+    <path d="M 630,300 H 690 V 315 H 990 V 380 H 630 Z" fill="#0a2030" stroke="#3aedff" class="tab"/>
+    <text x="810" y="340" text-anchor="middle" class="ttl" fill="#3aedff">sim</text>
+    <text x="810" y="360" text-anchor="middle" class="sub">GameWorld · TickClock · CollisionResolver</text>
+  </g>
+  <g>
+    <path d="M 630,400 H 690 V 415 H 990 V 480 H 630 Z" fill="#0a2030" stroke="#3aedff" class="tab"/>
+    <text x="810" y="440" text-anchor="middle" class="ttl" fill="#3aedff">dto</text>
+    <text x="810" y="460" text-anchor="middle" class="sub">WorldSnapshot · PlayerSnapshot · BombSnapshot · MatchStart · MatchEnd</text>
+  </g>
+  <g>
+    <path d="M 630,500 H 690 V 515 H 990 V 580 H 630 Z" fill="#0a2030" stroke="#3aedff" class="tab"/>
+    <text x="810" y="540" text-anchor="middle" class="ttl" fill="#3aedff">net</text>
+    <text x="810" y="560" text-anchor="middle" class="sub">Envelope · WireCodec · MessageType</text>
+  </g>
+  <g>
+    <path d="M 630,600 H 690 V 615 H 990 V 680 H 630 Z" fill="#0a2030" stroke="#3aedff" class="tab"/>
+    <text x="810" y="640" text-anchor="middle" class="ttl" fill="#3aedff">util</text>
+    <text x="810" y="660" text-anchor="middle" class="sub">PlayerId · TileKind · Avatar · GameMode · GameState</text>
+  </g>
+
+  <!-- ============ SERVER MODULE (right) ============ -->
+  <path d="M 1140,100 H 1300 V 120 H 1460 V 720 H 1140 Z" fill="#11141c" stroke="#ff3ad9" class="tab" filter="url(#bx-3d-bevel)"/>
+  <text x="1300" y="148" text-anchor="middle" class="ttl" fill="#ff3ad9">bomberman-server</text>
+  <text x="1300" y="166" text-anchor="middle" class="sub">Netty + persistence</text>
+
+  <g>
+    <path d="M 1170,200 H 1230 V 215 H 1430 V 280 H 1170 Z" fill="#2a0d20" stroke="#ff3ad9" class="tab"/>
+    <text x="1300" y="240" text-anchor="middle" class="ttl" fill="#ff3ad9">net</text>
+    <text x="1300" y="260" text-anchor="middle" class="sub">WebSocketServer</text>
+    <text x="1300" y="278" text-anchor="middle" class="sub">GameServerHandler</text>
+  </g>
+  <g>
+    <path d="M 1170,300 H 1230 V 315 H 1430 V 380 H 1170 Z" fill="#2a0d20" stroke="#ff3ad9" class="tab"/>
+    <text x="1300" y="340" text-anchor="middle" class="ttl" fill="#ff3ad9">match</text>
+    <text x="1300" y="360" text-anchor="middle" class="sub">MatchManager</text>
+    <text x="1300" y="378" text-anchor="middle" class="sub">MatchSession</text>
+  </g>
+  <g>
+    <path d="M 1170,400 H 1230 V 415 H 1430 V 480 H 1170 Z" fill="#2a0d20" stroke="#ff3ad9" class="tab"/>
+    <text x="1300" y="440" text-anchor="middle" class="ttl" fill="#ff3ad9">lobby</text>
+    <text x="1300" y="460" text-anchor="middle" class="sub">LobbyService</text>
+    <text x="1300" y="478" text-anchor="middle" class="sub">ChatRouter · ProfanityFilter</text>
+  </g>
+  <g>
+    <path d="M 1170,500 H 1230 V 515 H 1430 V 580 H 1170 Z" fill="#2a0d20" stroke="#ff3ad9" class="tab"/>
+    <text x="1300" y="540" text-anchor="middle" class="ttl" fill="#ff3ad9">auth</text>
+    <text x="1300" y="560" text-anchor="middle" class="sub">AuthRegistry · AuthProvider</text>
+    <text x="1300" y="578" text-anchor="middle" class="sub">SessionRegistry · ClientSession</text>
+  </g>
+  <g>
+    <path d="M 1170,600 H 1230 V 615 H 1430 V 680 H 1170 Z" fill="#2a0d20" stroke="#ff3ad9" class="tab"/>
+    <text x="1300" y="640" text-anchor="middle" class="ttl" fill="#ff3ad9">bot</text>
+    <text x="1300" y="660" text-anchor="middle" class="sub">BotController · BehaviourTree</text>
+    <text x="1300" y="678" text-anchor="middle" class="sub">PathFinder</text>
+  </g>
+
+  <!-- ============ IMPORT ARROWS ============ -->
+  <!-- All client packages import core (right edge of client → left edge of core, 5 lanes) -->
+  <!-- Lanes y = 245, 365, 485, 605 (and one trunk for two boxes that share a row) -->
+  <!-- We'll route a single trunk from the right edge of client column (x=480) at y=400 into core left edge (x=600) at the same height; plus 3 more lanes -->
+  <path class="conn" d="M 480,245 H 630" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="555" y="239" text-anchor="middle" class="edge">«import» domain</text>
+
+  <path class="conn" d="M 480,365 H 630" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="555" y="359" text-anchor="middle" class="edge">«import» dto</text>
+
+  <path class="conn" d="M 480,485 H 630" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="555" y="479" text-anchor="middle" class="edge">«import» dto · net</text>
+
+  <path class="conn" d="M 480,605 H 630" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="555" y="599" text-anchor="middle" class="edge">«import» util · net</text>
+
+  <!-- core ← server (right side; arrows point from server into core) -->
+  <path class="conn" d="M 1170,245 H 1020" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="1095" y="239" text-anchor="middle" class="edge">«import» net</text>
+
+  <path class="conn" d="M 1170,365 H 1020" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="1095" y="359" text-anchor="middle" class="edge">«import» sim · dto</text>
+
+  <path class="conn" d="M 1170,485 H 1020" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="1095" y="479" text-anchor="middle" class="edge">«import» dto · util</text>
+
+  <path class="conn" d="M 1170,605 H 1020" stroke="#3aedff" marker-end="url(#arrCyan)"/>
+  <text x="1095" y="599" text-anchor="middle" class="edge">«import» domain</text>
+
+  <!-- ===== runtime WebSocket edge (client.net <-> server.net) ===== -->
+  <!-- client.net at (450, 605) -> server.net at (1170, 245) — bridge via bottom trunk -->
+  <path class="conn" d="M 450,640 V 740 H 1300 V 280" stroke="#3affb5" marker-end="url(#arrGreen)"/>
+  <text x="850" y="734" text-anchor="middle" class="edge">runtime WSS  (wire/protocol)</text>
+
+  <!-- ============ NOTE BOXES ============ -->
+  <rect x="40" y="760" width="700" height="120" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <text x="56" y="784" class="ttl" fill="#ffb53a">Dependency rule</text>
+  <line x1="40" y1="794" x2="740" y2="794" stroke="#ffb53a" stroke-width="0.6" opacity="0.5"/>
+  <text x="56" y="814" class="sub">·  core depends on NOTHING. It contains only domain + DTO + simulation + util.</text>
+  <text x="56" y="832" class="sub">·  Both client and server depend on core. Neither depends on the other.</text>
+  <text x="56" y="850" class="sub">·  No cycles. The WebSocket runtime arrow is wire-level, not a Maven dependency.</text>
+  <text x="56" y="868" class="sub">·  Result: core can be unit-tested with no Netty / JavaFX / Postgres on the classpath.</text>
+
+  <rect x="760" y="760" width="700" height="120" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4" filter="url(#bx-3d-bevel)"/>
+  <text x="776" y="784" class="ttl" fill="#daa520">Build order</text>
+  <line x1="760" y1="794" x2="1460" y2="794" stroke="#daa520" stroke-width="0.6" opacity="0.5"/>
+  <text x="776" y="814" class="sub">1.  mvn -pl bomberman-core install     (publishes jar to the local repo)</text>
+  <text x="776" y="832" class="sub">2.  mvn -pl bomberman-server package   (depends on core jar)</text>
+  <text x="776" y="850" class="sub">3.  mvn -pl bomberman-client package   (depends on core jar; no server dep)</text>
+  <text x="776" y="868" class="sub">Reactor handles ordering automatically when invoked from the root POM.</text>
+
+  <!-- Legend -->
+  <rect x="40" y="890" width="1420" height="22" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
+  <text x="60" y="906" class="sub">Cyan arrows = «import» (compile-time)  ·  Green arrow = runtime wire link (not a Maven edge)</text>
+</svg>

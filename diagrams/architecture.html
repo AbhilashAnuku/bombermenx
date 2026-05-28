@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BomberMen-X — System Architecture</title>
+  <style>
+    body { margin:0; background:radial-gradient(ellipse at top,#21133a,#150a1f); color:#fff8e7; font-family:-apple-system,"Segoe UI",Roboto,sans-serif; min-height:100vh; }
+    .crumbs { padding:18px 32px; font-size:13px; color:#9a8d75; }
+    .crumbs a { color:#1abc9c; text-decoration:none; }
+    main { max-width:1400px; margin:0 auto; padding:8px 32px 64px; }
+    h1 { color:#ffc107; font-size:28px; margin:0 0 8px; }
+    .intro { color:#d2c3a8; margin-bottom:32px; max-width:78ch; }
+    figure { margin:36px 0; padding:16px; background:rgba(8,9,13,0.5); border:1px solid #5a3a18; border-radius:12px; }
+    figure img { display:block; width:100%; height:auto; filter: drop-shadow(4px 6px 9px rgba(0,0,0,0.6)) drop-shadow(0 0 12px rgba(218,165,32,0.18)); }
+    figcaption { color:#9a8d75; font-size:13px; margin-top:10px; padding-top:8px; border-top:1px solid rgba(218,165,32,0.18); }
+    h2 { color:#daa520; font-size:20px; margin-top:32px; }
+    ul { color:#d2c3a8; line-height:1.7; }
+    code { background:rgba(8,9,13,0.6); padding:2px 6px; border-radius:4px; color:#3affb5; font-size:13px; }
+  </style>
+</head>
+<body>
+  <nav class="crumbs">
+    <a href="../index.html">← Deliverables portal</a> &nbsp;/&nbsp; <span>diagrams</span> &nbsp;/&nbsp; <span>architecture</span>
+  </nav>
+  <main>
+    <h1>System Architecture</h1>
+    <p class="intro">
+      BomberMen-X is a three-tier real-time multiplayer system. The client tier (JavaFX desktop, web HTML, and a deferred 3D spectator)
+      renders the game and forwards player intent. The shared <code>bomberman-core</code> module provides the domain entities, the deterministic
+      simulation, and the wire protocol — re-used unchanged on both sides. The server tier is built on Netty and owns the authoritative
+      simulation, lobby, matchmaker and match sessions, with Postgres and Redis as durable and ephemeral sidecars.
+    </p>
+
+    <figure>
+      <img src="architecture.svg" alt="Three-tier system architecture for BomberMen-X, showing client tier, shared core ring, server tier, and Postgres + Redis sidecars">
+      <figcaption>
+        Figure 1 — System architecture. Teal arrows are client → server (input, auth);
+        pink arrows are server → client (snapshots, events); cyan arrows are shared-core dependencies; amber arrows are persistence.
+        All client rendering is stateless — the server is the single source of truth.
+      </figcaption>
+    </figure>
+
+    <h2>Key decisions</h2>
+    <ul>
+      <li><strong>Authoritative server.</strong> Clients send intents only; the server validates, simulates and broadcasts snapshots.</li>
+      <li><strong>One shared module.</strong> Domain entities and wire DTOs live in <code>bomberman-core</code> so client and server stay byte-compatible.</li>
+      <li><strong>60 Hz tick, 20 Hz broadcast.</strong> The simulation runs fixed-step; snapshots are delta-encoded against the last ACKed tick.</li>
+      <li><strong>Stateless tier.</strong> Server instances hold only in-flight match state; durable state lives in Postgres, ephemeral state in Redis.</li>
+    </ul>
+  </main>
+</body>
+</html>
