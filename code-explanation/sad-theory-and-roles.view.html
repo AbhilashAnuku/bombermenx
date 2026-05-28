@@ -321,5 +321,48 @@ classDiagram
 - Companion deliverables in this repository: `architecture-spec-arc42.md`, `requirements-traceability.md`, `systems-architecture.md`, `code-walkthrough.md`.
 
 </script>
+<script src="../assets/md-render.js"></script>
+<script>
+  document.getElementById('content').innerHTML =
+    window.renderMarkdown(document.getElementById('md-src').textContent);
+</script>
+<!-- Mermaid for inline diagrams (added for clean chart rendering). -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "dark",
+      securityLevel: "loose",
+      themeVariables: {
+        background:        "#150a1f",
+        primaryColor:      "#1abc9c",
+        primaryBorderColor:"#daa520",
+        primaryTextColor:  "#fff8e7",
+        secondaryColor:    "#ec407a",
+        tertiaryColor:     "#ffc107",
+        lineColor:         "#b8a99a",
+        textColor:         "#fff8e7",
+        mainBkg:           "#241636",
+        clusterBkg:        "rgba(36,22,54,0.4)",
+        clusterBorder:     "#5a3a18",
+        edgeLabelBackground:"#241636"
+      },
+      flowchart:    { useMaxWidth: true, htmlLabels: true, curve: "basis" },
+      sequence:     { useMaxWidth: true, mirrorActors: false, boxMargin: 12, boxTextMargin: 6, noteMargin: 12, messageMargin: 36, diagramMarginX: 24, diagramMarginY: 16 },
+      gantt:        { useMaxWidth: true, fontSize: 12, leftPadding: 80, rightPadding: 20, sectionFontSize: 12 },
+      state:        { useMaxWidth: true },
+      class:        { useMaxWidth: true },
+      mindmap:      { useMaxWidth: true, padding: 20 }
+    });
+    // Run AFTER md-render.js has injected #content (it does so via DOMContentLoaded + then a setTimeout 0).
+    function bxRunMermaid(){
+      var els = document.querySelectorAll("#content .mermaid");
+      if (els.length) { try { mermaid.run({ nodes: els }); } catch (e) { console.warn("mermaid:", e); } }
+    }
+    if (document.readyState === "complete") setTimeout(bxRunMermaid, 50);
+    else window.addEventListener("load", function(){ setTimeout(bxRunMermaid, 50); });
+  }
+</script>
 </body>
 </html>

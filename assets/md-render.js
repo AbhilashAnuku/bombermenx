@@ -197,8 +197,15 @@
           i++;
         }
         if (i < lines.length) i++; // consume closing fence
-        var cls = lang ? ' class="lang-' + escapeHtml(lang) + '"' : "";
-        out.push("<pre><code" + cls + ">" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
+        if (lang === "mermaid") {
+          // Mermaid blocks: emit a <pre class="mermaid"> container that the
+          // mermaid library (loaded in the .view.html) will replace with an
+          // SVG diagram. Escape entities so the textContent reads cleanly.
+          out.push('<pre class="mermaid">' + escapeHtml(codeLines.join("\n")) + "</pre>");
+        } else {
+          var cls = lang ? ' class="lang-' + escapeHtml(lang) + '"' : "";
+          out.push("<pre><code" + cls + ">" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
+        }
         continue;
       }
 

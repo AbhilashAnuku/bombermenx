@@ -432,6 +432,30 @@ html[data-theme="light"] #bmx-progress { box-shadow: 0 0 8px rgba(10,110,149,0.3
    them from the reveal-on-scroll hide. */
 #content, #content * { opacity: 1 !important; transform: none !important; }
 
+/* Mermaid diagrams — clean container, generous spacing, no clipping. */
+#content .mermaid {
+  display: block;
+  margin: 28px auto;
+  padding: 22px 18px;
+  background: rgba(8, 9, 13, 0.55);
+  border: 1px solid #5a3a18;
+  border-radius: 10px;
+  text-align: center;
+  overflow-x: auto;
+  font-family: "Segoe UI", "Inter", Roboto, sans-serif;
+}
+#content .mermaid svg {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
+/* Pre-render: hide the raw text the moment the page loads so users don't
+   see source flash before mermaid renders. */
+#content .mermaid:not([data-processed="true"]) {
+  color: transparent;
+  min-height: 60px;
+}
+
 /* ---------- Hero models (inline page diagrams) ----------
    Used at the top of plan and analysis pages to give a visual
    anchor before the prose. Lightweight, no JS framework. */
