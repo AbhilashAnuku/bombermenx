@@ -275,7 +275,7 @@ classDiagram
 
 - **Voice-channel moderation is open.** The `VoiceFrame` DTO exists but no pipeline analyses audio. Owner: JC.
 - **Spectator mode is unpolished.** `MatchSession` accepts non-player observers but the client lacks a dedicated spectator camera. Owner: SK.
-- **CodeQL has not been re-run after the Week 6 package restructure.** The previous clean baseline therefore no longer applies; a re-scan is scheduled before final submission. Owner: AA.
+- **CodeQL has not been re-run after the Week 7 src/+infra/ restructure.** The previous clean baseline therefore no longer applies; a re-scan is scheduled before final submission. Owner: AA.
 - **Persistent ranking math is deferred.** `RankingsView` shows session-only data; Elo-style aggregation is post-MVP. Owner: SK.
 
 ## 10. Lecture references

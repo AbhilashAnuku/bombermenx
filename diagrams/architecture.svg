@@ -62,7 +62,7 @@
   <g>
     <rect x="1000" y="160" width="320" height="140" rx="8" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
     <text x="1020" y="190" class="lbl ttl" fill="#3affb5">3D Spectator</text>
-    <text x="1020" y="212" class="sub">Read-only viewer (week 6 backlog)</text>
+    <text x="1020" y="212" class="sub">Read-only viewer (deferred to next iteration)</text>
     <line x1="1020" y1="224" x2="1300" y2="224" stroke="#1f2533"/>
     <text x="1020" y="248" class="edge">Subscribes to snapshot stream</text>
     <text x="1020" y="266" class="edge">No PlayerInput sent upstream</text>
