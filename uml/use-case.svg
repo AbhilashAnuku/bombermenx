@@ -1,199 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 940" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <style>
-    rect { rx: 6; ry: 6; }
-    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 12px; fill: #9aa6b8; }
-    .edge { font-size: 11px; fill: #c5cbd6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1d24; }
+    .title { font-weight: 700; font-size: 22px; fill: #1a1d24; }
+    .ttl { font-weight: 700; font-size: 14px; fill: #1a1d24; }
+    .sub { font-size: 12px; fill: #5a626e; }
+    .uc-label { font-weight: 600; font-size: 13px; fill: #1a1d24; }
+    .edge { font-size: 12px; fill: #3a3f47; }
+    .grp { font-weight: 700; font-size: 13px; letter-spacing: 1.2px; fill: #6a6f78; }
+    .conn { fill: none; stroke: #5a626e; stroke-width: 1.6; }
+    .actor { stroke-width: 2; fill: none; }
   </style>
   <title id="title">UML Use-Case Diagram — BomberMen-X</title>
   <desc id="desc">Actors Player, Spectator, Admin outside a system boundary that contains use-case ellipses.</desc>
   <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
-    </pattern>
-    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
-    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
-    <marker id="arrAmber" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ffb53a"/></marker>
-    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+    <marker id="arr" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#5a626e"/></marker>
+    <filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow stdDeviation="1" dx="0" dy="1" flood-color="#000" flood-opacity="0.08"/></filter>
   </defs>
-  <style>
-    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .title { font-weight: 700; font-size: 22px; }
-    .ttl { font-weight: 700; font-size: 13px; }
-    .uc-label { font-size: 12px; font-weight: 600; fill: #e6eef8; }
-    .sub { font-size: 11px; fill: #94a3b8; }
-    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .conn { fill: none; stroke-width: 1.6; }
-    .actor { stroke-width: 2; fill: none; }
-  </style>
-  <rect x="0" y="0" width="1500" height="940" fill="#08090d"/>
-  <rect x="0" y="0" width="1500" height="940" fill="url(#grid)"/>
 
-  <text x="40" y="42" class="title" fill="#daa520">UML Use-Case Diagram — BomberMen-X</text>
-  <text x="40" y="64" class="sub">Actors outside the boundary · use-case ellipses inside · associations are straight lines (UML allows diagonals here)</text>
+  <rect x="0" y="0" width="1400" height="900" fill="#ffffff"/>
+  <rect x="24" y="24" width="1352" height="852" rx="10" fill="#fdfdfb" stroke="#d6dae0" stroke-width="1.5"/>
 
-  <!-- ============ SYSTEM BOUNDARY ============ -->
-  <rect x="280" y="100" width="940" height="780" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
-  <text x="750" y="130" text-anchor="middle" class="ttl" fill="#3aedff">BomberMen-X  (system boundary)</text>
+  <text x="60" y="68" class="title">UML Use-Case Diagram — BomberMen-X</text>
+  <text x="60" y="92" class="sub">Actors outside the boundary · use-case ellipses inside · associations are straight lines (UML allows here)</text>
 
-  <!-- ============ USE CASES (ellipses) — 4 rows of 3 -->
-  <!-- Row centers y: 200, 360, 520, 680. Col centers x: 430, 750, 1070. ry=46 rx=140 -->
+  <!-- System boundary -->
+  <rect x="280" y="120" width="840" height="700" rx="10" fill="#e3f1fa" stroke="#1565c0" stroke-width="2" filter="url(#sh)"/>
+  <text x="700" y="148" text-anchor="middle" class="grp">BomberMen-X  (system boundary)</text>
 
-  <!-- Row 1: Sign in, Browse Lobby, View Rankings -->
-  <ellipse cx="430"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="430"  y="195" text-anchor="middle" class="uc-label">UC-01</text>
-  <text x="430"  y="215" text-anchor="middle" class="uc-label">Sign in</text>
+  <!-- ============ 4 rows × 3 cols of use cases. Row centers y=220, 380, 540, 700; Col centers x=420, 700, 980; rx=120 ry=44 ============ -->
 
-  <ellipse cx="750"  cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="750"  y="195" text-anchor="middle" class="uc-label">UC-02</text>
-  <text x="750"  y="215" text-anchor="middle" class="uc-label">Browse Lobby</text>
+  <!-- Row 1: UC-01..03 -->
+  <ellipse cx="420" cy="220" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="420" y="216" text-anchor="middle" class="uc-label">UC-01</text>
+  <text x="420" y="236" text-anchor="middle" class="uc-label">Sign in</text>
 
-  <ellipse cx="1070" cy="200" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="1070" y="195" text-anchor="middle" class="uc-label">UC-03</text>
-  <text x="1070" y="215" text-anchor="middle" class="uc-label">View Rankings</text>
+  <ellipse cx="700" cy="220" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="700" y="216" text-anchor="middle" class="uc-label">UC-02</text>
+  <text x="700" y="236" text-anchor="middle" class="uc-label">Browse Lobby</text>
 
-  <!-- Row 2: Join Match, Chat, Spectate Match -->
-  <ellipse cx="430"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="430"  y="355" text-anchor="middle" class="uc-label">UC-04</text>
-  <text x="430"  y="375" text-anchor="middle" class="uc-label">Join Match</text>
+  <ellipse cx="980" cy="220" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="980" y="216" text-anchor="middle" class="uc-label">UC-03</text>
+  <text x="980" y="236" text-anchor="middle" class="uc-label">View Rankings</text>
 
-  <ellipse cx="750"  cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="750"  y="355" text-anchor="middle" class="uc-label">UC-05</text>
-  <text x="750"  y="375" text-anchor="middle" class="uc-label">Chat in Lobby / Match</text>
+  <!-- Row 2: UC-04..06 -->
+  <ellipse cx="420" cy="380" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="420" y="376" text-anchor="middle" class="uc-label">UC-04</text>
+  <text x="420" y="396" text-anchor="middle" class="uc-label">Join Match</text>
 
-  <ellipse cx="1070" cy="360" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="1070" y="355" text-anchor="middle" class="uc-label">UC-06</text>
-  <text x="1070" y="375" text-anchor="middle" class="uc-label">Spectate Match</text>
+  <ellipse cx="700" cy="380" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="700" y="376" text-anchor="middle" class="uc-label">UC-05</text>
+  <text x="700" y="396" text-anchor="middle" class="uc-label">Chat in Lobby/Match</text>
 
-  <!-- Row 3: Place Bomb, Throw Bomb, Pick Up Power-up -->
-  <ellipse cx="430"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="430"  y="515" text-anchor="middle" class="uc-label">UC-07</text>
-  <text x="430"  y="535" text-anchor="middle" class="uc-label">Place Bomb</text>
+  <ellipse cx="980" cy="380" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="980" y="376" text-anchor="middle" class="uc-label">UC-06</text>
+  <text x="980" y="396" text-anchor="middle" class="uc-label">Spectate Match</text>
 
-  <ellipse cx="750"  cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="750"  y="515" text-anchor="middle" class="uc-label">UC-08</text>
-  <text x="750"  y="535" text-anchor="middle" class="uc-label">Throw / Kick Bomb</text>
+  <!-- Row 3: UC-07..09 -->
+  <ellipse cx="420" cy="540" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="420" y="536" text-anchor="middle" class="uc-label">UC-07</text>
+  <text x="420" y="556" text-anchor="middle" class="uc-label">Place Bomb</text>
 
-  <ellipse cx="1070" cy="520" rx="130" ry="46" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="1070" y="515" text-anchor="middle" class="uc-label">UC-09</text>
-  <text x="1070" y="535" text-anchor="middle" class="uc-label">Pick Up Power-up</text>
+  <ellipse cx="700" cy="540" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="700" y="536" text-anchor="middle" class="uc-label">UC-08</text>
+  <text x="700" y="556" text-anchor="middle" class="uc-label">Throw / Kick Bomb</text>
 
-  <!-- Row 4: Buy Cosmetic, Configure Server, Ban Player -->
-  <ellipse cx="430"  cy="680" rx="130" ry="46" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
-  <text x="430"  y="675" text-anchor="middle" class="uc-label">UC-10</text>
-  <text x="430"  y="695" text-anchor="middle" class="uc-label">Buy Cosmetic</text>
+  <ellipse cx="980" cy="540" rx="120" ry="44" fill="#ffffff" stroke="#0b8a78" stroke-width="1.6"/>
+  <text x="980" y="536" text-anchor="middle" class="uc-label">UC-09</text>
+  <text x="980" y="556" text-anchor="middle" class="uc-label">Pick Up Power-up</text>
 
-  <ellipse cx="750"  cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="750"  y="675" text-anchor="middle" class="uc-label">UC-11</text>
-  <text x="750"  y="695" text-anchor="middle" class="uc-label">Configure Server</text>
+  <!-- Row 4: UC-10 (amber for payment), UC-11/12 (pink for admin) -->
+  <ellipse cx="420" cy="700" rx="120" ry="44" fill="#fff5dc" stroke="#b8860b" stroke-width="1.6"/>
+  <text x="420" y="696" text-anchor="middle" class="uc-label">UC-10</text>
+  <text x="420" y="716" text-anchor="middle" class="uc-label">Buy Cosmetic</text>
 
-  <ellipse cx="1070" cy="680" rx="130" ry="46" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1070" y="675" text-anchor="middle" class="uc-label">UC-12</text>
-  <text x="1070" y="695" text-anchor="middle" class="uc-label">Ban Player</text>
+  <ellipse cx="700" cy="700" rx="120" ry="44" fill="#fceaf3" stroke="#c2185b" stroke-width="1.6"/>
+  <text x="700" y="696" text-anchor="middle" class="uc-label">UC-11</text>
+  <text x="700" y="716" text-anchor="middle" class="uc-label">Configure Server</text>
 
-  <!-- Includes / extends notes (inside boundary, between use cases) -->
-  <!-- UC-07 «extends» UC-08? Throw extends Place? No, Throw extends Place (or includes). Use «extends» -->
-  <path class="conn" d="M 560,520 H 620" stroke="#daa520" stroke-dasharray="6 4" marker-end="url(#arrAmber)"/>
-  <text x="590" y="514" text-anchor="middle" class="edge" fill="#daa520">«extends»</text>
+  <ellipse cx="980" cy="700" rx="120" ry="44" fill="#fceaf3" stroke="#c2185b" stroke-width="1.6"/>
+  <text x="980" y="696" text-anchor="middle" class="uc-label">UC-12</text>
+  <text x="980" y="716" text-anchor="middle" class="uc-label">Ban Player</text>
 
-  <!-- UC-04 includes UC-01 (must sign in to join) -->
-  <path class="conn" d="M 430,314 V 246" stroke="#daa520" stroke-dasharray="6 4" marker-end="url(#arrAmber)"/>
-  <text x="470" y="284" class="edge" fill="#daa520">«include»</text>
+  <!-- ============ «include» / «extends» relationships (orthogonal) ============ -->
 
-  <!-- UC-02 includes UC-01 (lobby needs auth) -->
-  <path class="conn" d="M 680,200 H 560" stroke="#daa520" stroke-dasharray="6 4" marker-end="url(#arrAmber)"/>
-  <text x="620" y="194" text-anchor="middle" class="edge" fill="#daa520">«include»</text>
+  <!-- UC-04 «include» UC-01 (vertical, between cols 1 row 1↔2) -->
+  <path class="conn" d="M 420,336 V 264" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="436" y="292" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="476" y="304" text-anchor="middle" class="edge">«include»</text>
 
-  <!-- UC-09 (Pick Up Power-up) extends UC-04 (Join Match)? — actually triggered inside a match. Show «extends» from UC-09 to UC-04 via L-shape -->
-  <path class="conn" d="M 1070,474 V 440 H 560 V 360" stroke="#daa520" stroke-dasharray="6 4" marker-end="url(#arrAmber)"/>
-  <text x="800" y="434" text-anchor="middle" class="edge" fill="#daa520">«extends» Join Match</text>
+  <!-- UC-02 «include» UC-01 (horizontal, same row) -->
+  <path class="conn" d="M 580,220 H 540" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="538" y="200" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="578" y="212" text-anchor="middle" class="edge">«include»</text>
 
-  <!-- UC-06 (Spectate) extends UC-02 (Browse Lobby) -->
-  <path class="conn" d="M 1070,314 V 286 H 880 V 246" stroke="#daa520" stroke-dasharray="6 4" marker-end="url(#arrAmber)"/>
-  <text x="975" y="280" text-anchor="middle" class="edge" fill="#daa520">«extends» Browse Lobby</text>
+  <!-- UC-08 «extends» UC-07 (horizontal, same row) -->
+  <path class="conn" d="M 580,540 H 540" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="538" y="520" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="578" y="532" text-anchor="middle" class="edge">«extends»</text>
 
-  <!-- ============ ACTORS (LEFT and RIGHT outside boundary) ============ -->
-  <!-- Player (left, y≈360) stick-figure -->
-  <g transform="translate(140,330)">
-    <circle cx="0" cy="0" r="18" class="actor" stroke="#3affb5"/>
-    <line x1="0" y1="18" x2="0" y2="65" class="actor" stroke="#3affb5"/>
-    <line x1="-25" y1="32" x2="25" y2="32" class="actor" stroke="#3affb5"/>
-    <line x1="0" y1="65" x2="-22" y2="100" class="actor" stroke="#3affb5"/>
-    <line x1="0" y1="65" x2="22" y2="100" class="actor" stroke="#3affb5"/>
-    <text x="0" y="125" text-anchor="middle" class="ttl" fill="#3affb5">Player</text>
-    <text x="0" y="141" text-anchor="middle" class="sub">primary actor</text>
+  <!-- UC-09 «extends» UC-04 (route via vertical down from UC-09 left, across row 460, up to UC-04 right edge) -->
+  <path class="conn" d="M 860,540 H 800 V 460 H 540 V 420" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="640" y="442" width="124" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="702" y="454" text-anchor="middle" class="edge">«extends» Join</text>
+
+  <!-- UC-06 «extends» UC-02 (route up from UC-06 top, across top trunk y=300, down to UC-02 bottom) -->
+  <path class="conn" d="M 980,336 V 300 H 700 V 264" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="800" y="282" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="880" y="294" text-anchor="middle" class="edge">«extends» Browse Lobby</text>
+
+  <!-- ============ ACTORS ============ -->
+  <!-- Player (left, y~380) -->
+  <g transform="translate(150,360)">
+    <circle cx="0" cy="0" r="18" class="actor" stroke="#0b8a78"/>
+    <line x1="0" y1="18" x2="0" y2="60" class="actor" stroke="#0b8a78"/>
+    <line x1="-22" y1="30" x2="22" y2="30" class="actor" stroke="#0b8a78"/>
+    <line x1="0" y1="60" x2="-20" y2="92" class="actor" stroke="#0b8a78"/>
+    <line x1="0" y1="60" x2="20" y2="92" class="actor" stroke="#0b8a78"/>
+    <text x="0" y="116" text-anchor="middle" class="ttl">Player</text>
+    <text x="0" y="132" text-anchor="middle" class="sub">primary actor</text>
   </g>
 
-  <!-- Spectator (left, y≈620) -->
-  <g transform="translate(140,590)">
-    <circle cx="0" cy="0" r="18" class="actor" stroke="#3aedff"/>
-    <line x1="0" y1="18" x2="0" y2="65" class="actor" stroke="#3aedff"/>
-    <line x1="-25" y1="32" x2="25" y2="32" class="actor" stroke="#3aedff"/>
-    <line x1="0" y1="65" x2="-22" y2="100" class="actor" stroke="#3aedff"/>
-    <line x1="0" y1="65" x2="22" y2="100" class="actor" stroke="#3aedff"/>
-    <text x="0" y="125" text-anchor="middle" class="ttl" fill="#3aedff">Spectator</text>
-    <text x="0" y="141" text-anchor="middle" class="sub">read-only</text>
+  <!-- Spectator (left, y~620) -->
+  <g transform="translate(150,580)">
+    <circle cx="0" cy="0" r="18" class="actor" stroke="#1565c0"/>
+    <line x1="0" y1="18" x2="0" y2="60" class="actor" stroke="#1565c0"/>
+    <line x1="-22" y1="30" x2="22" y2="30" class="actor" stroke="#1565c0"/>
+    <line x1="0" y1="60" x2="-20" y2="92" class="actor" stroke="#1565c0"/>
+    <line x1="0" y1="60" x2="20" y2="92" class="actor" stroke="#1565c0"/>
+    <text x="0" y="116" text-anchor="middle" class="ttl">Spectator</text>
+    <text x="0" y="132" text-anchor="middle" class="sub">read-only</text>
   </g>
 
-  <!-- Admin (right, y≈680) -->
-  <g transform="translate(1360,650)">
-    <circle cx="0" cy="0" r="18" class="actor" stroke="#ff3ad9"/>
-    <line x1="0" y1="18" x2="0" y2="65" class="actor" stroke="#ff3ad9"/>
-    <line x1="-25" y1="32" x2="25" y2="32" class="actor" stroke="#ff3ad9"/>
-    <line x1="0" y1="65" x2="-22" y2="100" class="actor" stroke="#ff3ad9"/>
-    <line x1="0" y1="65" x2="22" y2="100" class="actor" stroke="#ff3ad9"/>
-    <text x="0" y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">Admin</text>
-    <text x="0" y="141" text-anchor="middle" class="sub">ops / moderator</text>
+  <!-- Admin (right, y~700) -->
+  <g transform="translate(1250,680)">
+    <circle cx="0" cy="0" r="18" class="actor" stroke="#c2185b"/>
+    <line x1="0" y1="18" x2="0" y2="60" class="actor" stroke="#c2185b"/>
+    <line x1="-22" y1="30" x2="22" y2="30" class="actor" stroke="#c2185b"/>
+    <line x1="0" y1="60" x2="-20" y2="92" class="actor" stroke="#c2185b"/>
+    <line x1="0" y1="60" x2="20" y2="92" class="actor" stroke="#c2185b"/>
+    <text x="0" y="116" text-anchor="middle" class="ttl">Admin</text>
+    <text x="0" y="132" text-anchor="middle" class="sub">ops / moderator</text>
   </g>
 
-  <!-- Payment system (right, y≈360) -->
-  <g transform="translate(1360,330)">
-    <rect x="-50" y="-22" width="100" height="44" rx="6" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
-    <text x="0" y="-6" text-anchor="middle" class="ttl" fill="#ffb53a">«system»</text>
+  <!-- Payment Gateway (right, y~380) - boxed external system -->
+  <g transform="translate(1250,360)">
+    <rect x="-60" y="-22" width="120" height="44" rx="6" fill="#fff5dc" stroke="#b8860b" stroke-width="1.6"/>
+    <text x="0" y="-4" text-anchor="middle" class="ttl">«system»</text>
     <text x="0" y="14" text-anchor="middle" class="sub">Payment GW</text>
-    <text x="0" y="60" text-anchor="middle" class="ttl" fill="#ffb53a">Payment Gateway</text>
-    <text x="0" y="76" text-anchor="middle" class="sub">secondary actor</text>
+    <text x="0" y="56" text-anchor="middle" class="ttl">Payment Gateway</text>
+    <text x="0" y="72" text-anchor="middle" class="sub">secondary actor</text>
   </g>
 
-  <!-- ============ ACTOR -> USE CASE LINKS ============ -->
-  <!-- Player connects to UC-01, UC-02, UC-04, UC-05, UC-07, UC-08, UC-09, UC-10. Use straight diagonal lines (allowed). -->
-  <!-- Player anchor (158, 330) ; right side of figure (170, 330) -->
-  <line class="conn" x1="170" y1="320" x2="300" y2="200" stroke="#3affb5"/>
-  <line class="conn" x1="170" y1="330" x2="300" y2="360" stroke="#3affb5"/>
-  <line class="conn" x1="170" y1="340" x2="300" y2="520" stroke="#3affb5"/>
-  <line class="conn" x1="170" y1="350" x2="300" y2="680" stroke="#3affb5"/>
-  <!-- Player to Chat (UC-05) and Browse Lobby (UC-02) via long diagonals -->
-  <line class="conn" x1="180" y1="320" x2="620" y2="200" stroke="#3affb5"/>
-  <line class="conn" x1="180" y1="330" x2="620" y2="360" stroke="#3affb5"/>
+  <!-- ============ ACTOR → USE CASE LINKS (diagonals allowed for actors per task spec) ============ -->
+  <!-- Player to UC-01, UC-02, UC-04, UC-05, UC-07, UC-08 -->
+  <line class="conn" x1="170" y1="350" x2="302" y2="220" stroke="#0b8a78"/>
+  <line class="conn" x1="170" y1="360" x2="302" y2="380" stroke="#0b8a78"/>
+  <line class="conn" x1="170" y1="370" x2="302" y2="540" stroke="#0b8a78"/>
+  <line class="conn" x1="170" y1="380" x2="580" y2="380" stroke="#0b8a78"/>
+  <line class="conn" x1="170" y1="345" x2="580" y2="220" stroke="#0b8a78"/>
+  <line class="conn" x1="170" y1="375" x2="580" y2="540" stroke="#0b8a78"/>
 
-  <!-- Spectator (158, 590) - connects to UC-06 (Spectate), UC-03 (View Rankings), UC-02 (Browse Lobby) -->
-  <line class="conn" x1="170" y1="580" x2="940" y2="360" stroke="#3aedff"/>
-  <line class="conn" x1="170" y1="590" x2="940" y2="200" stroke="#3aedff"/>
-  <line class="conn" x1="170" y1="600" x2="620" y2="200" stroke="#3aedff" stroke-dasharray="4 3"/>
+  <!-- Spectator → UC-06 (Spectate), UC-03 (Rankings), UC-02 (Browse) -->
+  <line class="conn" x1="170" y1="570" x2="860" y2="380" stroke="#1565c0"/>
+  <line class="conn" x1="170" y1="580" x2="860" y2="220" stroke="#1565c0"/>
+  <line class="conn" x1="170" y1="590" x2="580" y2="220" stroke="#1565c0" stroke-dasharray="4 3"/>
 
-  <!-- Admin (1342, 650) connects to UC-11, UC-12 -->
-  <line class="conn" x1="1340" y1="640" x2="880" y2="680" stroke="#ff3ad9"/>
-  <line class="conn" x1="1340" y1="650" x2="1200" y2="680" stroke="#ff3ad9"/>
-  <!-- Admin can also view rankings -->
-  <line class="conn" x1="1340" y1="635" x2="1200" y2="200" stroke="#ff3ad9" stroke-dasharray="4 3"/>
+  <!-- Admin → UC-11, UC-12, UC-03 -->
+  <line class="conn" x1="1230" y1="670" x2="820" y2="700" stroke="#c2185b"/>
+  <line class="conn" x1="1230" y1="680" x2="1100" y2="700" stroke="#c2185b"/>
+  <line class="conn" x1="1230" y1="665" x2="1100" y2="220" stroke="#c2185b" stroke-dasharray="4 3"/>
 
-  <!-- Payment GW (1340, 330) to Buy Cosmetic UC-10 -->
-  <line class="conn" x1="1330" y1="350" x2="560" y2="680" stroke="#ffb53a"/>
-  <text x="1180" y="500" class="edge" fill="#ffb53a">authorises charge</text>
+  <!-- Payment Gateway → UC-10 (Buy Cosmetic) -->
+  <line class="conn" x1="1210" y1="380" x2="540" y2="700" stroke="#b8860b"/>
+  <rect x="1100" y="492" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1180" y="504" text-anchor="middle" class="edge">authorises charge</text>
 
   <!-- Legend -->
-  <rect x="40" y="890" width="1420" height="40" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
-  <text x="60" y="908" class="ttl" fill="#daa520">Legend</text>
-  <line x1="60" y1="922" x2="120" y2="922" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="130" y="926" class="sub">Player association</text>
-  <line x1="270" y1="922" x2="330" y2="922" stroke="#3aedff" stroke-width="1.6"/>
-  <text x="340" y="926" class="sub">Spectator association</text>
-  <line x1="500" y1="922" x2="560" y2="922" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="570" y="926" class="sub">Admin association</text>
-  <line x1="710" y1="922" x2="770" y2="922" stroke="#ffb53a" stroke-width="1.6"/>
-  <text x="780" y="926" class="sub">External system</text>
-  <line x1="910" y1="922" x2="970" y2="922" stroke="#daa520" stroke-dasharray="6 4" stroke-width="1.6" marker-end="url(#arrAmber)"/>
-  <text x="980" y="926" class="sub">«include» / «extends» (dashed, open-arrow)</text>
+  <rect x="60" y="838" width="1280" height="30" rx="6" fill="#ffffff" stroke="#d6dae0" stroke-width="1"/>
+  <text x="76" y="858" class="sub">Solid line = actor association · Dashed line + open arrow = «include» / «extends» · Teal=Player · Cyan=Spectator · Pink=Admin · Amber=External system</text>
 </svg>

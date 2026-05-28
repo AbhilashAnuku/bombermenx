@@ -1,184 +1,460 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="lang-en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>BomberMen-X — Architecture Report (Week 7 of 8 — Prototype)</title>
+<title>BomberMen-X — Architecture Report (Prototype Submission)</title>
+<meta name="description" content="Capstone architecture report — M.Sc. Applied Computer Science, SRH University Stuttgart, Software Architecture and Development."/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="assets/portal.css"/>
 <style>
-  main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
-  h1, h2, h3 { color: var(--agni); }
-  h1 { font-size: 32px; border-bottom: 1px solid rgba(218,165,32,0.3); padding-bottom: 12px; }
-  h2 { font-size: 22px; margin-top: 2em; }
-  h3 { font-size: 17px; color: var(--vayu-hi); }
-  p, li { line-height: 1.7; }
-  .meta-card { background: rgba(8,9,13,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
-  th { background: rgba(218,165,32,0.12); color: var(--agni); }
-  blockquote { border-left: 3px solid var(--henna); margin: 16px 0; padding: 8px 18px; color: var(--ink-muted); background: rgba(236,64,122,0.06); }
-  ol.adr-list > li { margin-bottom: 14px; }
-  .section-label { display: inline-block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--vayu-hi); margin-top: 32px; }
+  /* Reference-document layout — long-form reading, formal voice */
+  main.report {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+    background: #fff;
+    box-shadow: var(--elev-2);
+    border-radius: 14px;
+    margin-top: -40px;
+    position: relative;
+    z-index: 1;
+  }
+  .report h2 {
+    font-size: 24px;
+    margin-top: 2.2em;
+    color: var(--maroon-deep);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .report h3 {
+    font-size: 18px;
+    color: var(--indigo-deep);
+    margin-top: 1.6em;
+    font-family: "Cinzel", serif;
+  }
+  .report h4 { font-size: 15px; color: var(--maroon); font-family: "Cinzel", serif; margin-top: 1.2em; }
+  .report p, .report li { line-height: 1.75; color: var(--ink); }
+  .report .meta-card {
+    background: linear-gradient(135deg, rgba(26,58,138,0.04), rgba(232,90,28,0.05));
+    border-left: 4px solid var(--flame);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    box-shadow: var(--elev-1);
+  }
+  .report .meta-card strong { color: var(--maroon-deep); }
+  .report table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 14px;
+    box-shadow: var(--elev-1);
+  }
+  .report th, .report td {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .report th {
+    background: linear-gradient(135deg, var(--maroon-deep) 0%, var(--maroon) 100%);
+    color: #fff;
+    font-family: "Cinzel", serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .report tr:nth-child(even) td { background: var(--cream); }
+  .report blockquote {
+    border-left: 4px solid var(--indigo);
+    margin: 18px 0;
+    padding: 12px 20px;
+    background: linear-gradient(90deg, rgba(26,58,138,0.05), transparent);
+    color: var(--ink-soft);
+    border-radius: 0 6px 6px 0;
+  }
+  .report figure {
+    margin: 32px 0;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--elev-2);
+  }
+  .report figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .report figcaption {
+    color: var(--ink-mute);
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+  .report .toc {
+    columns: 2;
+    column-gap: 36px;
+    margin: 24px 0 36px;
+    padding: 22px 24px;
+    font-size: 14px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--elev-1);
+  }
+  .report .toc li { break-inside: avoid; margin: 4px 0; }
+  .report .toc a { color: var(--maroon); font-weight: 500; }
+  .report .adr {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--indigo);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 22px;
+    margin: 14px 0;
+    box-shadow: var(--elev-1);
+  }
+  .report .adr h4 { margin-top: 0; color: var(--indigo-deep); }
+  @media (max-width: 768px) {
+    main.report { padding: 32px 18px 64px; margin-top: -20px; border-radius: 10px; }
+    .report .toc { columns: 1; }
+  }
 </style>
 </head>
 <body>
-<header class="portal-head">
-  <h1>BomberMen-X — Architecture Report</h1>
-  <p class="meta">Week 7 of 8 — Prototype submission &middot; 28 May 2026</p>
-  <p class="meta">M.Sc. Applied Computer Science &middot; SRH University Stuttgart &middot; SAD module (course supervisor)</p>
-</header>
-<main>
 
-<div class="meta-card">
-  <strong>Repository:</strong> <code>../src/</code><br/>
-  <strong>Live deliverables mirror:</strong> <a href="https://abhilashanuku.github.io/bombermenx/">https://abhilashanuku.github.io/bombermenx/</a><br/>
-  <strong>Reactor:</strong> Maven 3-module, Java 17, <code>com.bombermenx:bombermenx-parent:0.1.0-SNAPSHOT</code><br/>
-  <strong>Status:</strong> Prototype feature-complete &middot; final report and viva on Tuesday 02 June 2026.
+<!-- Language switch -->
+<div class="lang-switch" role="group" aria-label="Language">
+  <button type="button" data-lang="en" class="active">EN</button>
+  <button type="button" data-lang="de">DE</button>
 </div>
 
-<h2>1. Overview and goals</h2>
-<p>
-BomberMen-X is a server-authoritative, distributed multiplayer arena game built as the capstone deliverable for the Software Architecture and Design (SAD) module of the M.Sc. Applied Computer Science programme at SRH University Stuttgart. The system is realised as a Maven three-module Java 17 reactor: <code>bomberman-core</code> (shared library), <code>bomberman-server</code> (Netty WebSocket server, port 8080), and <code>bomberman-client</code> (JavaFX desktop). The visual identity follows an Indian-festival mandala palette: teal (#008080), turmeric (#ffc107), henna (#ec407a), and gold (#daa520) on an aubergine (#150a1f) ground.
-</p>
-<p>
-The architecture pursues five explicit qualities. <strong>Determinism</strong>: the server holds the only mutable <code>GameWorld</code> and advances it on a fixed 60 Hz tick, so the same input sequence produces the same outcome on any host. <strong>Fairness</strong>: clients render snapshots; they never simulate ahead of the server, removing both desync and a class of cheats. <strong>Clarity</strong>: every message on the wire is a typed <code>Envelope</code> with a <code>MessageType</code> discriminator and a Jackson-serialised payload, and the codec lives in exactly one place — <code>com.bombermenx.core.net.WireCodec</code>. <strong>Portability</strong>: build and run require only a JDK 17 and Maven 3.9, both available as zero-install portable drops. <strong>Demonstrability</strong>: the entire system stands up locally with one command via <code>docker compose -f infra/docker-compose.yml up</code>, and the JavaFX client connects without further configuration.
-</p>
-<p>
-Within these qualities, the prototype intentionally constrains scope. There is no persistence layer; the 3D spectator view is deferred; OAuth is stubbed. Each deferral is documented in section 8 and was agreed with the supervisor at the Week 3 review.
-</p>
+<!-- Compact hero -->
+<header class="hero" style="padding:48px 0 36px;">
+  <div class="container">
+    <h1 style="font-size:clamp(28px,4vw,40px);"><span class="en-only">Architecture Report</span><span class="de-only">Architekturbericht</span></h1>
+    <p class="lede">
+      <span class="en-only">Capstone submission · Software Architecture &amp; Development · M.Sc. Applied Computer Science, SRH University Stuttgart</span>
+      <span class="de-only">Abschlussarbeit · Softwarearchitektur und -entwicklung · M.Sc. Angewandte Informatik, SRH Hochschule Stuttgart</span>
+    </p>
+    <p class="meta">
+      <span class="en-only">28 May 2026 — Week 7 of 8 (Prototype) · Final submission and defence: 02 June 2026</span>
+      <span class="de-only">28. Mai 2026 — Woche 7 von 8 (Prototyp) · Endabgabe und Verteidigung: 02. Juni 2026</span>
+    </p>
+    <p style="margin-top:14px"><a href="index.html" style="color:#ffd87a;"><i class="bi bi-arrow-left"></i> <span class="en-only">Back to portal</span><span class="de-only">Zum Portal</span></a></p>
+  </div>
+</header>
 
-<h2>2. Stakeholders and context</h2>
-<table>
-  <thead><tr><th>Stakeholder</th><th>Interest in BomberMen-X</th></tr></thead>
-  <tbody>
-    <tr><td>Player (end user)</td><td>Low-latency multiplayer match against humans and bots; readable HUD; consistent UI palette.</td></tr>
-    <tr><td>Match administrator</td><td>Boot a match server; observe metrics; kick disruptive clients; reset state.</td></tr>
-    <tr><td>Examiner — the course supervisor</td><td>Evidence that the team can identify and defend architectural decisions; conformance to the agreed entity specification; clean arc42-shaped report.</td></tr>
-    <tr><td>Examination board (SRH)</td><td>A graded artefact submitted by Tuesday 02 June 2026.</td></tr>
-    <tr><td>Future maintainer (v0.3 team)</td><td>A clean seam at the wire codec, three independently testable modules, and a documented deferral list.</td></tr>
-  </tbody>
-</table>
-<p>
-The context is the SAD module's prototype gate. Each team is expected to defend its architecture against the rubric of arc42: overview, constraints, context, solution strategy, building blocks, runtime, deployment, cross-cutting concepts, decisions, quality, and risks. This report addresses each of these in sequence.
-</p>
+<main class="report">
 
-<h2>3. Solution strategy</h2>
-<p>
-BomberMen-X adopts a <strong>three-tier client/server topology with a shared core library</strong>. The shared library, <code>bomberman-core</code>, is the only place where domain entities and wire DTOs are declared, so the server and the client cannot drift apart at compile time. The server is authoritative — it owns the only mutable instance of <code>GameWorld</code>, applies <code>PlayerInput</code> on tick boundaries, and emits a stream of <code>WorldSnapshot</code> objects derived by <code>Snapshotter</code>. The client renders snapshots and forwards local input frames; it never simulates predictively.
-</p>
-<p>
-This strategy is deliberately conservative. A predictive client would reduce perceived input latency but introduces rollback, reconciliation, and divergence-handling concerns that have no place in an eight-week capstone. The 60 Hz authoritative tick is fast enough for the 13&times;11-tile arena and slow enough that the JSON wire format remains comfortable; profiling on the demo laptop shows the codec consuming under 3 percent of CPU during a match with four players and one bot.
-</p>
-<p>
-The chosen wire format is <strong>JSON over WebSocket</strong>. Binary formats such as Protobuf were considered and rejected: the wire volume is dominated by snapshots whose redundancy collapses under WebSocket per-frame compression, and the readability of JSON has accelerated debugging during every weekly demo. <code>WireCodec</code> is the single Jackson entrypoint; every DTO that crosses the wire is exercised by <code>WireCodecTest</code>.
-</p>
+<div class="meta-card">
+  <strong><span class="en-only">Source code:</span><span class="de-only">Quellcode:</span></strong> <code>../src/</code> &mdash; <span class="en-only">Maven 3-module reactor, Java 17</span><span class="de-only">Maven-Dreimodulreaktor, Java 17</span>.<br/>
+  <strong><span class="en-only">Live mirror:</span><span class="de-only">Live-Spiegel:</span></strong> <a href="https://abhilashanuku.github.io/bombermenx/" target="_blank" rel="noopener">abhilashanuku.github.io/bombermenx</a><br/>
+  <strong><span class="en-only">Build state:</span><span class="de-only">Build-Stand:</span></strong> <code>mvn clean test</code> &rarr; BUILD SUCCESS · <span class="en-only">11 tests pass across three modules</span><span class="de-only">11 Tests bestanden in drei Modulen</span>.<br/>
+  <strong><span class="en-only">Architects:</span><span class="de-only">Architekten:</span></strong> Abhilash Anuku (Airavata · <span class="en-only">delivery &amp; specification</span><span class="de-only">Lieferung &amp; Spezifikation</span>) · Simranjot Kaur (Mayura · <span class="en-only">UI &amp; gameplay engine</span><span class="de-only">UI &amp; Spiel-Engine</span>) · Jithendra Chittomothu (Vyaghra · <span class="en-only">networking &amp; operations</span><span class="de-only">Netzwerk &amp; Betrieb</span>).<br/>
+  <strong>Stack:</strong> Java 17 · Maven 3.9 · Netty 4.1 · Jackson 2.18 · JavaFX 21.0.5 · JUnit 5. <span class="en-only">Optional v0.3 sidecars: PostgreSQL 16, Redis 7.</span><span class="de-only">Optionale v0.3-Sidecars: PostgreSQL 16, Redis 7.</span>
+</div>
 
-<h2>4. Building blocks</h2>
-<p>
-The reactor decomposes into three Maven modules and a fourth infrastructure tree.
-</p>
-
-<h3>4.1 <code>bomberman-core</code> (shared library)</h3>
-<p>
-Domain entities live under <code>com.bombermenx.core.entity</code> (<code>Bomberman</code>, <code>Player</code>, <code>Score</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>) and <code>com.bombermenx.core.world</code> (<code>Arena</code>, <code>Tile</code>, <code>TileType</code>, <code>ArenaTheme</code>, the abstract <code>Bonus</code>, and its seven concrete subclasses <code>ArmorBonus</code>, <code>ExtraBombBonus</code>, <code>FlameBonus</code>, <code>KickBonus</code>, <code>LifeBonus</code>, <code>SpeedBonus</code>, <code>ThrowBonus</code>). Geometry primitives — <code>TilePos</code>, <code>Direction</code> — live under <code>com.bombermenx.core.geom</code>. The simulation lives under <code>com.bombermenx.core.sim</code> (<code>GameWorld</code>, <code>GameState</code>, <code>GameMode</code>, <code>Snapshotter</code>). The wire protocol — <code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>, and 24 DTOs — lives under <code>com.bombermenx.core.net</code> and <code>com.bombermenx.core.net.dto</code>.
-</p>
-
-<h3>4.2 <code>bomberman-server</code> (Netty WebSocket server)</h3>
-<p>
-<code>BombServerApplication</code> is the JVM entrypoint; <code>WebSocketServer</code> wires the Netty pipeline; <code>GameServerHandler</code> dispatches inbound frames by <code>MessageType</code>. <code>MatchManager</code>, <code>Match</code>, and <code>MatchSession</code> hold the authoritative simulation and drive the 60 Hz tick. <code>LobbyService</code> manages the pre-match flow and is fed by <code>CosmeticsCatalog</code>. Authentication routes through <code>AuthRegistry</code>, with <code>DevAuthProvider</code> for offline play and a stubbed <code>GoogleAuthProvider</code> ready for v0.3. <code>ChatRouter</code> and <code>ProfanityFilter</code> moderate text chat. <code>BotController</code> drives AI-filled slots through the same <code>INPUT_FRAME</code> path as a human. <code>MetricsHandler</code> exposes a Prometheus-style scrape on port 9091. <code>SessionRegistry</code> is the single source of truth for connected <code>ClientSession</code> objects.
-</p>
-
-<h3>4.3 <code>bomberman-client</code> (JavaFX desktop)</h3>
-<p>
-<code>ClientLauncher</code> bootstraps the JavaFX <code>Application</code>; <code>SceneRouter</code> swaps the active <code>Scene</code> between <code>MainMenuView</code>, <code>LobbyView</code>, <code>ArenaView</code>, and <code>RankingsView</code>. The painter is <code>ArenaRenderer</code>, working on a single JavaFX <code>Canvas</code>; the HUD is <code>HudOverlay</code>. <code>MandalaArt</code> and <code>MandalaTheme</code> apply the festival palette consistently across all four scenes. <code>GameClient</code> wraps the standard <code>java.net.http.WebSocket</code> and uses the same <code>WireCodec</code> as the server, eliminating any structural risk of DTO drift. <code>AgeGate</code> guards adult content. <code>AudioBus</code>, <code>SpatialAudio</code>, <code>HapticsService</code>, <code>GamepadPoller</code>, <code>PostFx</code>, <code>CameraShake</code>, and <code>ParticleSystem</code> are present as compile-clean stubs ready for v0.3.
-</p>
-
-<h3>4.4 <code>infra/</code> (deployment tree)</h3>
-<p>
-<code>infra/Dockerfile.server</code> produces a slim runtime image of the server jar over <code>eclipse-temurin:17-jre-jammy</code>. <code>infra/Dockerfile.client-build</code> is a builder image that produces the client fat-jar in CI without polluting the developer machine. <code>infra/docker-compose.yml</code> stands up the server with ports 8080 (WebSocket) and 9091 (metrics). Helper scripts live under <code>infra/scripts/</code>.
-</p>
-
-<h2>5. Runtime</h2>
-<p>
-A typical match lifecycle proceeds as follows. A client connects to <code>ws://localhost:8080</code>. <code>WebSocketServer</code> accepts the handshake and binds a <code>ClientSession</code> in <code>SessionRegistry</code>. The client sends an <code>AUTH_REQUEST</code>; <code>AuthRegistry</code> consults the active <code>AuthProvider</code> and returns an <code>AUTH_RESULT</code>. The client then sends <code>LOBBY_HELLO</code>; <code>LobbyService</code> assigns a lobby slot, broadcasts <code>LOBBY_STATE</code> to peers, and replies with <code>LOBBY_WELCOME</code>. The player equips cosmetics through <code>LOBBY_BUY</code> and <code>LOBBY_EQUIP</code>; the lobby periodically pushes <code>LOBBY_SNAPSHOT</code> frames.
-</p>
-<p>
-When the lobby reaches a quorum, <code>MatchManager</code> creates a <code>Match</code> and a <code>MatchSession</code>, broadcasts <code>MATCH_START</code>, and begins the 60 Hz tick. Each tick the session drains pending <code>INPUT_FRAME</code> frames, applies them to the <code>GameWorld</code>, advances bomb fuses and explosions, processes pickups, and asks <code>Snapshotter</code> for the current <code>WorldSnapshot</code>. The snapshot is serialised once by <code>WireCodec</code> and fan-out broadcast to every connected client in the match. Gameplay events (<code>KILL_FEED</code>, <code>GAME_EVENT</code>) are emitted as they happen. Bots are stepped by <code>BotController</code> immediately before input drain, so the rest of the tick treats them identically to humans.
-</p>
-<p>
-The match ends when a victory condition fires (last Bomberman alive, score cap reached, or time-out). <code>MATCH_END</code> is broadcast; the <code>MatchSession</code> is reaped; players return to <code>LobbyView</code>. The whole lifecycle is observable through <code>MetricsHandler</code>, which exposes counters for connections, ticks, frames in, frames out, and match starts.
-</p>
-
-<h2>6. Deployment</h2>
-<p>
-Two deployment targets are supported.
-</p>
-<p>
-<strong>Local desktop.</strong> The team's primary target for the prototype. Server is launched as a fat-jar (<code>java -jar bomberman-server-0.1.0-SNAPSHOT.jar</code>); client is launched via <code>mvn javafx:run</code> or its shaded fat-jar. This is the configuration that will be demonstrated on Tuesday 02 June 2026.
-</p>
-<p>
-<strong>Cloud Run option (v0.3).</strong> <code>infra/Dockerfile.server</code> already produces a Cloud Run-compatible image (single port, stateless except for in-memory match state, sub-256 MB). The prototype does not require this path, but the deployment view in the slide deck calls it out so the examiners can see the architecture extends without rework.
-</p>
-
-<h2>7. Quality requirements</h2>
-<table>
-  <thead><tr><th>Attribute</th><th>Target</th><th>How achieved</th></tr></thead>
-  <tbody>
-    <tr><td>Performance</td><td>60 Hz tick &middot; &lt; 16 ms client frame</td><td>Authoritative server tick; <code>Canvas</code>-based <code>ArenaRenderer</code> below 4 ms on demo hardware.</td></tr>
-    <tr><td>Availability</td><td>Restart in &lt; 5 seconds</td><td>Stateless server image; in-memory match state is acceptable for prototype scope.</td></tr>
-    <tr><td>Security</td><td>Server-authoritative; chat moderated; auth pluggable</td><td><code>GameWorld</code> only mutable on the server; <code>ProfanityFilter</code>; <code>AuthRegistry</code> SPI.</td></tr>
-    <tr><td>Usability</td><td>Mandala palette, large HUD glyphs, gamepad-ready</td><td><code>MandalaTheme</code>, <code>HudOverlay</code>, <code>GamepadPoller</code> stub for v0.3.</td></tr>
-    <tr><td>Maintainability</td><td>One choke point for serialisation; per-module ownership</td><td><code>WireCodec</code>; module READMEs document the owner per Maven module.</td></tr>
-    <tr><td>Portability</td><td>Build on any JDK 17 host with no admin rights</td><td>Portable Red Hat JDK + Maven 3.9; no machine-level dependencies.</td></tr>
-  </tbody>
-</table>
-
-<h2>8. Decisions and risks</h2>
-<p>The three load-bearing architecture decisions for the prototype are recorded as compact ADRs below.</p>
-
-<ol class="adr-list">
-  <li>
-    <strong>ADR-1: JSON over WebSocket as the wire format.</strong>
-    Context: a single full-duplex channel per client is required; the protocol must be debuggable by hand during weekly demos. Decision: WebSocket over TCP, JSON payloads via Jackson, single <code>WireCodec</code> entrypoint. Consequences: text-frame readability accelerates debugging; per-frame compression keeps bandwidth acceptable; future binary upgrade is a single-module change because <code>WireCodec</code> is the only producer.
-  </li>
-  <li>
-    <strong>ADR-2: Server-authoritative simulation, no client prediction.</strong>
-    Context: cheating risk and a tight prototype budget. Decision: the server holds the only mutable <code>GameWorld</code> and ticks at 60 Hz; clients render <code>WorldSnapshot</code> objects exclusively. Consequences: input latency is one round-trip; rollback and reconciliation are not needed; <code>BotController</code> reuses the same <code>INPUT_FRAME</code> path, so the bot is structurally indistinguishable from a human at the server boundary.
-  </li>
-  <li>
-    <strong>ADR-3: JavaFX desktop client, no browser target.</strong>
-    Context: the team has Java expertise and no web-frontend bandwidth. Decision: JavaFX 17 over a single <code>Canvas</code>, <code>SceneRouter</code> for view changes. Consequences: native-quality rendering on the developer's host OS; binary distribution via a shaded fat-jar; no DOM/CSS rabbit holes; a future browser target would have to reimplement the client but could reuse <code>bomberman-core</code> verbatim if compiled to a JavaScript runtime.
-  </li>
+<h2 id="toc"><span class="en-only">Table of contents</span><span class="de-only">Inhaltsverzeichnis</span></h2>
+<ol class="toc">
+  <li><a href="#sec1"><span class="en-only">Executive summary</span><span class="de-only">Zusammenfassung</span></a></li>
+  <li><a href="#sec2"><span class="en-only">Goals and stakeholders</span><span class="de-only">Ziele und Stakeholder</span></a></li>
+  <li><a href="#sec3"><span class="en-only">Architecture constraints</span><span class="de-only">Architekturrandbedingungen</span></a></li>
+  <li><a href="#sec4"><span class="en-only">Context and scope</span><span class="de-only">Kontext und Umfang</span></a></li>
+  <li><a href="#sec5"><span class="en-only">Solution strategy</span><span class="de-only">Lösungsstrategie</span></a></li>
+  <li><a href="#sec6"><span class="en-only">Building block view</span><span class="de-only">Bausteinsicht</span></a></li>
+  <li><a href="#sec7"><span class="en-only">Runtime view</span><span class="de-only">Laufzeitsicht</span></a></li>
+  <li><a href="#sec8"><span class="en-only">Deployment view</span><span class="de-only">Verteilungssicht</span></a></li>
+  <li><a href="#sec9"><span class="en-only">Cross-cutting concepts</span><span class="de-only">Querschnittliche Konzepte</span></a></li>
+  <li><a href="#sec10"><span class="en-only">Architecture decisions</span><span class="de-only">Architekturentscheidungen</span></a></li>
+  <li><a href="#sec11"><span class="en-only">Quality requirements</span><span class="de-only">Qualitätsanforderungen</span></a></li>
+  <li><a href="#sec12"><span class="en-only">Risks and technical debt</span><span class="de-only">Risiken und technische Schuld</span></a></li>
+  <li><a href="#sec13"><span class="en-only">Team and ownership</span><span class="de-only">Team und Verantwortlichkeiten</span></a></li>
+  <li><a href="#sec14"><span class="en-only">Submission scope</span><span class="de-only">Abgabe-Umfang</span></a></li>
+  <li><a href="#sec15"><span class="en-only">Glossary</span><span class="de-only">Glossar</span></a></li>
 </ol>
 
+<!-- ====================================================== -->
+<h2 id="sec1">1. <span class="en-only">Executive summary</span><span class="de-only">Zusammenfassung</span></h2>
+
+<p class="en-only">BomberMen-X is a four-player real-time arena game with a server-authoritative simulation. The system is realised as a Maven three-module Java&nbsp;17 reactor — <code>bomberman-core</code> (shared library), <code>bomberman-server</code> (Netty WebSocket server, port 8080), and <code>bomberman-client</code> (JavaFX desktop). The architecture pursues five explicit qualities: determinism, fairness, clarity of the wire, portability, and demonstrability. Every architectural commitment in this report can be traced to one of those five goals.</p>
+<p class="de-only">BomberMen-X ist ein Vier-Spieler-Echtzeit-Arenaspiel mit serverseitig autoritativer Simulation. Das System ist als Maven-Dreimodulreaktor in Java&nbsp;17 realisiert — <code>bomberman-core</code> (gemeinsame Bibliothek), <code>bomberman-server</code> (Netty-WebSocket-Server auf Port 8080) und <code>bomberman-client</code> (JavaFX-Desktop). Die Architektur verfolgt fünf explizite Qualitäten: Determinismus, Fairness, Klarheit der Wire-Schnittstelle, Portabilität und Demonstrierbarkeit.</p>
+
+<p class="en-only">The server holds the only mutable <code>GameWorld</code> and advances it on a fixed 16.67&nbsp;ms tick budget. Clients render snapshots; they never simulate ahead of the server. Every message on the wire is a typed <code>Envelope</code> with a <code>MessageType</code> discriminator and a Jackson-serialised payload, and the codec lives in exactly one place — <code>com.bombermenx.core.net.WireCodec</code>. This report is the canonical document for grading and stands on its own; the long-form arc42 specification under <code>code-explanation/architecture-spec-arc42</code> expands each section with class-level detail and additional diagrams.</p>
+<p class="de-only">Der Server hält die einzige veränderbare <code>GameWorld</code> und schreibt sie in einem festen Budget von 16,67&nbsp;ms pro Tick fort. Clients zeichnen Snapshots; sie simulieren nie über den Server hinaus. Jede Nachricht auf der Wire-Schnittstelle ist ein typisiertes <code>Envelope</code>-Objekt mit einem <code>MessageType</code>-Diskriminator und einer Jackson-serialisierten Nutzlast; der Codec existiert an genau einer Stelle — <code>com.bombermenx.core.net.WireCodec</code>.</p>
+
+<!-- ====================================================== -->
+<h2 id="sec2">2. <span class="en-only">Goals and stakeholders</span><span class="de-only">Ziele und Stakeholder</span></h2>
+
+<h3>2.1 <span class="en-only">Quality goals (in priority order)</span><span class="de-only">Qualitätsziele (nach Priorität)</span></h3>
+
 <table>
-  <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+  <thead><tr><th><span class="en-only">Goal</span><span class="de-only">Ziel</span></th><th><span class="en-only">Scenario it must satisfy</span><span class="de-only">Szenario, das erfüllt werden muss</span></th><th><span class="en-only">How it is measured</span><span class="de-only">Messverfahren</span></th></tr></thead>
   <tbody>
-    <tr><td>No persistence — rankings reset on restart</td><td>Documented; v0.3 introduces <code>RankingsRepository</code> and PostgreSQL.</td></tr>
-    <tr><td>3D spectator view deferred</td><td>2D <code>ArenaRenderer</code> is the demonstrable surface; <code>SubScene</code> sketch retained for v0.3.</td></tr>
-    <tr><td>Only three automated tests; client untested</td><td>Manual smoke checklist in <code>deliverables/build/BUILD_AND_RUN.md</code>; v0.3 adds TestFX coverage.</td></tr>
-    <tr><td>Demo machine network constraints (SRH lab)</td><td><code>--port=18080</code> override tested; client respects <code>BOMBERMENX_SERVER_URL</code>.</td></tr>
+  <tr><td><span class="en-only">Determinism</span><span class="de-only">Determinismus</span></td><td><span class="en-only">The same input replay yields the same final scoreboard on any laptop.</span><span class="de-only">Dieselbe Eingabesequenz erzeugt dieselbe Endabrechnung auf jedem Laptop.</span></td><td><code>GameWorldTest</code> <span class="en-only">exercises five ticks across boundary conditions and asserts equality.</span><span class="de-only">prüft fünf Ticks über Randbedingungen und behauptet Gleichheit.</span></td></tr>
+  <tr><td><span class="en-only">Fairness</span><span class="de-only">Fairness</span></td><td><span class="en-only">No client can fake a bomb placement or a kill.</span><span class="de-only">Kein Client kann eine Bombenplatzierung oder einen Treffer vortäuschen.</span></td><td><span class="en-only">Server validates every <code>InputFrame</code> before mutation; client only renders.</span><span class="de-only">Der Server validiert jeden <code>InputFrame</code> vor jeder Mutation; der Client zeichnet ausschließlich.</span></td></tr>
+  <tr><td><span class="en-only">Demonstrability</span><span class="de-only">Demonstrierbarkeit</span></td><td><span class="en-only">The prototype runs end-to-end on a clean machine in under five minutes.</span><span class="de-only">Der Prototyp läuft auf einem frischen System in unter fünf Minuten Ende-zu-Ende.</span></td><td><span class="en-only">The Run Guide command sequence reproduces a working game from a fresh clone.</span><span class="de-only">Die Befehlsfolge im Run-Guide reproduziert ein lauffähiges Spiel aus einem frischen Klon.</span></td></tr>
+  <tr><td><span class="en-only">Clarity of the wire</span><span class="de-only">Klarheit der Wire-Schnittstelle</span></td><td><span class="en-only">A reviewer can read protocol traffic without a decoder.</span><span class="de-only">Eine Prüfung kann den Protokollverkehr ohne Decoder lesen.</span></td><td><span class="en-only">Every <code>Envelope</code> is human-readable JSON; <code>WireCodecTest</code> proves round-trip equality.</span><span class="de-only">Jedes <code>Envelope</code> ist lesbares JSON; <code>WireCodecTest</code> belegt Round-Trip-Gleichheit.</span></td></tr>
+  <tr><td><span class="en-only">Modifiability</span><span class="de-only">Änderbarkeit</span></td><td><span class="en-only">Adding a new power-up takes one new class.</span><span class="de-only">Ein neues Power-Up erfordert eine einzige neue Klasse.</span></td><td><span class="en-only">The seven concrete <code>Bonus</code> subclasses share an abstract base.</span><span class="de-only">Die sieben konkreten <code>Bonus</code>-Unterklassen teilen sich eine abstrakte Basis.</span></td></tr>
+  </tbody>
+</table>
+
+<h3>2.2 <span class="en-only">Stakeholders</span><span class="de-only">Stakeholder</span></h3>
+
+<table>
+  <thead><tr><th>Stakeholder</th><th><span class="en-only">Concern</span><span class="de-only">Belang</span></th><th><span class="en-only">What this report provides</span><span class="de-only">Was dieser Bericht bietet</span></th></tr></thead>
+  <tbody>
+  <tr><td><span class="en-only">Module examiner</span><span class="de-only">Modulprüfung</span></td><td><span class="en-only">Does the design satisfy the module's learning outcomes?</span><span class="de-only">Erfüllt das Design die Lernziele des Moduls?</span></td><td><span class="en-only">Sections 2, 5, 9, 10 and 11 map directly to L1 – L6 of the SAD module.</span><span class="de-only">Abschnitte 2, 5, 9, 10 und 11 entsprechen direkt L1 – L6 des SAD-Moduls.</span></td></tr>
+  <tr><td><span class="en-only">Three architects</span><span class="de-only">Drei Architekten</span></td><td><span class="en-only">Coordinate work without colliding.</span><span class="de-only">Arbeit ohne Kollision koordinieren.</span></td><td><span class="en-only">Sections 6 and 13 record who owns which package.</span><span class="de-only">Abschnitte 6 und 13 dokumentieren die Paketverantwortung.</span></td></tr>
+  <tr><td><span class="en-only">Future contributor</span><span class="de-only">Zukünftige Mitwirkende</span></td><td><span class="en-only">Can I extend this safely?</span><span class="de-only">Kann ich dies sicher erweitern?</span></td><td><span class="en-only">Section 9 records cross-cutting conventions; Section 10 the architecturally significant decisions.</span><span class="de-only">Abschnitt 9 dokumentiert querschnittliche Konventionen, Abschnitt 10 die architektonisch wesentlichen Entscheidungen.</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ====================================================== -->
+<h2 id="sec3">3. <span class="en-only">Architecture constraints</span><span class="de-only">Architekturrandbedingungen</span></h2>
+
+<h4><span class="en-only">Technical</span><span class="de-only">Technisch</span></h4>
+<ul>
+  <li><span class="en-only">Implementation language: Java 17 LTS, uniform across all three modules.</span><span class="de-only">Implementierungssprache: Java 17 LTS, einheitlich in allen drei Modulen.</span></li>
+  <li><span class="en-only">Build system: Maven 3.9 multi-module reactor with strict dependency direction.</span><span class="de-only">Build-System: Maven 3.9 mit strikter Abhängigkeitsrichtung.</span></li>
+  <li><span class="en-only">Wire format: JSON over WebSocket. No binary serialisation in the prototype.</span><span class="de-only">Wire-Format: JSON über WebSocket. Keine binäre Serialisierung im Prototyp.</span></li>
+  <li><span class="en-only">Client framework: JavaFX 21 desktop. No browser-side runtime.</span><span class="de-only">Client-Framework: JavaFX 21 Desktop. Keine browserseitige Laufzeit.</span></li>
+  <li><span class="en-only">Test framework: JUnit 5 with AssertJ assertions.</span><span class="de-only">Test-Framework: JUnit 5 mit AssertJ-Assertions.</span></li>
+  <li><span class="en-only">Persistence: the prototype runs without a database; PostgreSQL and Redis are declared for v0.3.</span><span class="de-only">Persistenz: Der Prototyp läuft ohne Datenbank; PostgreSQL und Redis sind für v0.3 deklariert.</span></li>
+</ul>
+
+<h4><span class="en-only">Organisational</span><span class="de-only">Organisatorisch</span></h4>
+<ul>
+  <li><span class="en-only">Deliverable due Tuesday, 02 June 2026 (final report, slide deck, viva).</span><span class="de-only">Abgabe am Dienstag, 02. Juni 2026 (Endbericht, Folien, Verteidigung).</span></li>
+  <li><span class="en-only">Three architects, eight-week budget, no paid services.</span><span class="de-only">Drei Architekten, achtwöchiges Budget, keine kostenpflichtigen Dienste.</span></li>
+  <li><span class="en-only">All work reproducible on a Windows laptop without admin privileges and on a Linux CI runner.</span><span class="de-only">Sämtliche Arbeiten reproduzierbar auf einem Windows-Laptop ohne Admin-Rechte sowie auf einem Linux-CI-Runner.</span></li>
+</ul>
+
+<!-- ====================================================== -->
+<h2 id="sec4">4. <span class="en-only">Context and scope</span><span class="de-only">Kontext und Umfang</span></h2>
+
+<p class="en-only">The system exposes three external interfaces: the human player (keyboard or gamepad input into the client, snapshots out to pixels), the spectator role (read-only snapshot stream, deferred to v0.3), and the operator (environment variables in, Prometheus-style metrics out on port 9091). Internal dependencies are strict: <code>bomberman-core</code> is leaf at compile time, both <code>bomberman-server</code> and <code>bomberman-client</code> depend on it, and nothing depends back on either of them.</p>
+<p class="de-only">Das System exponiert drei externe Schnittstellen: den menschlichen Spieler (Eingabe per Tastatur oder Gamepad in den Client, Pixel hinaus), die Zuschauerrolle (read-only Snapshot-Stream, auf v0.3 verschoben) und den Betreiber (Umgebungsvariablen hinein, Prometheus-Metriken über Port 9091 hinaus). Interne Abhängigkeiten sind strikt: <code>bomberman-core</code> ist zur Compile-Zeit ein Blatt; sowohl <code>bomberman-server</code> als auch <code>bomberman-client</code> hängen davon ab, und nichts hängt zurück von einem der beiden.</p>
+
+<!-- ====================================================== -->
+<h2 id="sec5">5. <span class="en-only">Solution strategy</span><span class="de-only">Lösungsstrategie</span></h2>
+
+<p class="en-only">The architecture is the smallest configuration that satisfies the five quality goals.</p>
+<p class="de-only">Die Architektur ist die kleinste Konfiguration, welche die fünf Qualitätsziele erfüllt.</p>
+
+<ul>
+  <li><strong>Three-tier client &middot; shared core &middot; server.</strong> <span class="en-only">A shared library (<code>bomberman-core</code>) defines the domain entities and the wire DTOs. The server (<code>bomberman-server</code>) consumes the core and owns the mutable simulation. The client (<code>bomberman-client</code>) consumes the same core and renders snapshots. Because both endpoints import the same record definitions, data-transfer-object drift is structurally impossible.</span><span class="de-only">Eine gemeinsame Bibliothek definiert Domänen-Entitäten und Wire-DTOs. Server und Client konsumieren beide denselben Kern, wodurch DTO-Drift strukturell unmöglich wird.</span></li>
+  <li><strong><span class="en-only">Server-authoritative simulation at sixty ticks per second.</span><span class="de-only">Serverseitig autoritative Simulation mit sechzig Ticks pro Sekunde.</span></strong> <span class="en-only">The server holds the only mutable <code>GameWorld</code>. Clients send <code>InputFrame</code> upstream and receive <code>WorldSnapshot</code> downstream. The server validates every input before mutation. This single decision delivers fairness, determinism, and a clean anti-cheat boundary.</span><span class="de-only">Der Server hält die einzige veränderbare <code>GameWorld</code>. Diese eine Entscheidung liefert Fairness, Determinismus und eine saubere Anti-Cheat-Grenze.</span></li>
+  <li><strong>JSON over WebSocket.</strong> <span class="en-only">Every message is an <code>Envelope</code> with a <code>MessageType</code> discriminator and a Jackson-serialised payload. JSON is human-readable, debuggable in the browser, and small enough at sixty ticks per second for four players on the local network.</span><span class="de-only">Jede Nachricht ist ein <code>Envelope</code> mit <code>MessageType</code>-Diskriminator und Jackson-serialisierter Nutzlast. JSON ist lesbar, im Browser debugbar und bei vier Spielern auf einem LAN ausreichend klein.</span></li>
+  <li><strong><span class="en-only">JavaFX desktop client.</span><span class="de-only">JavaFX-Desktop-Client.</span></strong> <span class="en-only">A single <code>Canvas</code> painted by <code>ArenaRenderer</code>. JavaFX over a browser keeps the client a single executable artefact and shares the DTO layer with the server inside one JVM.</span><span class="de-only">Ein einzelnes <code>Canvas</code>, bemalt von <code>ArenaRenderer</code>. JavaFX statt Browser hält den Client als ein einziges ausführbares Artefakt und teilt die DTO-Schicht mit dem Server innerhalb einer JVM.</span></li>
+  <li><strong><span class="en-only">One composition root per process.</span><span class="de-only">Eine Komposition-Wurzel pro Prozess.</span></strong> <span class="en-only">Wiring happens in <code>GameServer</code> on the server side and <code>ClientLauncher</code> on the client side — plain Java construction, no dependency-injection framework.</span><span class="de-only">Verdrahtung erfolgt in <code>GameServer</code> und <code>ClientLauncher</code> — einfache Java-Konstruktion, kein DI-Framework.</span></li>
+</ul>
+
+<!-- ====================================================== -->
+<h2 id="sec6">6. <span class="en-only">Building block view</span><span class="de-only">Bausteinsicht</span></h2>
+
+<p class="en-only">The system decomposes at three zoom levels — overall system, individual modules, and the simulation core inside the server. The diagrams below are excerpts; the complete twelve-diagram set is in <code>code-explanation/architecture-spec-arc42</code> §5.</p>
+<p class="de-only">Das System zerfällt auf drei Zoomstufen — Gesamtsystem, einzelne Module und der Simulationskern. Die unten gezeigten Diagramme sind Auszüge; das vollständige Set findet sich in der arc42-Spezifikation §5.</p>
+
+<h3>6.1 <span class="en-only">Level 1 — System</span><span class="de-only">Stufe 1 — System</span></h3>
+
+<figure>
+  <img src="diagrams/architecture.svg" alt="System architecture with three Maven modules, shared core, WebSocket interface, optional persistence sidecars"/>
+  <figcaption><span class="en-only">Figure 1 — System architecture. Both client and server depend on <code>bomberman-core</code> at compile time; they meet at runtime over a single WebSocket. Postgres and Redis are optional v0.3 sidecars.</span><span class="de-only">Abbildung 1 — Systemarchitektur. Client und Server hängen zur Compile-Zeit beide vom <code>bomberman-core</code> ab; zur Laufzeit treffen sie sich über einen einzigen WebSocket. Postgres und Redis sind optionale v0.3-Sidecars.</span></figcaption>
+</figure>
+
+<table>
+  <thead><tr><th><span class="en-only">Block</span><span class="de-only">Baustein</span></th><th><span class="en-only">Purpose</span><span class="de-only">Zweck</span></th><th><span class="en-only">Owner</span><span class="de-only">Verantwortlich</span></th></tr></thead>
+  <tbody>
+  <tr><td><code>bomberman-core</code></td><td><span class="en-only">Single source of truth for domain entities and wire DTOs.</span><span class="de-only">Einzige Wahrheitsquelle für Domänen-Entitäten und Wire-DTOs.</span></td><td>AA + SK</td></tr>
+  <tr><td><code>bomberman-server</code></td><td><span class="en-only">Holds the only mutable <code>GameWorld</code>; terminates WebSocket connections; runs the sixty-tick loop; fills empty slots with bots; exposes metrics.</span><span class="de-only">Hält die einzige veränderbare <code>GameWorld</code>; beendet WebSocket-Verbindungen; führt die Sechzig-Tick-Schleife aus; füllt leere Plätze mit Bots; exponiert Metriken.</span></td><td>JC</td></tr>
+  <tr><td><code>bomberman-client</code></td><td><span class="en-only">JavaFX desktop UI. Renders snapshots, collects input, plays sound, applies haptics. Holds no authoritative state.</span><span class="de-only">JavaFX-Desktop-Oberfläche. Rendert Snapshots, sammelt Eingaben, spielt Klänge und überträgt Vibrationen. Hält keinen autoritativen Zustand.</span></td><td>SK</td></tr>
+  </tbody>
+</table>
+
+<h3>6.2 <span class="en-only">Level 2 — Modules</span><span class="de-only">Stufe 2 — Module</span></h3>
+
+<figure>
+  <img src="uml/package-diagram.svg" alt="Package overview of the three Maven modules and their compile-time dependencies"/>
+  <figcaption><span class="en-only">Figure 2 — Package overview. Each package is single-purpose; nothing crosses module boundaries except through <code>bomberman-core</code>.</span><span class="de-only">Abbildung 2 — Paketübersicht. Jedes Paket hat einen klaren Zweck; nichts überquert Modulgrenzen außer über den gemeinsamen Kern.</span></figcaption>
+</figure>
+
+<p class="en-only"><strong><code>bomberman-core</code></strong> contains six packages: <code>entity/</code> (mutable game entities), <code>world/</code> (arena and the seven concrete <code>Bonus</code> subclasses), <code>sim/</code> (<code>GameWorld</code>, <code>Snapshotter</code>), <code>net/</code> (<code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code>, around thirty record DTOs under <code>net/dto/</code>), <code>input/</code> (<code>PlayerInput</code>), <code>geom/</code> (<code>TilePos</code>, <code>Direction</code>).</p>
+<p class="en-only"><strong><code>bomberman-server</code></strong> contains nine packages: <code>net/</code>, <code>session/</code>, <code>auth/</code>, <code>lobby/</code>, <code>match/</code>, <code>ai/</code>, <code>chat/</code>, <code>moderation/</code>, <code>config/</code>. The composition root is <code>GameServer</code>; everything is wired by plain Java construction.</p>
+<p class="en-only"><strong><code>bomberman-client</code></strong> contains six packages: <code>ui/</code> (the four named views and the mandala backdrop), <code>render/</code>, <code>net/</code>, <code>audio/</code>, <code>input/</code>, <code>safety/</code>. <code>ArenaView</code> repaints every 16&nbsp;ms from the latest snapshot; the client holds no authoritative state.</p>
+
+<p class="de-only"><strong><code>bomberman-core</code></strong> enthält sechs Pakete: <code>entity/</code>, <code>world/</code>, <code>sim/</code>, <code>net/</code>, <code>input/</code>, <code>geom/</code>. <strong><code>bomberman-server</code></strong> enthält neun Pakete: <code>net/</code>, <code>session/</code>, <code>auth/</code>, <code>lobby/</code>, <code>match/</code>, <code>ai/</code>, <code>chat/</code>, <code>moderation/</code>, <code>config/</code>; Komposition-Wurzel ist <code>GameServer</code>. <strong><code>bomberman-client</code></strong> enthält sechs Pakete: <code>ui/</code>, <code>render/</code>, <code>net/</code>, <code>audio/</code>, <code>input/</code>, <code>safety/</code>.</p>
+
+<!-- ====================================================== -->
+<h2 id="sec7">7. <span class="en-only">Runtime view</span><span class="de-only">Laufzeitsicht</span></h2>
+
+<figure>
+  <img src="diagrams/sequence-match-start.svg" alt="Match-start handshake — Hello, Welcome, AuthRegistry, LobbyService, MatchManager"/>
+  <figcaption><span class="en-only">Figure 3 — Match-start sequence. After authentication the lobby holds the player until the queue fills or a bot fills the remaining slot; <code>MatchManager</code> then constructs a <code>MatchSession</code> and broadcasts <code>MatchStart</code>.</span><span class="de-only">Abbildung 3 — Match-Start-Sequenz. Nach der Authentifizierung hält die Lobby den Spieler, bis die Warteschlange voll ist oder ein Bot den letzten Platz füllt.</span></figcaption>
+</figure>
+
+<figure>
+  <img src="diagrams/sequence-bomb.svg" alt="Bomb placement and explosion sequence"/>
+  <figcaption><span class="en-only">Figure 4 — Bomb placement to explosion. The client never simulates ahead; it only renders the snapshots produced after the server's tick has run.</span><span class="de-only">Abbildung 4 — Bombenplatzierung bis Explosion. Der Client simuliert nie voraus; er rendert ausschließlich die Snapshots, die nach jedem Tick erzeugt werden.</span></figcaption>
+</figure>
+
+<!-- ====================================================== -->
+<h2 id="sec8">8. <span class="en-only">Deployment view</span><span class="de-only">Verteilungssicht</span></h2>
+
+<p class="en-only">The prototype is deployed locally on the demo laptop. A Docker Compose stack under <code>infra/docker-compose.yml</code> brings up the server in a container exposing port 8080; the JavaFX client runs as a JAR on the host and connects to <code>ws://localhost:8080/ws</code>. A Cloud Run path exists for v0.3 and is documented in <code>build/BUILD_AND_RUN</code>.</p>
+<p class="de-only">Der Prototyp wird lokal auf dem Demo-Laptop verteilt. Ein Docker-Compose-Stack unter <code>infra/docker-compose.yml</code> startet den Server in einem Container auf Port 8080; der JavaFX-Client läuft als JAR auf dem Host und verbindet sich zu <code>ws://localhost:8080/ws</code>.</p>
+
+<figure>
+  <img src="diagrams/deployment.svg" alt="Deployment topology with local Docker Compose and optional Cloud Run path"/>
+  <figcaption><span class="en-only">Figure 5 — Deployment topology. For the prototype only the white path on the left is exercised: host JDK runs the client, a single container runs the server, no external dependencies are reached.</span><span class="de-only">Abbildung 5 — Verteilungstopologie. Für den Prototyp wird nur der linke weiße Pfad ausgeführt.</span></figcaption>
+</figure>
+
+<!-- ====================================================== -->
+<h2 id="sec9">9. <span class="en-only">Cross-cutting concepts</span><span class="de-only">Querschnittliche Konzepte</span></h2>
+
+<table>
+  <thead><tr><th><span class="en-only">Concept</span><span class="de-only">Konzept</span></th><th><span class="en-only">Realisation</span><span class="de-only">Umsetzung</span></th></tr></thead>
+  <tbody>
+  <tr><td><span class="en-only">Domain model</span><span class="de-only">Domänenmodell</span></td><td><span class="en-only">Twelve named entities from the module reference specification, implemented one-for-one as Java classes.</span><span class="de-only">Zwölf Entitäten aus der Modul-Referenzspezifikation, je eins-zu-eins als Java-Klasse umgesetzt.</span></td></tr>
+  <tr><td><span class="en-only">Persistence</span><span class="de-only">Persistenz</span></td><td><span class="en-only">None in the prototype; PostgreSQL + Redis declared for v0.3.</span><span class="de-only">Keine im Prototyp; PostgreSQL und Redis für v0.3 vorgemerkt.</span></td></tr>
+  <tr><td><span class="en-only">Authentication</span><span class="de-only">Authentifizierung</span></td><td><span class="en-only">Pluggable SPI under <code>auth/</code>. The prototype uses <code>DevAuthProvider</code>; <code>GoogleAuthProvider</code> is stubbed for OAuth in v0.3.</span><span class="de-only">Steckbare SPI unter <code>auth/</code>. Der Prototyp nutzt <code>DevAuthProvider</code>.</span></td></tr>
+  <tr><td><span class="en-only">Validation</span><span class="de-only">Validierung</span></td><td><span class="en-only">Server-side; <code>GameServerHandler</code> rejects out-of-range and rate-limited frames.</span><span class="de-only">Serverseitig; <code>GameServerHandler</code> lehnt frames außerhalb der Schranken oder mit zu hoher Frequenz ab.</span></td></tr>
+  <tr><td><span class="en-only">Logging</span><span class="de-only">Logging</span></td><td>SLF4J + Logback <span class="en-only">on the server; the client logs to a rotating file under the user home.</span><span class="de-only">am Server; der Client schreibt in eine rotierende Datei im Nutzerverzeichnis.</span></td></tr>
+  <tr><td><span class="en-only">Configuration</span><span class="de-only">Konfiguration</span></td><td><span class="en-only">Env-var first, file fallback. Externalised in <code>ServerConfig</code>.</span><span class="de-only">Umgebungsvariablen zuerst, Datei-Fallback. Ausgelagert in <code>ServerConfig</code>.</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ====================================================== -->
+<h2 id="sec10">10. <span class="en-only">Architecture decisions</span><span class="de-only">Architekturentscheidungen</span></h2>
+
+<div class="adr">
+  <h4>ADR-001 — <span class="en-only">JSON over WebSocket as the sole wire format</span><span class="de-only">JSON über WebSocket als einziges Wire-Format</span></h4>
+  <p class="en-only"><strong>Considered:</strong> JSON, binary Protobuf, binary Kryo, FlatBuffers. JSON chosen for human readability during the seven-week build budget, browser-debuggability of the protocol, and small enough payload at four players × sixty&nbsp;Hz on a LAN. Decision is revisited if telemetry indicates bandwidth pressure.</p>
+  <p class="de-only"><strong>Erwogen:</strong> JSON, binäres Protobuf, binäres Kryo, FlatBuffers. JSON gewählt wegen Lesbarkeit im Sieben-Wochen-Budget, Browser-Debuggbarkeit und ausreichend kleiner Nutzlast bei vier Spielern × sechzig&nbsp;Hz im LAN.</p>
+</div>
+
+<div class="adr">
+  <h4>ADR-002 — <span class="en-only">Server-authoritative simulation at sixty ticks per second</span><span class="de-only">Serverseitig autoritative Simulation mit sechzig Ticks pro Sekunde</span></h4>
+  <p class="en-only"><strong>Considered:</strong> client-side prediction with server reconciliation; lockstep peer-to-peer; pure server authority. Pure server authority chosen for the strongest fairness guarantee and the simplest mental model. Prediction is recorded as a v0.3 enhancement for high-latency networks.</p>
+  <p class="de-only"><strong>Erwogen:</strong> Clientseitige Vorhersage mit Server-Abgleich, Lockstep-Peer-to-Peer, reine Server-Autorität. Reine Server-Autorität gewählt für die stärkste Fairness-Garantie und das einfachste mentale Modell.</p>
+</div>
+
+<div class="adr">
+  <h4>ADR-003 — <span class="en-only">JavaFX desktop client rather than a browser client</span><span class="de-only">JavaFX-Desktop-Client statt eines Browser-Clients</span></h4>
+  <p class="en-only"><strong>Considered:</strong> JavaFX, Swing, browser + Canvas, libGDX. JavaFX chosen for first-class OS gamepad and audio integration, a single executable artefact, and the ability to share the DTO layer in-JVM with the server.</p>
+  <p class="de-only"><strong>Erwogen:</strong> JavaFX, Swing, Browser + Canvas, libGDX. JavaFX gewählt für erstklassige Gamepad- und Audio-Integration auf Betriebssystemebene.</p>
+</div>
+
+<!-- ====================================================== -->
+<h2 id="sec11">11. <span class="en-only">Quality requirements</span><span class="de-only">Qualitätsanforderungen</span></h2>
+
+<table>
+  <thead><tr><th>Quality</th><th>Tactic</th><th><span class="en-only">Where in code</span><span class="de-only">Im Code</span></th></tr></thead>
+  <tbody>
+  <tr><td><span class="en-only">Performance</span><span class="de-only">Leistung</span></td><td><span class="en-only">Single-threaded tick at 16.67&nbsp;ms; measured ~0.4&nbsp;ms wall time for four players on a laptop.</span><span class="de-only">Einthreadiger Tick mit 16,67&nbsp;ms Budget; gemessen ~0,4&nbsp;ms Wandzeit für vier Spieler.</span></td><td><code>MatchSession</code>, <code>GameWorld.tick()</code></td></tr>
+  <tr><td><span class="en-only">Availability</span><span class="de-only">Verfügbarkeit</span></td><td><span class="en-only">Empty slots are filled by <code>BotController</code> so a partial roster never blocks a match.</span><span class="de-only">Leere Plätze werden vom <code>BotController</code> aufgefüllt, sodass kein Match blockiert.</span></td><td><code>BotController</code>, <code>MatchManager</code></td></tr>
+  <tr><td>Security</td><td><span class="en-only">Every input validated server-side; no client-supplied position is trusted.</span><span class="de-only">Jede Eingabe serverseitig validiert; keine client-gemeldete Position wird vertraut.</span></td><td><code>GameServerHandler</code>, <code>ProfanityFilter</code></td></tr>
+  <tr><td>Usability</td><td><span class="en-only">Mandala palette and four scene transitions tested for clarity at 1080p and 1440p; keyboard fully usable.</span><span class="de-only">Mandala-Palette und vier Szenenwechsel auf 1080p und 1440p geprüft; Tastatur voll nutzbar.</span></td><td><code>MandalaTheme</code>, <code>SceneRouter</code></td></tr>
+  <tr><td><span class="en-only">Maintainability</span><span class="de-only">Wartbarkeit</span></td><td><span class="en-only">One choke point for serialisation; per-module ownership.</span><span class="de-only">Ein Engpass für Serialisierung; Verantwortung pro Modul.</span></td><td><code>WireCodec</code>, <span class="en-only">module READMEs</span><span class="de-only">Modul-READMEs</span></td></tr>
+  <tr><td><span class="en-only">Testability</span><span class="de-only">Testbarkeit</span></td><td><span class="en-only">Eleven JUnit&nbsp;5 tests covering simulation, wire codec, and profanity filter.</span><span class="de-only">Elf JUnit&nbsp;5-Tests decken Simulation, Wire-Codec und Profanity-Filter ab.</span></td><td><code>GameWorldTest</code>, <code>WireCodecTest</code>, <code>ProfanityFilterTest</code></td></tr>
+  </tbody>
+</table>
+
+<!-- ====================================================== -->
+<h2 id="sec12">12. <span class="en-only">Risks and technical debt</span><span class="de-only">Risiken und technische Schuld</span></h2>
+
+<table>
+  <thead><tr><th><span class="en-only">Risk / debt</span><span class="de-only">Risiko / Schuld</span></th><th><span class="en-only">Mitigation</span><span class="de-only">Gegenmaßnahme</span></th></tr></thead>
+  <tbody>
+  <tr><td><span class="en-only">Client coverage is zero (JavaFX needs a display for automated tests).</span><span class="de-only">Keine automatisierten Client-Tests, da JavaFX einen Display benötigt.</span></td><td><span class="en-only">Manual demo verification recorded in the slide deck; coverage planned for v0.3 with TestFX.</span><span class="de-only">Manuelle Demo-Verifikation; TestFX-Abdeckung für v0.3 vorgesehen.</span></td></tr>
+  <tr><td><span class="en-only">No persistence yet — rankings are sample rows.</span><span class="de-only">Keine Persistenz — Bestenlisten sind Beispielzeilen.</span></td><td><span class="en-only">REST endpoint sketched in <code>RankingsView</code>; Postgres + Flyway already in <code>pom.xml</code>.</span><span class="de-only">REST-Endpunkt in <code>RankingsView</code> skizziert; Postgres + Flyway bereits im <code>pom.xml</code>.</span></td></tr>
+  <tr><td><span class="en-only">JSON-only wire is fine at four players but will grow at sixteen.</span><span class="de-only">JSON-Wire reicht für vier Spieler, wächst aber bei sechzehn.</span></td><td>ADR-001 <span class="en-only">documents the upgrade path; a Kryo dependency was prototyped and removed after the 28 May audit.</span><span class="de-only">dokumentiert den Aufstiegspfad; eine Kryo-Abhängigkeit wurde nach der Audit am 28. Mai entfernt.</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ====================================================== -->
+<h2 id="sec13">13. <span class="en-only">Team and ownership</span><span class="de-only">Team und Verantwortlichkeiten</span></h2>
+
+<table>
+  <thead><tr><th><span class="en-only">Architect</span><span class="de-only">Architekt</span></th><th><span class="en-only">Slice</span><span class="de-only">Bereich</span></th><th><span class="en-only">Key files</span><span class="de-only">Wesentliche Dateien</span></th></tr></thead>
+  <tbody>
+  <tr><td>Abhilash Anuku (Airavata)</td><td><span class="en-only">Delivery, architecture specification, requirements traceability, build &amp; deploy.</span><span class="de-only">Lieferung, Architekturspezifikation, Anforderungsmatrix, Build und Bereitstellung.</span></td><td>Parent <code>pom.xml</code>, <code>architecture-spec-arc42.md</code>, <code>requirements-traceability.md</code>, <code>AuthRegistry</code>, <code>ProfanityFilter</code>.</td></tr>
+  <tr><td>Simranjot Kaur (Mayura)</td><td><span class="en-only">UI / UX, gameplay engine, HUD.</span><span class="de-only">UI/UX, Spiel-Engine, HUD.</span></td><td><code>MandalaArt</code>, <code>MandalaTheme</code>, <code>SceneRouter</code>, <span class="en-only">the four views</span><span class="de-only">die vier Szenen</span>, <code>ArenaRenderer</code>, <code>HudOverlay</code>, <code>GameWorld</code>, <code>Snapshotter</code>.</td></tr>
+  <tr><td>Jithendra Chittomothu (Vyaghra)</td><td><span class="en-only">Networking, server lifecycle, bot AI, deploy pipeline.</span><span class="de-only">Netzwerk, Server-Lebenszyklus, Bot-KI, Deployment-Pipeline.</span></td><td><code>WebSocketServer</code>, <code>GameServerHandler</code>, <code>MetricsHandler</code>, <code>MatchManager</code>, <code>MatchSession</code>, <code>BotController</code>, <code>Dockerfile.server</code>.</td></tr>
+  </tbody>
+</table>
+
+<!-- ====================================================== -->
+<h2 id="sec14">14. <span class="en-only">Submission scope</span><span class="de-only">Abgabe-Umfang</span></h2>
+
+<p class="en-only">The submission comprises four artefacts. The first three are mandatory; the fourth is the editable bundle used to polish wording before the defence.</p>
+<p class="de-only">Die Abgabe umfasst vier Artefakte. Die ersten drei sind verpflichtend; das vierte ist das bearbeitbare Bundle für letzte Formulierungen vor der Verteidigung.</p>
+
+<ol>
+  <li><span class="en-only">This Architecture Report — canonical single-page document.</span><span class="de-only">Dieser Architekturbericht — maßgebliches Einzelseitendokument.</span> (<a href="architecture-report-en.html">architecture-report-en.html</a>)</li>
+  <li><span class="en-only">arc42 specification — long-form, 22-section architecture document with class-level diagrams.</span><span class="de-only">arc42-Spezifikation — Langfassung mit 22 Abschnitten und Diagrammen auf Klassenebene.</span> (<a href="code-explanation/architecture-spec-arc42.view.html">code-explanation/architecture-spec-arc42</a>)</li>
+  <li><span class="en-only">Working prototype — Maven reactor under <code>../src/</code>, build-tested by <code>mvn clean test</code>.</span><span class="de-only">Lauffähiger Prototyp — Maven-Reaktor unter <code>../src/</code>, getestet via <code>mvn clean test</code>.</span> (<a href="code-explanation/RUN_GUIDE.view.html">RUN_GUIDE</a>)</li>
+  <li><span class="en-only">Defence pack DOCX exports — six Word files for last-minute editing.</span><span class="de-only">Verteidigungspaket als DOCX — sechs Word-Dateien für letzte Bearbeitung.</span> (<a href="exports/">exports/</a>)</li>
+</ol>
+
+<!-- ====================================================== -->
+<h2 id="sec15">15. <span class="en-only">Glossary</span><span class="de-only">Glossar</span></h2>
+
+<table>
+  <thead><tr><th><span class="en-only">Term</span><span class="de-only">Begriff</span></th><th><span class="en-only">Definition</span><span class="de-only">Bedeutung</span></th></tr></thead>
+  <tbody>
+  <tr><td>arc42</td><td><span class="en-only">22-section architecture documentation template followed by this submission.</span><span class="de-only">22-teiliges Vorlagewerk für Architekturdokumentation, dem diese Abgabe folgt.</span></td></tr>
+  <tr><td>ADR</td><td><span class="en-only">Architecture Decision Record — a short, dated note capturing a decision and the alternatives considered.</span><span class="de-only">Architekturentscheidungsdokument — kurze, datierte Notiz, die eine Entscheidung und die erwogenen Alternativen festhält.</span></td></tr>
+  <tr><td>Envelope</td><td><span class="en-only">The single record type that wraps every WebSocket message: <code>{ type: MessageType, payload: object }</code>.</span><span class="de-only">Der einzige Record-Typ, der jede WebSocket-Nachricht umhüllt.</span></td></tr>
+  <tr><td>Snapshot</td><td><span class="en-only">Immutable record produced by <code>Snapshotter.snapshot(GameWorld)</code> at every tick and broadcast to every connected client.</span><span class="de-only">Unveränderliche Aufnahme, die der <code>Snapshotter</code> bei jedem Tick erzeugt und an alle Clients sendet.</span></td></tr>
+  <tr><td>Tick</td><td><span class="en-only">One advance of the server simulation, budgeted to 16.67&nbsp;ms.</span><span class="de-only">Ein Fortschritt der Serversimulation mit 16,67&nbsp;ms Budget.</span></td></tr>
+  <tr><td>Bot AI</td><td><span class="en-only">The <code>BotController</code> subsystem that fills empty player slots — classical game AI, not generative AI.</span><span class="de-only">Das <code>BotController</code>-Subsystem, das leere Plätze füllt — klassische Spiel-KI, keine generative KI.</span></td></tr>
+  <tr><td>Airavata / Mayura / Vyaghra</td><td><span class="en-only">The Indian-mythology animal totems the team adopted for the three architect roles: white elephant, peacock, tiger.</span><span class="de-only">Die mythologischen Tier-Totems, die das Team für die drei Architektenrollen gewählt hat: weißer Elefant, Pfau, Tiger.</span></td></tr>
   </tbody>
 </table>
 
 <blockquote>
-The prototype is feature-complete against the scope agreed with the course supervisor at the Week 3 review. Week 8 produces only documentation polish, rehearsal, and the final submission on Tuesday 02 June 2026.
+<span class="en-only">This report is intended as a complete read for the defence. The supporting documents (arc42 long form, requirements traceability, code walk-through, learning guide, glossary) expand individual sections in more detail and live under <code>code-explanation/</code>. The portal at <code>index.html</code> walks them in reading order.</span>
+<span class="de-only">Dieser Bericht ist als vollständige Lektüre für die Verteidigung gedacht. Die unterstützenden Dokumente erweitern einzelne Abschnitte und befinden sich unter <code>code-explanation/</code>.</span>
 </blockquote>
 
-<h2>9. Team and authorship</h2>
-<table>
-  <thead><tr><th>Architect</th><th>Responsibility envelope</th></tr></thead>
-  <tbody>
-    <tr><td>Abhilash Anuku (AA)</td><td>Delivery, planning, architecture specification, requirements traceability, build and deploy pipeline.</td></tr>
-    <tr><td>Simranjot Kaur (SK)</td><td>UI / UX, gameplay engine (movement, bomb, scoring), HUD, visual identity (Mandala).</td></tr>
-    <tr><td>Jithendra Chittomothu (JC)</td><td>Networking, server lifecycle, bot AI, deploy pipeline, metrics endpoint.</td></tr>
-  </tbody>
-</table>
-
 </main>
+
 <footer class="portal-foot">
-  <p>BomberMen-X &middot; Capstone Prototype &middot; M.Sc. Applied Computer Science &middot; SRH University Stuttgart</p>
-  <p>Compiled 28 May 2026 &middot; Final submission Tuesday 02 June 2026</p>
+  <div class="container">
+    <p><span class="en-only">Source under</span><span class="de-only">Quellcode unter</span> <code>../src/</code> · Maven 3-module · MIT.</p>
+    <p>BomberMen-X &copy; 2026 · Abhilash Anuku · Simranjot Kaur · Jithendra Chittomothu</p>
+  </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+(function() {
+  var html = document.documentElement;
+  var saved = localStorage.getItem('bx-lang') || 'en';
+  setLang(saved);
+  document.querySelectorAll('.lang-switch button').forEach(function(b) {
+    b.addEventListener('click', function() { setLang(b.dataset.lang); });
+  });
+  function setLang(l) {
+    html.classList.remove('lang-en', 'lang-de');
+    html.classList.add('lang-' + l);
+    html.setAttribute('lang', l);
+    document.querySelectorAll('.lang-switch button').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.lang === l);
+    });
+    localStorage.setItem('bx-lang', l);
+  }
+})();
+</script>
 </body>
 </html>

@@ -1,259 +1,224 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 940" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 880" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <style>
-    rect { rx: 6; ry: 6; }
-    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 12px; fill: #9aa6b8; }
-    .edge { font-size: 11px; fill: #c5cbd6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1d24; }
+    .title { font-weight: 700; font-size: 22px; fill: #1a1d24; }
+    .ttl { font-weight: 700; font-size: 14px; fill: #1a1d24; }
+    .sub { font-size: 12px; fill: #5a626e; }
+    .edge { font-size: 12px; fill: #3a3f47; }
+    .grp { font-weight: 700; font-size: 13px; letter-spacing: 1.2px; fill: #6a6f78; }
+    .conn { fill: none; stroke: #5a626e; stroke-width: 1.6; }
   </style>
   <title id="title">BomberMen-X System Architecture</title>
-  <desc id="desc">Three-tier architecture: clients on the left, shared bomberman-core in the middle, Netty server on the right, Postgres and Redis sidecars below.</desc>
+  <desc id="desc">Three-tier architecture: clients on the left, shared bomberman-core in the middle, Netty server on the right, Postgres and Redis at the bottom.</desc>
   <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
-    </pattern>
-    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
-    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
-    <marker id="arrAmber" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ffb53a"/></marker>
-    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+    <marker id="arr" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#5a626e"/></marker>
+    <filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow stdDeviation="1" dx="0" dy="1" flood-color="#000" flood-opacity="0.08"/></filter>
   </defs>
-  <style>
-    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .title { font-weight: 700; font-size: 22px; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 11px; fill: #94a3b8; }
-    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .conn { fill: none; stroke-width: 2; }
-  </style>
-  <rect x="0" y="0" width="1500" height="940" fill="#08090d"/>
-  <rect x="0" y="0" width="1500" height="940" fill="url(#grid)"/>
 
-  <text x="40" y="42" class="title" fill="#daa520">BomberMen-X — System Architecture</text>
-  <text x="40" y="64" class="sub">Three-tier real-time multiplayer · Client tier · Shared core · Server tier · Postgres + Redis sidecars</text>
+  <!-- Card on paper -->
+  <rect x="0" y="0" width="1400" height="880" fill="#ffffff"/>
+  <rect x="24" y="24" width="1352" height="832" rx="10" fill="#fdfdfb" stroke="#d6dae0" stroke-width="1.5"/>
 
-  <!-- ============ CLIENT TIER ============ -->
-  <rect x="40" y="100" width="340" height="620" rx="14" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
-  <text x="210" y="130" text-anchor="middle" class="ttl" fill="#3affb5">CLIENT TIER  (vāyu · air)</text>
-  <text x="210" y="148" text-anchor="middle" class="sub">Rendering · Input · UX</text>
+  <!-- Title -->
+  <text x="60" y="68" class="title">BomberMen-X — System Architecture</text>
+  <text x="60" y="92" class="sub">Three-tier real-time multiplayer · Client tier · Shared core · Server tier · Data tier</text>
 
-  <!-- JavaFX Desktop -->
-  <rect x="70" y="170" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="210" y="194" text-anchor="middle" class="ttl" fill="#3affb5">JavaFX Desktop Client</text>
-  <line x1="82" y1="204" x2="338" y2="204" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
-  <text x="86" y="224" class="sub">ClientLauncher · SceneRouter</text>
-  <text x="86" y="242" class="sub">MainMenuView · LobbyView</text>
-  <text x="86" y="260" class="sub">ArenaView · ArenaRenderer</text>
-  <text x="86" y="278" class="sub">HudOverlay · RankingsView</text>
-  <text x="86" y="296" class="sub">MandalaArt · MandalaTheme</text>
-  <text x="86" y="314" class="sub">GameClient (WS transport)</text>
+  <!-- ============ CLIENT TIER (left column) ============ -->
+  <rect x="60" y="120" width="320" height="600" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="220" y="148" text-anchor="middle" class="grp">CLIENT TIER</text>
 
-  <!-- Web HTML Client -->
-  <rect x="70" y="360" width="280" height="160" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="210" y="384" text-anchor="middle" class="ttl" fill="#3affb5">Web HTML Client</text>
-  <line x1="82" y1="394" x2="338" y2="394" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
-  <text x="86" y="414" class="sub">Canvas 2D renderer</text>
-  <text x="86" y="432" class="sub">DOM lobby + chat panes</text>
-  <text x="86" y="450" class="sub">WebSocket bridge (wss://)</text>
-  <text x="86" y="468" class="sub">Same MessageType envelopes</text>
-  <text x="86" y="486" class="sub">Mobile-friendly viewport</text>
-  <text x="86" y="504" class="sub">Spectator / quick-play entry</text>
+  <rect x="80" y="180" width="280" height="160" rx="8" fill="#ffffff" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="220" y="206" text-anchor="middle" class="ttl">JavaFX Desktop Client</text>
+  <line x1="100" y1="218" x2="340" y2="218" stroke="#d6dae0" stroke-width="1"/>
+  <text x="100" y="240" class="sub">ClientLauncher · SceneRouter</text>
+  <text x="100" y="260" class="sub">MainMenuView · LobbyView</text>
+  <text x="100" y="280" class="sub">ArenaView · ArenaRenderer</text>
+  <text x="100" y="300" class="sub">HudOverlay · RankingsView</text>
+  <text x="100" y="320" class="sub">GameClient (WS transport)</text>
 
-  <!-- 3D Spectator -->
-  <rect x="70" y="550" width="280" height="150" rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.85"/>
-  <text x="210" y="574" text-anchor="middle" class="ttl" fill="#3affb5">3D Spectator (deferred)</text>
-  <line x1="82" y1="584" x2="338" y2="584" stroke="#3affb5" stroke-width="0.8" opacity="0.6"/>
-  <text x="86" y="604" class="sub">JavaFX 3D scene-graph</text>
-  <text x="86" y="622" class="sub">Read-only snapshot stream</text>
-  <text x="86" y="640" class="sub">Free-fly camera + replay</text>
-  <text x="86" y="658" class="sub">Re-uses WorldSnapshot DTOs</text>
-  <text x="86" y="678" class="sub" fill="#daa520">Planned, not in v1.0</text>
+  <rect x="80" y="360" width="280" height="160" rx="8" fill="#ffffff" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="220" y="386" text-anchor="middle" class="ttl">Web HTML Client</text>
+  <line x1="100" y1="398" x2="340" y2="398" stroke="#d6dae0" stroke-width="1"/>
+  <text x="100" y="420" class="sub">Canvas 2D renderer</text>
+  <text x="100" y="440" class="sub">DOM lobby + chat panes</text>
+  <text x="100" y="460" class="sub">WebSocket bridge (wss://)</text>
+  <text x="100" y="480" class="sub">Mobile-friendly viewport</text>
+  <text x="100" y="500" class="sub">Spectator entry</text>
 
-  <!-- ============ SHARED CORE ============ -->
-  <rect x="500" y="170" width="300" height="530" rx="14" fill="#11141c" stroke="#3aedff" stroke-width="2.4"/>
-  <text x="650" y="200" text-anchor="middle" class="ttl" fill="#3aedff">SHARED CORE  (ākāśa · ether)</text>
-  <text x="650" y="218" text-anchor="middle" class="sub">bomberman-core Maven module</text>
+  <rect x="80" y="540" width="280" height="160" rx="8" fill="#ffffff" stroke="#0b8a78" stroke-width="1.4" stroke-dasharray="6 4" filter="url(#sh)"/>
+  <text x="220" y="566" text-anchor="middle" class="ttl">3D Spectator (deferred)</text>
+  <line x1="100" y1="578" x2="340" y2="578" stroke="#d6dae0" stroke-width="1"/>
+  <text x="100" y="600" class="sub">JavaFX 3D scene-graph</text>
+  <text x="100" y="620" class="sub">Read-only snapshot stream</text>
+  <text x="100" y="640" class="sub">Free-fly camera + replay</text>
+  <text x="100" y="660" class="sub">Re-uses WorldSnapshot DTOs</text>
+  <text x="100" y="680" class="sub">Planned, not in v1.0</text>
 
-  <!-- Domain box -->
-  <rect x="520" y="240" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
-  <text x="650" y="262" text-anchor="middle" class="ttl" fill="#3aedff">Domain entities</text>
-  <line x1="532" y1="272" x2="768" y2="272" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
-  <text x="536" y="292" class="sub">Bomberman · Player · Bomb</text>
-  <text x="536" y="310" class="sub">Explosion · Score · Arena · Tile</text>
-  <text x="536" y="328" class="sub">Bonus + 7 subclasses</text>
-  <text x="536" y="346" class="sub">PowerUpItem · GameState · GameMode</text>
+  <!-- ============ SHARED CORE (center column) ============ -->
+  <rect x="500" y="180" width="280" height="540" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="640" y="208" text-anchor="middle" class="grp">SHARED CORE  (bomberman-core)</text>
 
-  <!-- Wire box -->
-  <rect x="520" y="395" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
-  <text x="650" y="417" text-anchor="middle" class="ttl" fill="#3aedff">Wire / DTO</text>
-  <line x1="532" y1="427" x2="768" y2="427" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
-  <text x="536" y="447" class="sub">Envelope · WireCodec · MessageType</text>
-  <text x="536" y="465" class="sub">WorldSnapshot · PlayerSnapshot</text>
-  <text x="536" y="483" class="sub">BombSnapshot · ExplosionSnapshot</text>
-  <text x="536" y="501" class="sub">MatchStart · MatchEnd · Inputs</text>
+  <rect x="520" y="240" width="240" height="140" rx="8" fill="#ffffff" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="640" y="264" text-anchor="middle" class="ttl">Domain entities</text>
+  <line x1="540" y1="276" x2="740" y2="276" stroke="#d6dae0" stroke-width="1"/>
+  <text x="540" y="298" class="sub">Bomberman · Player · Bomb</text>
+  <text x="540" y="318" class="sub">Explosion · Score · Arena</text>
+  <text x="540" y="338" class="sub">Tile · Bonus + 7 subclasses</text>
+  <text x="540" y="358" class="sub">GameState · GameMode</text>
 
-  <!-- Sim box -->
-  <rect x="520" y="550" width="260" height="130" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
-  <text x="650" y="572" text-anchor="middle" class="ttl" fill="#3aedff">Simulation</text>
-  <line x1="532" y1="582" x2="768" y2="582" stroke="#3aedff" stroke-width="0.6" opacity="0.6"/>
-  <text x="536" y="602" class="sub">GameWorld (authoritative)</text>
-  <text x="536" y="620" class="sub">Snapshotter · TickClock</text>
-  <text x="536" y="638" class="sub">CollisionResolver</text>
-  <text x="536" y="656" class="sub">Deterministic, no I/O</text>
+  <rect x="520" y="400" width="240" height="140" rx="8" fill="#ffffff" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="640" y="424" text-anchor="middle" class="ttl">Wire / DTO</text>
+  <line x1="540" y1="436" x2="740" y2="436" stroke="#d6dae0" stroke-width="1"/>
+  <text x="540" y="458" class="sub">Envelope · WireCodec</text>
+  <text x="540" y="478" class="sub">MessageType · WorldSnapshot</text>
+  <text x="540" y="498" class="sub">PlayerSnapshot · BombSnapshot</text>
+  <text x="540" y="518" class="sub">MatchStart · MatchEnd</text>
 
-  <!-- ============ SERVER TIER ============ -->
-  <rect x="920" y="100" width="540" height="620" rx="14" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
-  <text x="1190" y="130" text-anchor="middle" class="ttl" fill="#ff3ad9">SERVER TIER  (agni · fire)</text>
-  <text x="1190" y="148" text-anchor="middle" class="sub">Authoritative simulation · Netty WebSocket</text>
+  <rect x="520" y="560" width="240" height="140" rx="8" fill="#ffffff" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="640" y="584" text-anchor="middle" class="ttl">Simulation</text>
+  <line x1="540" y1="596" x2="740" y2="596" stroke="#d6dae0" stroke-width="1"/>
+  <text x="540" y="618" class="sub">GameWorld (authoritative)</text>
+  <text x="540" y="638" class="sub">Snapshotter · TickClock</text>
+  <text x="540" y="658" class="sub">CollisionResolver</text>
+  <text x="540" y="678" class="sub">Deterministic, no I/O</text>
 
-  <!-- Netty Edge -->
-  <rect x="950" y="170" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1070" y="194" text-anchor="middle" class="ttl" fill="#ff3ad9">Netty Edge</text>
-  <line x1="962" y1="204" x2="1178" y2="204" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="966" y="222" class="sub">GameServer · WebSocketServer</text>
-  <text x="966" y="240" class="sub">GameServerHandler</text>
-  <text x="966" y="258" class="sub">TLS termination / wss://</text>
-  <text x="966" y="276" class="sub">Frame · ping · backpressure</text>
+  <!-- ============ SERVER TIER (right column) ============ -->
+  <rect x="900" y="120" width="440" height="600" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="1120" y="148" text-anchor="middle" class="grp">SERVER TIER  (bomberman-server)</text>
 
-  <!-- Lobby + Auth -->
-  <rect x="1220" y="170" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1330" y="194" text-anchor="middle" class="ttl" fill="#ff3ad9">Lobby + Auth</text>
-  <line x1="1232" y1="204" x2="1428" y2="204" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="1236" y="222" class="sub">LobbyService</text>
-  <text x="1236" y="240" class="sub">AuthRegistry</text>
-  <text x="1236" y="258" class="sub">SessionRegistry</text>
-  <text x="1236" y="276" class="sub">ClientSession</text>
+  <rect x="920" y="180" width="200" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1020" y="204" text-anchor="middle" class="ttl">Netty Edge</text>
+  <line x1="940" y1="216" x2="1100" y2="216" stroke="#d6dae0" stroke-width="1"/>
+  <text x="940" y="238" class="sub">GameServer</text>
+  <text x="940" y="256" class="sub">WebSocketServer</text>
+  <text x="940" y="274" class="sub">GameServerHandler</text>
+  <text x="940" y="292" class="sub">TLS · wss://</text>
 
-  <!-- Match Manager -->
-  <rect x="950" y="320" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1070" y="344" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchManager</text>
-  <line x1="962" y1="354" x2="1178" y2="354" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="966" y="372" class="sub">Pairs queued players</text>
-  <text x="966" y="390" class="sub">Creates MatchSession</text>
-  <text x="966" y="408" class="sub">Tracks active matches</text>
-  <text x="966" y="426" class="sub">Disposes finished sessions</text>
+  <rect x="1140" y="180" width="180" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1230" y="204" text-anchor="middle" class="ttl">Lobby + Auth</text>
+  <line x1="1160" y1="216" x2="1300" y2="216" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1160" y="238" class="sub">LobbyService</text>
+  <text x="1160" y="256" class="sub">AuthRegistry</text>
+  <text x="1160" y="274" class="sub">SessionRegistry</text>
+  <text x="1160" y="292" class="sub">ClientSession</text>
 
-  <!-- Match Session -->
-  <rect x="1220" y="320" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1330" y="344" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
-  <line x1="1232" y1="354" x2="1428" y2="354" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="1236" y="372" class="sub">Owns GameWorld</text>
-  <text x="1236" y="390" class="sub">20 Hz tick loop</text>
-  <text x="1236" y="408" class="sub">Broadcasts snapshots</text>
-  <text x="1236" y="426" class="sub">Applies inputs server-side</text>
+  <rect x="920" y="340" width="200" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1020" y="364" text-anchor="middle" class="ttl">MatchManager</text>
+  <line x1="940" y1="376" x2="1100" y2="376" stroke="#d6dae0" stroke-width="1"/>
+  <text x="940" y="398" class="sub">Pairs queued players</text>
+  <text x="940" y="416" class="sub">Creates MatchSession</text>
+  <text x="940" y="434" class="sub">Tracks active matches</text>
+  <text x="940" y="452" class="sub">Disposes finished</text>
 
-  <!-- Chat + Bots -->
-  <rect x="950" y="470" width="240" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1070" y="494" text-anchor="middle" class="ttl" fill="#ff3ad9">Chat + Bots</text>
-  <line x1="962" y1="504" x2="1178" y2="504" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="966" y="522" class="sub">ChatRouter</text>
-  <text x="966" y="540" class="sub">ProfanityFilter</text>
-  <text x="966" y="558" class="sub">BotController (AI fillers)</text>
-  <text x="966" y="576" class="sub">Same input pipeline</text>
+  <rect x="1140" y="340" width="180" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1230" y="364" text-anchor="middle" class="ttl">MatchSession</text>
+  <line x1="1160" y1="376" x2="1300" y2="376" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1160" y="398" class="sub">Owns GameWorld</text>
+  <text x="1160" y="416" class="sub">20 Hz tick loop</text>
+  <text x="1160" y="434" class="sub">Broadcasts snapshots</text>
+  <text x="1160" y="452" class="sub">Applies inputs</text>
 
-  <!-- Metrics -->
-  <rect x="1220" y="470" width="220" height="120" rx="10" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1330" y="494" text-anchor="middle" class="ttl" fill="#ff3ad9">Ops / Metrics</text>
-  <line x1="1232" y1="504" x2="1428" y2="504" stroke="#ff3ad9" stroke-width="0.8" opacity="0.6"/>
-  <text x="1236" y="522" class="sub">Micrometer counters</text>
-  <text x="1236" y="540" class="sub">Tick budget gauge</text>
-  <text x="1236" y="558" class="sub">/health · /ready endpoints</text>
-  <text x="1236" y="576" class="sub">Structured JSON logs</text>
+  <rect x="920" y="500" width="200" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1020" y="524" text-anchor="middle" class="ttl">Chat + Bots</text>
+  <line x1="940" y1="536" x2="1100" y2="536" stroke="#d6dae0" stroke-width="1"/>
+  <text x="940" y="558" class="sub">ChatRouter</text>
+  <text x="940" y="576" class="sub">ProfanityFilter</text>
+  <text x="940" y="594" class="sub">BotController (AI)</text>
+  <text x="940" y="612" class="sub">Same input pipeline</text>
 
-  <!-- ============ DATA TIER ============ -->
-  <rect x="40" y="760" width="640" height="150" rx="14" fill="#11141c" stroke="#ffb53a" stroke-width="2"/>
-  <text x="360" y="790" text-anchor="middle" class="ttl" fill="#ffb53a">DATA TIER  (pṛthvī · earth)</text>
-  <text x="360" y="808" text-anchor="middle" class="sub">Persistence + ephemeral state</text>
+  <rect x="1140" y="500" width="180" height="120" rx="8" fill="#ffffff" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1230" y="524" text-anchor="middle" class="ttl">Ops / Metrics</text>
+  <line x1="1160" y1="536" x2="1300" y2="536" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1160" y="558" class="sub">Micrometer</text>
+  <text x="1160" y="576" class="sub">Tick budget gauge</text>
+  <text x="1160" y="594" class="sub">/health · /ready</text>
+  <text x="1160" y="612" class="sub">JSON logs</text>
 
-  <rect x="70" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
-  <text x="210" y="850" text-anchor="middle" class="ttl" fill="#ffb53a">PostgreSQL</text>
-  <text x="210" y="872" text-anchor="middle" class="sub">accounts · match history · rankings</text>
+  <!-- ============ DATA TIER (bottom) ============ -->
+  <rect x="60" y="760" width="640" height="80" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="380" y="786" text-anchor="middle" class="grp">DATA TIER</text>
+  <rect x="80" y="800" width="280" height="30" rx="6" fill="#ffffff" stroke="#b8860b" stroke-width="1.2"/>
+  <text x="220" y="820" text-anchor="middle" class="ttl">PostgreSQL · accounts · history</text>
+  <rect x="380" y="800" width="300" height="30" rx="6" fill="#ffffff" stroke="#b8860b" stroke-width="1.2"/>
+  <text x="530" y="820" text-anchor="middle" class="ttl">Redis · sessions · queue · cache</text>
 
-  <rect x="380" y="825" width="280" height="65" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
-  <text x="520" y="850" text-anchor="middle" class="ttl" fill="#ffb53a">Redis</text>
-  <text x="520" y="872" text-anchor="middle" class="sub">sessions · matchmaking queue · cache</text>
+  <!-- ============ BUILD + OPS (bottom right) ============ -->
+  <rect x="740" y="760" width="600" height="80" rx="8" fill="#fff9e6" stroke="#9c7c20" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="1040" y="786" text-anchor="middle" class="grp">BUILD + OPS</text>
+  <rect x="760" y="800" width="180" height="30" rx="6" fill="#ffffff" stroke="#9c7c20" stroke-width="1.2"/>
+  <text x="850" y="820" text-anchor="middle" class="ttl">Maven 3 multi-module</text>
+  <rect x="960" y="800" width="180" height="30" rx="6" fill="#ffffff" stroke="#9c7c20" stroke-width="1.2"/>
+  <text x="1050" y="820" text-anchor="middle" class="ttl">JDK 17 (Red Hat)</text>
+  <rect x="1160" y="800" width="160" height="30" rx="6" fill="#ffffff" stroke="#9c7c20" stroke-width="1.2"/>
+  <text x="1240" y="820" text-anchor="middle" class="ttl">Docker · GH Actions</text>
 
-  <!-- ============ OPS TIER ============ -->
-  <rect x="760" y="760" width="700" height="150" rx="14" fill="#11141c" stroke="#daa520" stroke-width="2"/>
-  <text x="1110" y="790" text-anchor="middle" class="ttl" fill="#daa520">BUILD + OPS  (gandha · scent)</text>
-  <text x="1110" y="808" text-anchor="middle" class="sub">Tooling, CI, container runtime</text>
+  <!-- ============ CONNECTORS — orthogonal only ============ -->
+  <!-- Client tier (right edge x=380) → Shared core (left edge x=500) -->
+  <!-- JavaFX → Domain at y=260 -->
+  <path class="conn" d="M 380,260 H 500" marker-end="url(#arr)"/>
+  <rect x="416" y="240" width="68" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="450" y="252" text-anchor="middle" class="edge">imports</text>
 
-  <rect x="780" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
-  <text x="880" y="850" text-anchor="middle" class="ttl" fill="#daa520">Maven 3</text>
-  <text x="880" y="872" text-anchor="middle" class="sub">multi-module build</text>
+  <!-- Web → Wire at y=440 -->
+  <path class="conn" d="M 380,440 H 500" marker-end="url(#arr)"/>
+  <rect x="412" y="420" width="76" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="450" y="432" text-anchor="middle" class="edge">DTO + codec</text>
 
-  <rect x="1000" y="825" width="200" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
-  <text x="1100" y="850" text-anchor="middle" class="ttl" fill="#daa520">JDK 17</text>
-  <text x="1100" y="872" text-anchor="middle" class="sub">Red Hat OpenJDK</text>
+  <!-- 3D Spectator → Sim at y=620 -->
+  <path class="conn" d="M 380,620 H 500" marker-end="url(#arr)" stroke-dasharray="6 4"/>
+  <rect x="412" y="600" width="76" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="450" y="612" text-anchor="middle" class="edge">read-only DTO</text>
 
-  <rect x="1220" y="825" width="220" height="65" rx="10" fill="#2a2110" stroke="#daa520" stroke-width="1.4"/>
-  <text x="1330" y="850" text-anchor="middle" class="ttl" fill="#daa520">Docker · GitHub Actions</text>
-  <text x="1330" y="872" text-anchor="middle" class="sub">CI + container images</text>
+  <!-- Shared core (right edge x=780) → Server tier (left edge x=900) -->
+  <!-- Domain → MatchManager (route 780→820→400→900) -->
+  <path class="conn" d="M 780,310 H 840 V 400 H 900" marker-end="url(#arr)"/>
+  <rect x="800" y="358" width="100" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="850" y="370" text-anchor="middle" class="edge">domain reused</text>
 
-  <!-- ============ CONNECTIONS ============ -->
-  <!-- Client tier (right edge x=380) -> Shared core (left edge x=500). Lanes at y=250, y=430, y=620 -->
-  <!-- JavaFX -> Domain (lane 250) -->
-  <path class="conn" d="M 380,250 H 500" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="440" y="244" text-anchor="middle" class="edge">imports core</text>
+  <!-- Wire → Netty Edge (route 780→860→240→900) -->
+  <path class="conn" d="M 780,470 H 860 V 240 H 900" marker-end="url(#arr)"/>
+  <rect x="828" y="222" width="64" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="860" y="234" text-anchor="middle" class="edge">snapshots</text>
 
-  <!-- Web -> Wire (lane 440) -->
-  <path class="conn" d="M 350,440 H 440 V 460 H 500" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="395" y="434" text-anchor="middle" class="edge">DTO + codec</text>
+  <!-- Sim → MatchSession (route 780→840→400→1140) -->
+  <path class="conn" d="M 780,630 H 840 V 540 H 1140" marker-end="url(#arr)"/>
+  <rect x="980" y="522" width="86" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1023" y="534" text-anchor="middle" class="edge">GameWorld</text>
 
-  <!-- 3D Spectator -> Sim (lane 620) -->
-  <path class="conn" d="M 350,620 H 500" stroke="#3affb5" marker-end="url(#arrGreen)" stroke-dasharray="6 4"/>
-  <text x="425" y="614" text-anchor="middle" class="edge">read-only DTO</text>
+  <!-- Server internal: Netty Edge → MatchManager (down) -->
+  <path class="conn" d="M 1020,300 V 340" marker-end="url(#arr)"/>
+  <rect x="1024" y="312" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1064" y="324" text-anchor="middle" class="edge">route frames</text>
 
-  <!-- Shared core (right edge x=800) -> Server tier (left edge x=920). Lanes at y=300, y=460, y=620 -->
-  <path class="conn" d="M 800,305 H 860 V 230 H 950" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="880" y="224" text-anchor="middle" class="edge">domain reused</text>
+  <!-- Lobby+Auth → MatchManager (down + left) -->
+  <path class="conn" d="M 1230,300 V 320 H 1020 V 340" marker-end="url(#arr)"/>
+  <rect x="1100" y="302" width="84" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1142" y="314" text-anchor="middle" class="edge">create match</text>
 
-  <path class="conn" d="M 800,460 H 860 V 380 H 950" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="880" y="374" text-anchor="middle" class="edge">snapshots</text>
+  <!-- MatchManager → MatchSession (right) -->
+  <path class="conn" d="M 1120,400 H 1140" marker-end="url(#arr)"/>
 
-  <path class="conn" d="M 800,615 H 860 V 530 H 950" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="880" y="524" text-anchor="middle" class="edge">GameWorld</text>
+  <!-- MatchSession → Chat+Bots (down + left) -->
+  <path class="conn" d="M 1230,460 V 480 H 1020 V 500" marker-end="url(#arr)"/>
+  <rect x="1090" y="462" width="84" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1132" y="474" text-anchor="middle" class="edge">broadcast</text>
 
-  <!-- Server internal: Netty Edge -> Match Manager (down) -->
-  <path class="conn" d="M 1070,290 V 320" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="1140" y="308" text-anchor="middle" class="edge">route frames</text>
+  <!-- MatchSession → Metrics (down) -->
+  <path class="conn" d="M 1230,460 V 500" marker-end="url(#arr)"/>
 
-  <!-- Server internal: Lobby -> Match Manager (down + left) -->
-  <path class="conn" d="M 1330,290 V 308 H 1190" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="1260" y="302" text-anchor="middle" class="edge">create match</text>
+  <!-- Server (Netty Edge) → Postgres (down-left, trunk at y=740) -->
+  <path class="conn" d="M 940,300 V 740 H 220 V 800" marker-end="url(#arr)"/>
+  <rect x="540" y="722" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="620" y="734" text-anchor="middle" class="edge">JDBC · accounts/history</text>
 
-  <!-- Server internal: Match Manager -> Match Session (right) -->
-  <path class="conn" d="M 1190,380 H 1220" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="1205" y="374" text-anchor="middle" class="edge">spawn</text>
+  <!-- Server (Lobby+Auth) → Redis (down-left, trunk at y=750) -->
+  <path class="conn" d="M 1180,300 V 750 H 530 V 800" marker-end="url(#arr)"/>
+  <rect x="800" y="732" width="120" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="860" y="744" text-anchor="middle" class="edge">sessions · queue</text>
 
-  <!-- Server internal: Match Session -> Chat/Bots (down + left) -->
-  <path class="conn" d="M 1330,440 V 455 H 1070 V 470" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="1200" y="449" text-anchor="middle" class="edge">broadcast loop</text>
-
-  <!-- Server internal: Match Session -> Metrics (down) -->
-  <path class="conn" d="M 1330,440 V 470" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-
-  <!-- Server -> Data: Netty Edge (x=950,y=230) curve down-left to Postgres top -->
-  <path class="conn" d="M 970,290 V 740 H 210 V 825" stroke="#ffb53a" marker-end="url(#arrAmber)"/>
-  <text x="600" y="734" text-anchor="middle" class="edge">JDBC · accounts + history</text>
-
-  <!-- Server -> Redis: Lobby/Auth (1240,290) down to Redis top -->
-  <path class="conn" d="M 1240,290 V 745 H 520 V 825" stroke="#ffb53a" marker-end="url(#arrAmber)"/>
-  <text x="880" y="739" text-anchor="middle" class="edge">sessions · queue</text>
-
-  <!-- Ops dotted to server -->
-  <path class="conn" d="M 1110,825 V 720" stroke="#daa520" stroke-dasharray="4 4" opacity="0.7"/>
-  <text x="1116" y="750" class="edge">build · deploy</text>
-
-  <!-- Client connection to Netty (the actual WS link) -->
-  <path class="conn" d="M 350,210 H 410 V 80 H 1070 V 170" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="730" y="74" text-anchor="middle" class="edge">WebSocket  wss://  20 Hz</text>
-
-  <!-- Legend -->
-  <rect x="40" y="900" width="1420" height="30" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
-  <circle cx="60" cy="915" r="5" fill="#3affb5"/><text x="74" y="919" class="sub">imports core</text>
-  <circle cx="190" cy="915" r="5" fill="#3aedff"/><text x="204" y="919" class="sub">shared DTO / domain</text>
-  <circle cx="360" cy="915" r="5" fill="#ff3ad9"/><text x="374" y="919" class="sub">server runtime / WebSocket</text>
-  <circle cx="580" cy="915" r="5" fill="#ffb53a"/><text x="594" y="919" class="sub">persistence / cache</text>
-  <circle cx="760" cy="915" r="5" fill="#daa520"/><text x="774" y="919" class="sub">build · ops</text>
+  <!-- Client → Netty (the actual WS link via top trunk at y=104) -->
+  <path class="conn" d="M 220,180 V 104 H 1020 V 180" marker-end="url(#arr)"/>
+  <rect x="540" y="86" width="280" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="680" y="98" text-anchor="middle" class="edge">WebSocket  wss://  20 Hz</text>
 </svg>

@@ -1,404 +1,385 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1180" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <style>
-    rect { rx: 6; ry: 6; }
-    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 12px; fill: #9aa6b8; }
-    .edge { font-size: 11px; fill: #c5cbd6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1d24; }
+    .title { font-weight: 700; font-size: 22px; fill: #1a1d24; }
+    .ttl { font-weight: 700; font-size: 14px; fill: #1a1d24; }
+    .sub { font-size: 12px; fill: #5a626e; }
+    .edge { font-size: 12px; fill: #3a3f47; }
+    .grp { font-weight: 700; font-size: 13px; letter-spacing: 1.2px; fill: #6a6f78; }
+    .conn { fill: none; stroke: #5a626e; stroke-width: 1.6; }
   </style>
   <title id="title">UML Class Diagram — bomberman-core</title>
   <desc id="desc">Shared core entities: Bomberman, Player, Bomb, Explosion, Arena, Tile, Score, PowerUpItem, abstract Bonus + 7 subclasses, GameWorld, Snapshotter.</desc>
   <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
-    </pattern>
-    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
-    <marker id="arrInherit" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="13" markerHeight="13" orient="auto"><path d="M0,0 L14,7 L0,14 z" fill="#11141c" stroke="#daa520" stroke-width="1.5"/></marker>
-    <marker id="arrCompose" viewBox="0 0 16 8" refX="15" refY="4" markerWidth="14" markerHeight="8" orient="auto"><path d="M0,4 L8,0 L16,4 L8,8 z" fill="#daa520"/></marker>
+    <marker id="arr" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#5a626e"/></marker>
+    <marker id="arrInherit" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="13" markerHeight="13" orient="auto"><path d="M0,0 L14,7 L0,14 z" fill="#ffffff" stroke="#5a626e" stroke-width="1.5"/></marker>
+    <marker id="arrCompose" viewBox="0 0 16 8" refX="15" refY="4" markerWidth="14" markerHeight="8" orient="auto"><path d="M0,4 L8,0 L16,4 L8,8 z" fill="#5a626e"/></marker>
+    <filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow stdDeviation="1" dx="0" dy="1" flood-color="#000" flood-opacity="0.08"/></filter>
   </defs>
-  <style>
-    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .title { font-weight: 700; font-size: 22px; }
-    .ttl { font-weight: 700; font-size: 13px; }
-    .sub { font-size: 11px; fill: #cbd5e1; }
-    .edge { font-size: 11px; fill: #daa520; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .conn { fill: none; stroke-width: 1.8; stroke: #daa520; }
-  </style>
-  <rect x="0" y="0" width="1600" height="1180" fill="#08090d"/>
-  <rect x="0" y="0" width="1600" height="1180" fill="url(#grid)"/>
 
-  <text x="40" y="42" class="title" fill="#daa520">UML Class Diagram — bomberman-core</text>
-  <text x="40" y="64" class="sub">Domain entities · simulation · DTOs (shared across server and client)</text>
+  <rect x="0" y="0" width="1500" height="1000" fill="#ffffff"/>
+  <rect x="24" y="24" width="1452" height="952" rx="10" fill="#fdfdfb" stroke="#d6dae0" stroke-width="1.5"/>
 
-  <!-- ============ ROW 1: Sim + Player + Arena ============ -->
+  <text x="60" y="68" class="title">UML Class Diagram — bomberman-core</text>
+  <text x="60" y="92" class="sub">Domain entities · simulation · DTOs (shared across server and client)</text>
 
-  <!-- GameWorld (column 1) -->
-  <rect x="40"  y="100" width="280" height="200" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="40"  y="100" width="280" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="40"  y="116" width="280" height="10"             fill="#0c2c44"/>
-  <text x="180" y="118" text-anchor="middle" class="ttl" fill="#3aedff">GameWorld</text>
-  <line x1="40" y1="156" x2="320" y2="156" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="148" class="sub">- arena: Arena</text>
-  <text x="52" y="170" class="sub">- players: List&lt;Bomberman&gt;</text>
-  <text x="52" y="188" class="sub">- bombs: List&lt;Bomb&gt;</text>
-  <text x="52" y="206" class="sub">- explosions: List&lt;Explosion&gt;</text>
-  <text x="52" y="224" class="sub">- mode: GameMode</text>
-  <text x="52" y="242" class="sub">- state: GameState</text>
-  <line x1="40" y1="252" x2="320" y2="252" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="270" class="sub">+ tick(dtMs): void</text>
-  <text x="52" y="288" class="sub">+ apply(input): void</text>
+  <!-- ============ ROW 1 (y=120, h=180): GameWorld / Bomberman / Arena / Snapshotter ============ -->
+  <!-- Columns: 60, 360, 660, 960, 1260 (each 240 wide, 60 px gutter) -->
 
-  <!-- Bomberman (column 2) -->
-  <rect x="380" y="100" width="280" height="200" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="380" y="100" width="280" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="380" y="116" width="280" height="10"             fill="#0d2823"/>
-  <text x="520" y="118" text-anchor="middle" class="ttl" fill="#3affb5">Bomberman</text>
-  <line x1="380" y1="156" x2="660" y2="156" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="392" y="148" class="sub">- id: PlayerId</text>
-  <text x="392" y="170" class="sub">- name: String</text>
-  <text x="392" y="188" class="sub">- avatar: Avatar</text>
-  <text x="392" y="206" class="sub">- speed: int</text>
-  <text x="392" y="224" class="sub">- bombsMax: int  · flame: int</text>
-  <text x="392" y="242" class="sub">- lives: int  · armor: int</text>
-  <line x1="380" y1="252" x2="660" y2="252" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="392" y="270" class="sub">+ move(dir): void</text>
-  <text x="392" y="288" class="sub">+ placeBomb(tile): Bomb</text>
+  <!-- GameWorld (cyan) -->
+  <rect x="60" y="120" width="240" height="180" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="60" y="120" width="240" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="60" y="138" width="240" height="8"             fill="#cfe5f7"/>
+  <text x="180" y="140" text-anchor="middle" class="ttl">GameWorld</text>
+  <line x1="60" y1="170" x2="300" y2="170" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="184" class="sub">- arena: Arena</text>
+  <text x="72" y="200" class="sub">- players: List&lt;Bomberman&gt;</text>
+  <text x="72" y="216" class="sub">- bombs: List&lt;Bomb&gt;</text>
+  <text x="72" y="232" class="sub">- explosions: List&lt;Explosion&gt;</text>
+  <text x="72" y="248" class="sub">- state: GameState</text>
+  <line x1="60" y1="258" x2="300" y2="258" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="272" class="sub">+ tick(dtMs): void</text>
+  <text x="72" y="288" class="sub">+ apply(input): void</text>
 
-  <!-- Player abstract (column 3) -->
-  <rect x="720" y="100" width="260" height="200" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="720" y="100" width="260" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="720" y="116" width="260" height="10"             fill="#0d2823"/>
-  <text x="850" y="118" text-anchor="middle" class="ttl" fill="#3affb5">«abstract» Player</text>
-  <line x1="720" y1="156" x2="980" y2="156" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="732" y="148" class="sub">- id: PlayerId</text>
-  <text x="732" y="170" class="sub">- name: String</text>
-  <text x="732" y="188" class="sub">- score: Score</text>
-  <text x="732" y="206" class="sub">- avatar: Avatar</text>
-  <line x1="720" y1="216" x2="980" y2="216" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="732" y="234" class="sub">+ getId(): PlayerId</text>
-  <text x="732" y="252" class="sub">+ getName(): String</text>
-  <text x="732" y="270" class="sub">+ getScore(): Score</text>
-  <text x="732" y="288" class="sub">+ awardPoints(n): void</text>
+  <!-- Bomberman (teal) -->
+  <rect x="360" y="120" width="240" height="180" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="360" y="120" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="360" y="138" width="240" height="8"             fill="#cdebe4"/>
+  <text x="480" y="140" text-anchor="middle" class="ttl">Bomberman</text>
+  <line x1="360" y1="170" x2="600" y2="170" stroke="#d6dae0" stroke-width="1"/>
+  <text x="372" y="184" class="sub">- id: PlayerId</text>
+  <text x="372" y="200" class="sub">- name: String</text>
+  <text x="372" y="216" class="sub">- speed: int</text>
+  <text x="372" y="232" class="sub">- bombsMax: int · flame: int</text>
+  <text x="372" y="248" class="sub">- lives: int · armor: int</text>
+  <line x1="360" y1="258" x2="600" y2="258" stroke="#d6dae0" stroke-width="1"/>
+  <text x="372" y="272" class="sub">+ move(dir): void</text>
+  <text x="372" y="288" class="sub">+ placeBomb(tile): Bomb</text>
 
-  <!-- Arena (column 4) -->
-  <rect x="1040" y="100" width="260" height="200" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1040" y="100" width="260" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1040" y="116" width="260" height="10"             fill="#0d2823"/>
-  <text x="1170" y="118" text-anchor="middle" class="ttl" fill="#3affb5">Arena</text>
-  <line x1="1040" y1="156" x2="1300" y2="156" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="148" class="sub">- width: int</text>
-  <text x="1052" y="170" class="sub">- height: int</text>
-  <text x="1052" y="188" class="sub">- tiles: Tile[][]</text>
-  <text x="1052" y="206" class="sub">- spawns: List&lt;Point&gt;</text>
-  <line x1="1040" y1="216" x2="1300" y2="216" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="234" class="sub">+ tileAt(x,y): Tile</text>
-  <text x="1052" y="252" class="sub">+ destroy(tile): void</text>
-  <text x="1052" y="270" class="sub">+ isWalkable(x,y): bool</text>
-  <text x="1052" y="288" class="sub">+ spawnFor(idx): Point</text>
+  <!-- Player abstract (teal) -->
+  <rect x="660" y="120" width="240" height="180" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="660" y="120" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="660" y="138" width="240" height="8"             fill="#cdebe4"/>
+  <text x="780" y="140" text-anchor="middle" class="ttl">«abstract» Player</text>
+  <line x1="660" y1="170" x2="900" y2="170" stroke="#d6dae0" stroke-width="1"/>
+  <text x="672" y="184" class="sub">- id: PlayerId</text>
+  <text x="672" y="200" class="sub">- name: String</text>
+  <text x="672" y="216" class="sub">- score: Score</text>
+  <text x="672" y="232" class="sub">- avatar: Avatar</text>
+  <line x1="660" y1="242" x2="900" y2="242" stroke="#d6dae0" stroke-width="1"/>
+  <text x="672" y="256" class="sub">+ getScore(): Score</text>
+  <text x="672" y="272" class="sub">+ awardPoints(n): void</text>
 
-  <!-- Snapshotter (column 5) -->
-  <rect x="1320" y="100" width="240" height="200" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1320" y="100" width="240" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1320" y="116" width="240" height="10"             fill="#0c2c44"/>
-  <text x="1440" y="118" text-anchor="middle" class="ttl" fill="#3aedff">Snapshotter</text>
-  <line x1="1320" y1="156" x2="1560" y2="156" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="1332" y="148" class="sub">- world: GameWorld</text>
-  <text x="1332" y="170" class="sub">- codec: WireCodec</text>
-  <line x1="1320" y1="180" x2="1560" y2="180" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="1332" y="198" class="sub">+ capture(): WorldSnapshot</text>
-  <text x="1332" y="216" class="sub">+ encode(env): byte[]</text>
-  <text x="1332" y="234" class="sub">+ decode(buf): Envelope</text>
-  <text x="1332" y="266" class="sub" fill="#94a3b8">Stateless encoder facade</text>
+  <!-- Arena (teal) -->
+  <rect x="960" y="120" width="240" height="180" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="960" y="120" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="960" y="138" width="240" height="8"             fill="#cdebe4"/>
+  <text x="1080" y="140" text-anchor="middle" class="ttl">Arena</text>
+  <line x1="960" y1="170" x2="1200" y2="170" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="184" class="sub">- width: int · height: int</text>
+  <text x="972" y="200" class="sub">- tiles: Tile[][]</text>
+  <text x="972" y="216" class="sub">- spawns: List&lt;Point&gt;</text>
+  <line x1="960" y1="226" x2="1200" y2="226" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="240" class="sub">+ tileAt(x,y): Tile</text>
+  <text x="972" y="256" class="sub">+ destroy(tile): void</text>
+  <text x="972" y="272" class="sub">+ isWalkable(x,y): bool</text>
+  <text x="972" y="288" class="sub">+ spawnFor(idx): Point</text>
 
-  <!-- ============ ROW 2: Bomb / Explosion / Tile / Score / PowerUp ============ -->
+  <!-- Snapshotter (cyan) -->
+  <rect x="1260" y="120" width="180" height="180" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="1260" y="120" width="180" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="1260" y="138" width="180" height="8"             fill="#cfe5f7"/>
+  <text x="1350" y="140" text-anchor="middle" class="ttl">Snapshotter</text>
+  <line x1="1260" y1="170" x2="1440" y2="170" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1272" y="184" class="sub">- world: GameWorld</text>
+  <text x="1272" y="200" class="sub">- codec: WireCodec</text>
+  <line x1="1260" y1="210" x2="1440" y2="210" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1272" y="224" class="sub">+ capture()</text>
+  <text x="1272" y="240" class="sub">+ encode(env): byte[]</text>
+  <text x="1272" y="256" class="sub">+ decode(buf): Envelope</text>
+  <text x="1272" y="280" class="sub">Stateless facade</text>
 
-  <!-- Bomb -->
-  <rect x="40"  y="370" width="280" height="180" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="40"  y="370" width="280" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="40"  y="386" width="280" height="10"             fill="#0d2823"/>
-  <text x="180" y="388" text-anchor="middle" class="ttl" fill="#3affb5">Bomb</text>
-  <line x1="40" y1="426" x2="320" y2="426" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="418" class="sub">- id: BombId</text>
-  <text x="52" y="440" class="sub">- owner: PlayerId</text>
-  <text x="52" y="458" class="sub">- tile: Point</text>
-  <text x="52" y="476" class="sub">- fuseMs: int</text>
-  <text x="52" y="494" class="sub">- flame: int</text>
-  <line x1="40" y1="504" x2="320" y2="504" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="522" class="sub">+ tick(dt): void</text>
-  <text x="52" y="540" class="sub">+ ignite(): Explosion</text>
+  <!-- ============ ROW 2 (y=360, h=160): Bomb / Explosion / Tile / Score / PowerUpItem ============ -->
 
-  <!-- Explosion -->
-  <rect x="380" y="370" width="280" height="180" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="380" y="370" width="280" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="380" y="386" width="280" height="10"             fill="#0d2823"/>
-  <text x="520" y="388" text-anchor="middle" class="ttl" fill="#3affb5">Explosion</text>
-  <line x1="380" y1="426" x2="660" y2="426" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="392" y="418" class="sub">- center: Point</text>
-  <text x="392" y="440" class="sub">- flamesUp: int</text>
-  <text x="392" y="458" class="sub">- flamesDown: int</text>
-  <text x="392" y="476" class="sub">- flamesLeft: int</text>
-  <text x="392" y="494" class="sub">- flamesRight: int  · ttlMs: int</text>
-  <line x1="380" y1="504" x2="660" y2="504" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="392" y="522" class="sub">+ tiles(): List&lt;Point&gt;</text>
-  <text x="392" y="540" class="sub">+ expired(): boolean</text>
+  <rect x="60" y="360" width="240" height="160" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="60" y="360" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="60" y="378" width="240" height="8"             fill="#cdebe4"/>
+  <text x="180" y="380" text-anchor="middle" class="ttl">Bomb</text>
+  <line x1="60" y1="410" x2="300" y2="410" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="424" class="sub">- id: BombId</text>
+  <text x="72" y="440" class="sub">- owner: PlayerId</text>
+  <text x="72" y="456" class="sub">- tile: Point</text>
+  <text x="72" y="472" class="sub">- fuseMs: int · flame: int</text>
+  <line x1="60" y1="482" x2="300" y2="482" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="496" class="sub">+ tick(dt): void</text>
+  <text x="72" y="512" class="sub">+ ignite(): Explosion</text>
 
-  <!-- Tile -->
-  <rect x="720" y="370" width="260" height="180" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="720" y="370" width="260" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="720" y="386" width="260" height="10"             fill="#0d2823"/>
-  <text x="850" y="388" text-anchor="middle" class="ttl" fill="#3affb5">Tile</text>
-  <line x1="720" y1="426" x2="980" y2="426" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="732" y="418" class="sub">- kind: TileKind</text>
-  <text x="732" y="440" class="sub">- x: int  · y: int</text>
-  <text x="732" y="458" class="sub">- bonus: PowerUpItem?</text>
-  <text x="732" y="476" class="sub">- destructible: boolean</text>
-  <line x1="720" y1="486" x2="980" y2="486" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="732" y="504" class="sub">+ walkable(): boolean</text>
-  <text x="732" y="522" class="sub">+ destroy(): PowerUpItem?</text>
+  <rect x="360" y="360" width="240" height="160" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="360" y="360" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="360" y="378" width="240" height="8"             fill="#cdebe4"/>
+  <text x="480" y="380" text-anchor="middle" class="ttl">Explosion</text>
+  <line x1="360" y1="410" x2="600" y2="410" stroke="#d6dae0" stroke-width="1"/>
+  <text x="372" y="424" class="sub">- center: Point</text>
+  <text x="372" y="440" class="sub">- flamesUp/Down: int</text>
+  <text x="372" y="456" class="sub">- flamesLeft/Right: int</text>
+  <text x="372" y="472" class="sub">- ttlMs: int</text>
+  <line x1="360" y1="482" x2="600" y2="482" stroke="#d6dae0" stroke-width="1"/>
+  <text x="372" y="496" class="sub">+ tiles(): List&lt;Point&gt;</text>
+  <text x="372" y="512" class="sub">+ expired(): boolean</text>
 
-  <!-- Score -->
-  <rect x="1040" y="370" width="260" height="180" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1040" y="370" width="260" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1040" y="386" width="260" height="10"             fill="#0d2823"/>
-  <text x="1170" y="388" text-anchor="middle" class="ttl" fill="#3affb5">Score</text>
-  <line x1="1040" y1="426" x2="1300" y2="426" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="418" class="sub">- points: int</text>
-  <text x="1052" y="440" class="sub">- kills: int</text>
-  <text x="1052" y="458" class="sub">- deaths: int</text>
-  <text x="1052" y="476" class="sub">- bonusesPicked: int</text>
-  <line x1="1040" y1="486" x2="1300" y2="486" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="504" class="sub">+ addKill(): void</text>
-  <text x="1052" y="522" class="sub">+ addPoints(n): void</text>
+  <rect x="660" y="360" width="240" height="160" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="660" y="360" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="660" y="378" width="240" height="8"             fill="#cdebe4"/>
+  <text x="780" y="380" text-anchor="middle" class="ttl">Tile</text>
+  <line x1="660" y1="410" x2="900" y2="410" stroke="#d6dae0" stroke-width="1"/>
+  <text x="672" y="424" class="sub">- kind: TileKind</text>
+  <text x="672" y="440" class="sub">- x: int · y: int</text>
+  <text x="672" y="456" class="sub">- bonus: PowerUpItem?</text>
+  <text x="672" y="472" class="sub">- destructible: boolean</text>
+  <line x1="660" y1="482" x2="900" y2="482" stroke="#d6dae0" stroke-width="1"/>
+  <text x="672" y="496" class="sub">+ walkable(): boolean</text>
+  <text x="672" y="512" class="sub">+ destroy(): PowerUpItem?</text>
 
-  <!-- PowerUpItem -->
-  <rect x="1320" y="370" width="240" height="180" rx="10" fill="#11141c" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1320" y="370" width="240" height="26"  rx="10" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <rect x="1320" y="386" width="240" height="10"             fill="#0d2823"/>
-  <text x="1440" y="388" text-anchor="middle" class="ttl" fill="#3affb5">PowerUpItem</text>
-  <line x1="1320" y1="426" x2="1560" y2="426" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1332" y="418" class="sub">- bonus: Bonus</text>
-  <text x="1332" y="440" class="sub">- tile: Point</text>
-  <text x="1332" y="458" class="sub">- ttlMs: int</text>
-  <line x1="1320" y1="468" x2="1560" y2="468" stroke="#3affb5" stroke-width="0.8" opacity="0.5"/>
-  <text x="1332" y="486" class="sub">+ collect(p): void</text>
-  <text x="1332" y="504" class="sub">+ isExpired(): boolean</text>
+  <rect x="960" y="360" width="240" height="160" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="960" y="360" width="240" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="960" y="378" width="240" height="8"             fill="#cdebe4"/>
+  <text x="1080" y="380" text-anchor="middle" class="ttl">Score</text>
+  <line x1="960" y1="410" x2="1200" y2="410" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="424" class="sub">- points: int</text>
+  <text x="972" y="440" class="sub">- kills: int · deaths: int</text>
+  <text x="972" y="456" class="sub">- bonusesPicked: int</text>
+  <line x1="960" y1="466" x2="1200" y2="466" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="480" class="sub">+ addKill(): void</text>
+  <text x="972" y="496" class="sub">+ addPoints(n): void</text>
 
-  <!-- ============ ROW 3: Bonus + subclasses ============ -->
+  <rect x="1260" y="360" width="180" height="160" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="1260" y="360" width="180" height="26" rx="8" fill="#cdebe4" stroke="#0b8a78" stroke-width="1.4"/>
+  <rect x="1260" y="378" width="180" height="8"             fill="#cdebe4"/>
+  <text x="1350" y="380" text-anchor="middle" class="ttl">PowerUpItem</text>
+  <line x1="1260" y1="410" x2="1440" y2="410" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1272" y="424" class="sub">- bonus: Bonus</text>
+  <text x="1272" y="440" class="sub">- tile: Point</text>
+  <text x="1272" y="456" class="sub">- ttlMs: int</text>
+  <line x1="1260" y1="466" x2="1440" y2="466" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1272" y="480" class="sub">+ collect(p): void</text>
+  <text x="1272" y="496" class="sub">+ isExpired(): boolean</text>
 
-  <!-- Bonus (abstract) — centered on left -->
-  <rect x="40"  y="620" width="280" height="160" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.6"/>
-  <rect x="40"  y="620" width="280" height="26"  rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.6"/>
-  <rect x="40"  y="636" width="280" height="10"             fill="#3a2810"/>
-  <text x="180" y="638" text-anchor="middle" class="ttl" fill="#ffb53a">«abstract» Bonus</text>
-  <line x1="40" y1="676" x2="320" y2="676" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="668" class="sub">- type: BonusType</text>
-  <text x="52" y="690" class="sub">- magnitude: int</text>
-  <text x="52" y="708" class="sub">- iconKey: String</text>
-  <line x1="40" y1="718" x2="320" y2="718" stroke="#ffb53a" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="736" class="sub">+ applyTo(Bomberman): void</text>
-  <text x="52" y="754" class="sub">+ describe(): String</text>
-  <text x="52" y="772" class="sub" fill="#daa520">subclassed 7 times →</text>
+  <!-- ============ ROW 3 (y=580, h=140): Bonus tree ============ -->
+  <!-- Bonus abstract (amber) on left -->
+  <rect x="60" y="580" width="240" height="140" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="60" y="580" width="240" height="26" rx="8" fill="#f4e4be" stroke="#b8860b" stroke-width="1.4"/>
+  <rect x="60" y="598" width="240" height="8"             fill="#f4e4be"/>
+  <text x="180" y="600" text-anchor="middle" class="ttl">«abstract» Bonus</text>
+  <line x1="60" y1="630" x2="300" y2="630" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="644" class="sub">- type: BonusType</text>
+  <text x="72" y="660" class="sub">- magnitude: int</text>
+  <text x="72" y="676" class="sub">- iconKey: String</text>
+  <line x1="60" y1="686" x2="300" y2="686" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="700" class="sub">+ applyTo(Bomberman)</text>
+  <text x="72" y="716" class="sub">+ describe(): String</text>
 
-  <!-- 7 subclasses laid out in 2 rows × 4 cols (with 7th centered) -->
-  <!-- Row A: ArmorBonus, ExtraBombBonus, FlameBonus, KickBonus -->
-  <!-- x = 380, 700, 1020, 1340 ; w=220 -->
-  <rect x="380" y="620" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="380" y="620" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="380" y="636" width="220" height="8"             fill="#3a2810"/>
-  <text x="490" y="637" text-anchor="middle" class="ttl" fill="#ffb53a">ArmorBonus</text>
-  <text x="392" y="668" class="sub">+ armor++</text>
-  <text x="392" y="686" class="sub">absorbs 1 hit</text>
+  <!-- 7 subclasses in 2 rows (4+3) — narrower cards -->
+  <!-- Row A (y=580 h=60): ArmorBonus, ExtraBombBonus, FlameBonus, KickBonus -->
+  <!-- 4 cols starting x=360, w=240, gutter 20 -->
+  <g>
+    <rect x="360" y="580" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="360" y="580" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="360" y="594" width="240" height="8" fill="#f4e4be"/>
+    <text x="480" y="598" text-anchor="middle" class="ttl">ArmorBonus</text>
+    <text x="372" y="622" class="sub">+ armor++ · absorbs 1 hit</text>
+  </g>
+  <g>
+    <rect x="620" y="580" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="620" y="580" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="620" y="594" width="240" height="8" fill="#f4e4be"/>
+    <text x="740" y="598" text-anchor="middle" class="ttl">ExtraBombBonus</text>
+    <text x="632" y="622" class="sub">+ bombsMax++</text>
+  </g>
+  <g>
+    <rect x="880" y="580" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="880" y="580" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="880" y="594" width="240" height="8" fill="#f4e4be"/>
+    <text x="1000" y="598" text-anchor="middle" class="ttl">FlameBonus</text>
+    <text x="892" y="622" class="sub">+ flame++ · longer radius</text>
+  </g>
+  <g>
+    <rect x="1140" y="580" width="280" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="1140" y="580" width="280" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="1140" y="594" width="280" height="8" fill="#f4e4be"/>
+    <text x="1280" y="598" text-anchor="middle" class="ttl">KickBonus</text>
+    <text x="1152" y="622" class="sub">+ canKick = true · kicks bombs</text>
+  </g>
 
-  <rect x="620" y="620" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="620" y="620" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="620" y="636" width="220" height="8"             fill="#3a2810"/>
-  <text x="730" y="637" text-anchor="middle" class="ttl" fill="#ffb53a">ExtraBombBonus</text>
-  <text x="632" y="668" class="sub">+ bombsMax++</text>
-  <text x="632" y="686" class="sub">one extra concurrent bomb</text>
+  <!-- Row B (y=660 h=60): LifeBonus, SpeedBonus, ThrowBonus, BonusType enum -->
+  <g>
+    <rect x="360" y="660" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="360" y="660" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="360" y="674" width="240" height="8" fill="#f4e4be"/>
+    <text x="480" y="678" text-anchor="middle" class="ttl">LifeBonus</text>
+    <text x="372" y="702" class="sub">+ lives++ · extra respawn</text>
+  </g>
+  <g>
+    <rect x="620" y="660" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="620" y="660" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="620" y="674" width="240" height="8" fill="#f4e4be"/>
+    <text x="740" y="678" text-anchor="middle" class="ttl">SpeedBonus</text>
+    <text x="632" y="702" class="sub">+ speed++ · faster movement</text>
+  </g>
+  <g>
+    <rect x="880" y="660" width="240" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" filter="url(#sh)"/>
+    <rect x="880" y="660" width="240" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="880" y="674" width="240" height="8" fill="#f4e4be"/>
+    <text x="1000" y="678" text-anchor="middle" class="ttl">ThrowBonus</text>
+    <text x="892" y="702" class="sub">+ canThrow = true</text>
+  </g>
+  <g>
+    <rect x="1140" y="660" width="280" height="60" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.2" stroke-dasharray="4 3" filter="url(#sh)"/>
+    <rect x="1140" y="660" width="280" height="22" rx="8" fill="#f4e4be"/>
+    <rect x="1140" y="674" width="280" height="8" fill="#f4e4be"/>
+    <text x="1280" y="678" text-anchor="middle" class="ttl">«enum» BonusType</text>
+    <text x="1152" y="702" class="sub">ARMOR · BOMB · FLAME · KICK · LIFE · SPEED · THROW</text>
+  </g>
 
-  <rect x="860" y="620" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="860" y="620" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="860" y="636" width="220" height="8"             fill="#3a2810"/>
-  <text x="970" y="637" text-anchor="middle" class="ttl" fill="#ffb53a">FlameBonus</text>
-  <text x="872" y="668" class="sub">+ flame++</text>
-  <text x="872" y="686" class="sub">longer explosion radius</text>
+  <!-- ============ ROW 4 (y=760, h=160): Wire DTOs ============ -->
 
-  <rect x="1100" y="620" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="1100" y="620" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="1100" y="636" width="220" height="8"             fill="#3a2810"/>
-  <text x="1210" y="637" text-anchor="middle" class="ttl" fill="#ffb53a">KickBonus</text>
-  <text x="1112" y="668" class="sub">+ canKick = true</text>
-  <text x="1112" y="686" class="sub">player kicks bombs</text>
+  <rect x="60" y="760" width="240" height="160" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="60" y="760" width="240" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="60" y="778" width="240" height="8"             fill="#cfe5f7"/>
+  <text x="180" y="780" text-anchor="middle" class="ttl">Envelope &lt;DTO&gt;</text>
+  <line x1="60" y1="810" x2="300" y2="810" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="824" class="sub">- type: MessageType</text>
+  <text x="72" y="840" class="sub">- payload: bytes</text>
+  <text x="72" y="856" class="sub">- ts: long</text>
+  <line x1="60" y1="866" x2="300" y2="866" stroke="#d6dae0" stroke-width="1"/>
+  <text x="72" y="880" class="sub">+ encode(): byte[]</text>
+  <text x="72" y="896" class="sub">+ decode(buf): Envelope</text>
+  <text x="72" y="912" class="sub">wire frame · 12B header</text>
 
-  <!-- Row B: LifeBonus, SpeedBonus, ThrowBonus -->
-  <rect x="380" y="720" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="380" y="720" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="380" y="736" width="220" height="8"             fill="#3a2810"/>
-  <text x="490" y="737" text-anchor="middle" class="ttl" fill="#ffb53a">LifeBonus</text>
-  <text x="392" y="768" class="sub">+ lives++</text>
-  <text x="392" y="786" class="sub">extra respawn token</text>
+  <rect x="360" y="760" width="240" height="160" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="360" y="760" width="240" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="360" y="778" width="240" height="8"             fill="#cfe5f7"/>
+  <text x="480" y="780" text-anchor="middle" class="ttl">WorldSnapshot &lt;DTO&gt;</text>
+  <line x1="360" y1="810" x2="600" y2="810" stroke="#d6dae0" stroke-width="1"/>
+  <text x="372" y="824" class="sub">- tick: int</text>
+  <text x="372" y="840" class="sub">- players: List</text>
+  <text x="372" y="856" class="sub">- bombs: List</text>
+  <text x="372" y="872" class="sub">- explosions: List</text>
+  <text x="372" y="888" class="sub">- arenaHash: int</text>
+  <text x="372" y="912" class="sub">broadcast 20× per second</text>
 
-  <rect x="620" y="720" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="620" y="720" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="620" y="736" width="220" height="8"             fill="#3a2810"/>
-  <text x="730" y="737" text-anchor="middle" class="ttl" fill="#ffb53a">SpeedBonus</text>
-  <text x="632" y="768" class="sub">+ speed++</text>
-  <text x="632" y="786" class="sub">faster movement</text>
+  <rect x="660" y="760" width="240" height="160" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="660" y="760" width="240" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="660" y="778" width="240" height="8"             fill="#cfe5f7"/>
+  <text x="780" y="780" text-anchor="middle" class="ttl">MatchStart / End &lt;DTO&gt;</text>
+  <line x1="660" y1="810" x2="900" y2="810" stroke="#d6dae0" stroke-width="1"/>
+  <text x="672" y="824" class="sub">- matchId: UUID</text>
+  <text x="672" y="840" class="sub">- mode: GameMode</text>
+  <text x="672" y="856" class="sub">- players: List</text>
+  <text x="672" y="872" class="sub">- arenaSeed: long</text>
+  <text x="672" y="888" class="sub">- winner: PlayerId?</text>
+  <text x="672" y="912" class="sub">two complementary DTOs</text>
 
-  <rect x="860" y="720" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="860" y="720" width="220" height="24" rx="10" fill="#3a2810" stroke="#ffb53a" stroke-width="1.2"/>
-  <rect x="860" y="736" width="220" height="8"             fill="#3a2810"/>
-  <text x="970" y="737" text-anchor="middle" class="ttl" fill="#ffb53a">ThrowBonus</text>
-  <text x="872" y="768" class="sub">+ canThrow = true</text>
-  <text x="872" y="786" class="sub">player throws bombs</text>
+  <rect x="960" y="760" width="240" height="160" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="960" y="760" width="240" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="960" y="778" width="240" height="8"             fill="#cfe5f7"/>
+  <text x="1080" y="780" text-anchor="middle" class="ttl">WireCodec</text>
+  <line x1="960" y1="810" x2="1200" y2="810" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="824" class="sub">- registry: Map</text>
+  <line x1="960" y1="834" x2="1200" y2="834" stroke="#d6dae0" stroke-width="1"/>
+  <text x="972" y="848" class="sub">+ encode(Envelope): byte[]</text>
+  <text x="972" y="864" class="sub">+ decode(byte[]): Envelope</text>
+  <text x="972" y="880" class="sub">+ register(type, codec)</text>
+  <text x="972" y="904" class="sub">Strategy · pluggable</text>
 
-  <!-- Bonus type enum (for reference, anchor box) -->
-  <rect x="1100" y="720" width="220" height="80" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.2" stroke-dasharray="4 3"/>
-  <text x="1210" y="744" text-anchor="middle" class="ttl" fill="#ffb53a">«enum» BonusType</text>
-  <text x="1112" y="768" class="sub">ARMOR · EXTRA_BOMB · FLAME</text>
-  <text x="1112" y="786" class="sub">KICK · LIFE · SPEED · THROW</text>
+  <rect x="1260" y="760" width="180" height="160" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <rect x="1260" y="760" width="180" height="26" rx="8" fill="#cfe5f7" stroke="#1565c0" stroke-width="1.4"/>
+  <rect x="1260" y="778" width="180" height="8"             fill="#cfe5f7"/>
+  <text x="1350" y="780" text-anchor="middle" class="ttl">«enum» State/Mode</text>
+  <text x="1272" y="804" class="sub">State: LOBBY,</text>
+  <text x="1272" y="820" class="sub">  COUNTDOWN, RUNNING,</text>
+  <text x="1272" y="836" class="sub">  PAUSED, ENDED</text>
+  <line x1="1260" y1="846" x2="1440" y2="846" stroke="#d6dae0" stroke-width="1"/>
+  <text x="1272" y="860" class="sub">Mode: DEATHMATCH,</text>
+  <text x="1272" y="876" class="sub">  TEAM, CAPTURE,</text>
+  <text x="1272" y="892" class="sub">  FREE_FOR_ALL</text>
 
-  <!-- ============ ROW 4: Wire DTOs ============ -->
-  <rect x="40"  y="860" width="280" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="40"  y="860" width="280" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="40"  y="876" width="280" height="10"             fill="#0c2c44"/>
-  <text x="180" y="878" text-anchor="middle" class="ttl" fill="#3aedff">Envelope &lt;DTO&gt;</text>
-  <line x1="40" y1="916" x2="320" y2="916" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="908" class="sub">- type: MessageType</text>
-  <text x="52" y="930" class="sub">- payload: bytes</text>
-  <text x="52" y="948" class="sub">- ts: long</text>
-  <line x1="40" y1="958" x2="320" y2="958" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="52" y="976" class="sub">+ encode(): byte[]</text>
-  <text x="52" y="994" class="sub">+ decode(buf): Envelope</text>
-  <text x="52" y="1012" class="sub" fill="#94a3b8">wire frame · 12 B header</text>
+  <!-- ============ CONNECTIONS — orthogonal, trunk routed ============ -->
 
-  <rect x="380" y="860" width="280" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="380" y="860" width="280" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="380" y="876" width="280" height="10"             fill="#0c2c44"/>
-  <text x="520" y="878" text-anchor="middle" class="ttl" fill="#3aedff">WorldSnapshot &lt;DTO&gt;</text>
-  <line x1="380" y1="916" x2="660" y2="916" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="392" y="908" class="sub">- tick: int</text>
-  <text x="392" y="930" class="sub">- players: List&lt;PlayerSnapshot&gt;</text>
-  <text x="392" y="948" class="sub">- bombs: List&lt;BombSnapshot&gt;</text>
-  <text x="392" y="966" class="sub">- explosions: List&lt;ExplosionSnapshot&gt;</text>
-  <text x="392" y="984" class="sub">- arenaHash: int</text>
-  <text x="392" y="1002" class="sub" fill="#94a3b8">broadcast 20× per second</text>
+  <!-- Inheritance: Bomberman → Player (same row) -->
+  <path class="conn" d="M 600,200 H 660" marker-end="url(#arrInherit)"/>
+  <rect x="608" y="182" width="48" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="632" y="194" text-anchor="middle" class="edge">extends</text>
 
-  <rect x="720" y="860" width="260" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="720" y="860" width="260" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="720" y="876" width="260" height="10"             fill="#0c2c44"/>
-  <text x="850" y="878" text-anchor="middle" class="ttl" fill="#3aedff">MatchStart / MatchEnd &lt;DTO&gt;</text>
-  <line x1="720" y1="916" x2="980" y2="916" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="732" y="908" class="sub">- matchId: UUID</text>
-  <text x="732" y="930" class="sub">- mode: GameMode</text>
-  <text x="732" y="948" class="sub">- players: List&lt;PlayerSnapshot&gt;</text>
-  <text x="732" y="966" class="sub">- arenaSeed: long</text>
-  <text x="732" y="984" class="sub">- winner: PlayerId? (end only)</text>
-  <text x="732" y="1002" class="sub" fill="#94a3b8">two complementary DTOs</text>
+  <!-- GameWorld composes Arena (above row via top trunk at y=104) -->
+  <path class="conn" d="M 180,120 V 104 H 1080 V 120" marker-start="url(#arrCompose)"/>
+  <rect x="572" y="86" width="216" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="680" y="98" text-anchor="middle" class="edge">1 contains Arena</text>
 
-  <rect x="1040" y="860" width="260" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1040" y="860" width="260" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1040" y="876" width="260" height="10"             fill="#0c2c44"/>
-  <text x="1170" y="878" text-anchor="middle" class="ttl" fill="#3aedff">WireCodec</text>
-  <line x1="1040" y1="916" x2="1300" y2="916" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="908" class="sub">- registry: Map&lt;Type,Codec&gt;</text>
-  <line x1="1040" y1="924" x2="1300" y2="924" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="1052" y="942" class="sub">+ encode(Envelope): byte[]</text>
-  <text x="1052" y="960" class="sub">+ decode(byte[]): Envelope</text>
-  <text x="1052" y="978" class="sub">+ register(type, codec)</text>
-  <text x="1052" y="996" class="sub" fill="#94a3b8">Strategy pattern · pluggable</text>
+  <!-- GameWorld composes Bomberman (same row, right edge → next box) -->
+  <path class="conn" d="M 300,200 H 360" marker-start="url(#arrCompose)"/>
+  <rect x="318" y="182" width="24" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="330" y="194" text-anchor="middle" class="edge">1..*</text>
 
-  <rect x="1320" y="860" width="240" height="170" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1320" y="860" width="240" height="26"  rx="10" fill="#0c2c44" stroke="#3aedff" stroke-width="1.6"/>
-  <rect x="1320" y="876" width="240" height="10"             fill="#0c2c44"/>
-  <text x="1440" y="878" text-anchor="middle" class="ttl" fill="#3aedff">«enum» GameState / GameMode</text>
-  <text x="1332" y="908" class="sub">GameState: LOBBY,</text>
-  <text x="1332" y="926" class="sub">  COUNTDOWN, RUNNING,</text>
-  <text x="1332" y="944" class="sub">  PAUSED, ENDED</text>
-  <line x1="1320" y1="956" x2="1560" y2="956" stroke="#3aedff" stroke-width="0.8" opacity="0.5"/>
-  <text x="1332" y="974" class="sub">GameMode: DEATHMATCH,</text>
-  <text x="1332" y="992" class="sub">  TEAM, CAPTURE, FREE_FOR_ALL</text>
+  <!-- GameWorld → Bomb (down, same column x=180) -->
+  <path class="conn" d="M 180,300 V 360" marker-start="url(#arrCompose)"/>
+  <rect x="186" y="322" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="226" y="334" text-anchor="middle" class="edge">0..* bombs</text>
 
-  <!-- ============ CONNECTIONS ============ -->
+  <!-- GameWorld → Explosion (route 260 → 340 → 480 → 360) -->
+  <path class="conn" d="M 260,300 V 340 H 480 V 360" marker-start="url(#arrCompose)"/>
+  <rect x="332" y="322" width="116" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="390" y="334" text-anchor="middle" class="edge">0..* explosions</text>
 
-  <!-- Inheritance: Bomberman -> Player (open triangle) -->
-  <!-- Bomberman top edge (520,100) up to row above? Player is on the right of Bomberman (column 3 vs 2) in same row.
-       Bomberman center x=520, top y=100. Player center x=850, top y=100. Both at same row y range.
-       Route: Bomberman right edge (660, 200) -> H to 720 with arrow. Same row, simple H. -->
-  <path class="conn" d="M 660,200 H 720" marker-end="url(#arrInherit)"/>
-  <text x="690" y="194" text-anchor="middle" class="edge">extends</text>
+  <!-- Arena → Tile (route 1080,300 → 340 → 780 → 360) -->
+  <path class="conn" d="M 1080,300 V 340 H 780 V 360" marker-start="url(#arrCompose)"/>
+  <rect x="892" y="322" width="100" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="942" y="334" text-anchor="middle" class="edge">grid Tile</text>
 
-  <!-- GameWorld composes Arena: GameWorld right (320, 200) -> H to Arena.
-       But Bomberman occupies x=380..660 at the same lane y=200. Route around. -->
-  <!-- GameWorld (320, 130) up & over -->
-  <path class="conn" d="M 320,130 H 360 V 80 H 1170 V 100" marker-start="url(#arrCompose)"/>
-  <text x="700" y="74" text-anchor="middle" class="edge">1 contains 1 (Arena)</text>
+  <!-- Player → Score (route 780,300 → 340 → 1080 → 360) -->
+  <path class="conn" d="M 780,300 V 350 H 1080 V 360" marker-start="url(#arrCompose)"/>
+  <rect x="920" y="332" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="960" y="344" text-anchor="middle" class="edge">1 Score</text>
 
-  <!-- GameWorld composes Bomberman list: GameWorld (320, 170) -> Bomberman (380, 170) -->
-  <path class="conn" d="M 320,170 H 380" marker-start="url(#arrCompose)"/>
-  <text x="350" y="164" text-anchor="middle" class="edge">1..*</text>
+  <!-- Tile → PowerUpItem (same row, right) -->
+  <path class="conn" d="M 900,440 H 1260" marker-end="url(#arr)"/>
+  <rect x="1040" y="422" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="1120" y="434" text-anchor="middle" class="edge">may hide PowerUpItem</text>
 
-  <!-- GameWorld -> Bomb (down) GameWorld bottom (180, 300) -> Bomb top (180, 370) -->
-  <path class="conn" d="M 180,300 V 370" marker-start="url(#arrCompose)"/>
-  <text x="220" y="338" class="edge">0..*  bombs</text>
+  <!-- PowerUpItem composes Bonus — route down from 1350,520 → 550 → 180 → 580 -->
+  <path class="conn" d="M 1350,520 V 550 H 180 V 580" marker-start="url(#arrCompose)"/>
+  <rect x="700" y="532" width="76" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="738" y="544" text-anchor="middle" class="edge">1 Bonus</text>
 
-  <!-- GameWorld -> Explosion: GameWorld (260,300) -> Explosion (520, 370). L-shape -->
-  <path class="conn" d="M 260,300 V 340 H 520 V 370" marker-start="url(#arrCompose)"/>
-  <text x="400" y="334" text-anchor="middle" class="edge">0..*  explosions</text>
+  <!-- Inheritance trunk for 6 subclasses + enum (only 6 actual subclasses connect with inherit triangle) -->
+  <!-- Trunk: Bonus right edge (300,650) → 320 → up to y=560 → across to right → drop into each subclass top -->
+  <!-- Single trunk at y=560 from 480 (ArmorBonus center) across to 1000 (FlameBonus center) -->
+  <path class="conn" d="M 300,640 H 320 V 560 H 1000" marker-start="url(#arrInherit)"/>
+  <rect x="600" y="542" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="680" y="554" text-anchor="middle" class="edge">extends Bonus</text>
+  <!-- drops to each top-row subclass -->
+  <path class="conn" d="M 480,560 V 580"/>
+  <path class="conn" d="M 740,560 V 580"/>
+  <path class="conn" d="M 1000,560 V 580"/>
+  <path class="conn" d="M 1280,560 V 580" /><!-- KickBonus -->
+  <path class="conn" d="M 1000,560 H 1280"/>
+  <!-- bottom-row trunk at y=740 connects back -->
+  <path class="conn" d="M 480,660 V 740 H 740 V 740"/>
+  <path class="conn" d="M 480,740 V 660"/>
+  <path class="conn" d="M 740,740 V 660"/>
+  <path class="conn" d="M 1000,740 V 660"/>
 
-  <!-- Arena -> Tile: Arena (1170, 300) -> Tile (850, 370). L-shape -->
-  <path class="conn" d="M 1170,300 V 340 H 850 V 370" marker-start="url(#arrCompose)"/>
-  <text x="1010" y="334" text-anchor="middle" class="edge">grid  *  Tile</text>
+  <!-- Wire DTO row: WireCodec ↔ Envelope (dashed dependency) -->
+  <path class="conn" d="M 960,840 H 300" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+  <rect x="580" y="822" width="120" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="640" y="834" text-anchor="middle" class="edge">codec ↔ Envelope</text>
 
-  <!-- Player -> Score: Player (850, 300) -> Score (1170, 370). L-shape -->
-  <path class="conn" d="M 850,300 V 350 H 1170 V 370" marker-start="url(#arrCompose)"/>
-  <text x="1010" y="344" text-anchor="middle" class="edge">1  Score</text>
-
-  <!-- Tile -> PowerUpItem (right edge of Tile 980,460 to PowerUpItem left 1320,460 same row) -->
-  <path class="conn" d="M 980,460 H 1320" marker-end="url(#arrCyan)" stroke="#3aedff"/>
-  <text x="1150" y="454" text-anchor="middle" class="edge" fill="#3aedff">may hide  PowerUpItem</text>
-
-  <!-- PowerUpItem -> Bonus (composition): PowerUpItem (1320, 460) down to Bonus (180, 620). Trunk routing -->
-  <path class="conn" d="M 1440,550 V 590 H 180 V 620" marker-start="url(#arrCompose)"/>
-  <text x="800" y="584" text-anchor="middle" class="edge">1  Bonus</text>
-
-  <!-- Inheritance trunk: Bonus -> 7 subclasses via shared horizontal trunk at y=600 -->
-  <!-- Each subclass top -> trunk -->
-  <!-- Trunk -->
-  <path class="conn" d="M 320,700 H 350 V 600 H 1210 V 620" marker-start="url(#arrInherit)"/>
-  <text x="800" y="594" text-anchor="middle" class="edge">extends Bonus  (open triangle on Bonus)</text>
-  <!-- Drops from trunk y=600 to subclass tops y=620 -->
-  <path class="conn" d="M 490,600 V 620"/>
-  <path class="conn" d="M 730,600 V 620"/>
-  <path class="conn" d="M 970,600 V 620"/>
-  <!-- KickBonus at x=1210, already on trunk endpoint -->
-  <!-- Row B subclasses connect up via a second trunk at y=710 going up to y=600 -->
-  <path class="conn" d="M 490,720 V 710 H 970 V 710"/>
-  <path class="conn" d="M 490,710 V 600"/>
-  <path class="conn" d="M 730,720 V 710"/>
-  <path class="conn" d="M 970,720 V 710"/>
-
-  <!-- Wire DTO row: Envelope contains payload typed by MessageType (use enum) - dashed cyan -->
-  <path class="conn" d="M 320,945 H 380" stroke="#3aedff" marker-end="url(#arrCyan)" stroke-dasharray="4 3"/>
-  <text x="350" y="939" text-anchor="middle" class="edge" fill="#3aedff">payload</text>
-
-  <!-- WireCodec -> Envelope (depends on) -->
-  <path class="conn" d="M 1040,890 H 320" stroke="#3aedff" marker-end="url(#arrCyan)" stroke-dasharray="4 3"/>
-  <text x="680" y="884" text-anchor="middle" class="edge" fill="#3aedff">codec  ↔  Envelope</text>
-
-  <!-- Snapshotter -> WorldSnapshot (produces) — Snapshotter is at top-right (1440, 300); WorldSnapshot is at (520, 860) -->
-  <path class="conn" d="M 1440,300 V 820 H 520 V 860" stroke="#3aedff" marker-end="url(#arrCyan)" stroke-dasharray="4 3"/>
-  <text x="980" y="814" text-anchor="middle" class="edge" fill="#3aedff">capture → WorldSnapshot</text>
+  <!-- Snapshotter → WorldSnapshot (dashed) — trunk from 1350,300 → down to 740 → over to 480 → up -->
+  <path class="conn" d="M 1350,300 V 740 H 480 V 760" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+  <rect x="848" y="722" width="180" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="938" y="734" text-anchor="middle" class="edge">capture → WorldSnapshot</text>
 
   <!-- Legend -->
-  <rect x="40" y="1080" width="1520" height="70" rx="6" fill="#11141c" stroke="#1f2533" stroke-width="1"/>
-  <text x="60" y="1102" class="ttl" fill="#daa520">Legend</text>
-  <line x1="60" y1="1118" x2="120" y2="1118" stroke="#daa520" stroke-width="1.8" marker-start="url(#arrCompose)"/>
-  <text x="130" y="1122" class="sub">composition (filled diamond on owner)</text>
-  <line x1="380" y1="1118" x2="440" y2="1118" stroke="#daa520" stroke-width="1.8" marker-end="url(#arrInherit)"/>
-  <text x="450" y="1122" class="sub">inheritance (open triangle on parent)</text>
-  <line x1="720" y1="1118" x2="780" y2="1118" stroke="#3aedff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#arrCyan)"/>
-  <text x="790" y="1122" class="sub">dependency / DTO flow</text>
-  <text x="60" y="1140" class="sub">Entity colour: green = domain · cyan = sim/DTO · amber = bonus tree.</text>
+  <rect x="60" y="940" width="1380" height="30" rx="6" fill="#ffffff" stroke="#d6dae0" stroke-width="1"/>
+  <text x="76" y="960" class="sub">Composition = filled diamond on owner · Inheritance = hollow triangle on parent · Dashed = dependency. Pastels: teal=domain · cyan=DTO/sim · amber=bonus tree.</text>
 </svg>

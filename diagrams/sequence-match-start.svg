@@ -1,146 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <style>
-    rect { rx: 6; ry: 6; }
-    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 12px; fill: #9aa6b8; }
-    .edge { font-size: 11px; fill: #c5cbd6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1d24; }
+    .title { font-weight: 700; font-size: 22px; fill: #1a1d24; }
+    .ttl { font-weight: 700; font-size: 14px; fill: #1a1d24; }
+    .sub { font-size: 12px; fill: #5a626e; }
+    .edge { font-size: 12px; fill: #3a3f47; }
+    .num { font-size: 12px; font-weight: 700; fill: #1a1d24; }
+    .grp { font-weight: 700; font-size: 13px; letter-spacing: 1.2px; fill: #6a6f78; }
+    .conn { fill: none; stroke: #5a626e; stroke-width: 1.6; }
+    .life { stroke: #b0b6bf; stroke-width: 1.4; stroke-dasharray: 6 5; }
+    .bar  { fill: #fceaf3; stroke: #c2185b; stroke-width: 1; }
   </style>
   <title id="title">Sequence — Hello to MatchStart</title>
   <desc id="desc">Sequence of a client logging in, joining the lobby, being matched, and receiving MatchStart.</desc>
   <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
-    </pattern>
-    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
-    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
-    <marker id="arrAmber" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ffb53a"/></marker>
-    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+    <marker id="arr" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#5a626e"/></marker>
+    <filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow stdDeviation="1" dx="0" dy="1" flood-color="#000" flood-opacity="0.08"/></filter>
   </defs>
-  <style>
-    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .title { font-weight: 700; font-size: 22px; }
-    .ttl { font-weight: 700; font-size: 13px; }
-    .sub { font-size: 11px; fill: #94a3b8; }
-    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .num { font-size: 11px; font-weight: 700; fill: #daa520; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .conn { fill: none; stroke-width: 2; }
-    .life { stroke: #3aedff; stroke-width: 1.4; stroke-dasharray: 6 5; opacity: 0.55; }
-    .bar  { fill: #2a0d20; stroke: #ff3ad9; stroke-width: 1; }
-  </style>
-  <rect x="0" y="0" width="1500" height="1000" fill="#08090d"/>
-  <rect x="0" y="0" width="1500" height="1000" fill="url(#grid)"/>
 
-  <text x="40" y="42" class="title" fill="#daa520">Sequence — Hello to MatchStart</text>
-  <text x="40" y="64" class="sub">Login · lobby join · matchmaking · MatchStart broadcast</text>
+  <rect x="0" y="0" width="1200" height="800" fill="#ffffff"/>
+  <rect x="24" y="24" width="1152" height="752" rx="10" fill="#fdfdfb" stroke="#d6dae0" stroke-width="1.5"/>
 
-  <!-- 7 lifelines (centers): 130, 320, 510, 700, 890, 1080, 1320 -->
+  <text x="60" y="68" class="title">Sequence — Hello to MatchStart</text>
+  <text x="60" y="92" class="sub">Login · lobby join · matchmaking · MatchStart broadcast</text>
 
-  <rect x="50"   y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="130"  y="125" text-anchor="middle" class="ttl" fill="#3affb5">Client (A)</text>
-  <text x="130"  y="145" text-anchor="middle" class="sub">GameClient</text>
+  <!-- 6 lifelines: 140, 320, 500, 680, 860, 1080 (≥160 px gutters; trimmed to 6 from 7) -->
 
-  <rect x="240"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="320"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">WebSocketServer</text>
-  <text x="320"  y="145" text-anchor="middle" class="sub">Netty edge</text>
+  <rect x="60" y="120" width="160" height="60" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="140" y="146" text-anchor="middle" class="ttl">Client (A)</text>
+  <text x="140" y="166" text-anchor="middle" class="sub">GameClient</text>
 
-  <rect x="430"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="510"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">AuthRegistry</text>
-  <text x="510"  y="145" text-anchor="middle" class="sub">+ SessionRegistry</text>
+  <rect x="240" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="320" y="146" text-anchor="middle" class="ttl">WebSocketServer</text>
+  <text x="320" y="166" text-anchor="middle" class="sub">Netty edge</text>
 
-  <rect x="620"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="700"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">LobbyService</text>
-  <text x="700"  y="145" text-anchor="middle" class="sub">presence/queue</text>
+  <rect x="420" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="500" y="146" text-anchor="middle" class="ttl">AuthRegistry</text>
+  <text x="500" y="166" text-anchor="middle" class="sub">+ Session</text>
 
-  <rect x="810"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="890"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchManager</text>
-  <text x="890"  y="145" text-anchor="middle" class="sub">creates sessions</text>
+  <rect x="600" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="680" y="146" text-anchor="middle" class="ttl">LobbyService</text>
+  <text x="680" y="166" text-anchor="middle" class="sub">presence/queue</text>
 
-  <rect x="1000" y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="1080" y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
-  <text x="1080" y="145" text-anchor="middle" class="sub">tick loop</text>
+  <rect x="780" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="860" y="146" text-anchor="middle" class="ttl">MatchManager</text>
+  <text x="860" y="166" text-anchor="middle" class="sub">+ MatchSession</text>
 
-  <rect x="1240" y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="1320" y="125" text-anchor="middle" class="ttl" fill="#3affb5">Matched Clients</text>
-  <text x="1320" y="145" text-anchor="middle" class="sub">A · B · C · D</text>
+  <rect x="1000" y="120" width="160" height="60" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1080" y="146" text-anchor="middle" class="ttl">Matched Clients</text>
+  <text x="1080" y="166" text-anchor="middle" class="sub">A · B · C · D</text>
 
-  <!-- Lifelines -->
-  <line class="life" x1="130"  y1="160" x2="130"  y2="900"/>
-  <line class="life" x1="320"  y1="160" x2="320"  y2="900"/>
-  <line class="life" x1="510"  y1="160" x2="510"  y2="900"/>
-  <line class="life" x1="700"  y1="160" x2="700"  y2="900"/>
-  <line class="life" x1="890"  y1="160" x2="890"  y2="900"/>
-  <line class="life" x1="1080" y1="160" x2="1080" y2="900"/>
-  <line class="life" x1="1320" y1="160" x2="1320" y2="900"/>
+  <!-- Lifelines (y 180 → 640) -->
+  <line class="life" x1="140"  y1="180" x2="140"  y2="640"/>
+  <line class="life" x1="320"  y1="180" x2="320"  y2="640"/>
+  <line class="life" x1="500"  y1="180" x2="500"  y2="640"/>
+  <line class="life" x1="680"  y1="180" x2="680"  y2="640"/>
+  <line class="life" x1="860"  y1="180" x2="860"  y2="640"/>
+  <line class="life" x1="1080" y1="180" x2="1080" y2="640"/>
 
   <!-- Activation bars -->
-  <rect class="bar" x="315"  y="200" width="10" height="100"/>
-  <rect class="bar" x="505"  y="240" width="10" height="60"/>
-  <rect class="bar" x="695"  y="360" width="10" height="220"/>
-  <rect class="bar" x="885"  y="500" width="10" height="220"/>
-  <rect class="bar" x="1075" y="640" width="10" height="180"/>
+  <rect class="bar" x="315" y="220" width="10" height="120"/>
+  <rect class="bar" x="495" y="260" width="10" height="60"/>
+  <rect class="bar" x="675" y="380" width="10" height="140"/>
+  <rect class="bar" x="855" y="500" width="10" height="100"/>
 
-  <!-- 1. Client -> WSS Hello, y=200 -->
-  <path class="conn" d="M 130,200 H 315" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="222" y="194" text-anchor="middle" class="edge"><tspan class="num">1.</tspan> Envelope{ HELLO, token }</text>
+  <!-- 1. Client → WSS Hello, y=220 -->
+  <path class="conn" d="M 140,220 H 315" marker-end="url(#arr)"/>
+  <rect x="170" y="202" width="180" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="183" y="214" class="num">1.</text>
+  <text x="197" y="214" class="edge">Envelope{ HELLO, token }</text>
 
-  <!-- 2. WSS -> AuthRegistry, y=260 -->
-  <path class="conn" d="M 325,260 H 505" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="415" y="254" text-anchor="middle" class="edge"><tspan class="num">2.</tspan> validate(token)</text>
+  <!-- 2. WSS → AuthRegistry, y=260 -->
+  <path class="conn" d="M 325,260 H 495" marker-end="url(#arr)"/>
+  <rect x="368" y="242" width="116" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="378" y="254" class="num">2.</text>
+  <text x="392" y="254" class="edge">validate(token)</text>
 
-  <!-- 3. AuthRegistry -> WSS (return), y=300 -->
-  <path class="conn" d="M 505,300 H 325" stroke="#ff3ad9" marker-end="url(#arrPink)" stroke-dasharray="5 4"/>
-  <text x="415" y="294" text-anchor="middle" class="edge"><tspan class="num">3.</tspan> ok( PlayerId )</text>
+  <!-- 3. AuthRegistry → WSS return, y=300 (dashed) -->
+  <path class="conn" d="M 495,300 H 325" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+  <rect x="370" y="282" width="116" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="380" y="294" class="num">3.</text>
+  <text x="394" y="294" class="edge">ok( PlayerId )</text>
 
-  <!-- 4. WSS -> Client Welcome, y=340 (return-ish but main) -->
-  <path class="conn" d="M 315,340 H 130" stroke="#3affb5" marker-end="url(#arrGreen)" stroke-dasharray="5 4"/>
-  <text x="222" y="334" text-anchor="middle" class="edge"><tspan class="num">4.</tspan> WELCOME { playerId, motd }</text>
+  <!-- 4. WSS → Client WELCOME, y=340 (dashed return) -->
+  <path class="conn" d="M 315,340 H 140" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+  <rect x="170" y="322" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="180" y="334" class="num">4.</text>
+  <text x="194" y="334" class="edge">WELCOME { playerId }</text>
 
-  <!-- 5. Client -> WSS join lobby, y=400 -->
-  <path class="conn" d="M 130,400 H 315 V 410 H 695" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="500" y="394" text-anchor="middle" class="edge"><tspan class="num">5.</tspan> JOIN_LOBBY  (routed via WSS)</text>
+  <!-- 5. Client → LobbyService (via WSS), y=400. Use Z-route: 140 → 380 → 680 -->
+  <path class="conn" d="M 140,400 H 580 V 400 H 675" marker-end="url(#arr)"/>
+  <rect x="300" y="382" width="240" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="310" y="394" class="num">5.</text>
+  <text x="324" y="394" class="edge">JOIN_LOBBY  (routed via WSS)</text>
 
-  <!-- 6. LobbyService self-loop enqueue, y=460 -->
-  <path class="conn" d="M 705,460 H 760 V 490 H 705" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="760" y="454" text-anchor="middle" class="edge"><tspan class="num">6.</tspan> enqueue(player)</text>
+  <!-- 6. LobbyService self-loop, y=440 → y=470 -->
+  <path class="conn" d="M 685,440 H 740 V 470 H 685" marker-end="url(#arr)"/>
+  <rect x="694" y="422" width="120" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="702" y="434" class="num">6.</text>
+  <text x="716" y="434" class="edge">enqueue(player)</text>
 
-  <!-- 7. Lobby broadcast LobbySnapshot back via WSS to Client, y=520 -->
-  <path class="conn" d="M 695,520 H 130" stroke="#3affb5" marker-end="url(#arrGreen)" stroke-dasharray="5 4"/>
-  <text x="412" y="514" text-anchor="middle" class="edge"><tspan class="num">7.</tspan> LOBBY_SNAPSHOT</text>
+  <!-- 7. LobbyService → Client LOBBY_SNAPSHOT (dashed), y=500. Route 680 → 140 -->
+  <path class="conn" d="M 675,500 H 140" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+  <rect x="280" y="482" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="290" y="494" class="num">7.</text>
+  <text x="304" y="494" class="edge">LOBBY_SNAPSHOT</text>
 
-  <!-- 8. LobbyService -> MatchManager, y=580 -->
-  <path class="conn" d="M 705,580 H 885" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="795" y="574" text-anchor="middle" class="edge"><tspan class="num">8.</tspan> readyToMatch(4 players)</text>
+  <!-- 8. LobbyService → MatchManager, y=540 -->
+  <path class="conn" d="M 685,540 H 855" marker-end="url(#arr)"/>
+  <rect x="708" y="522" width="148" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="718" y="534" class="num">8.</text>
+  <text x="732" y="534" class="edge">readyToMatch(4)</text>
 
-  <!-- 9. MatchManager self-loop, y=640 -->
-  <path class="conn" d="M 895,640 H 950 V 670 H 895" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="950" y="634" text-anchor="middle" class="edge"><tspan class="num">9.</tspan> allocate match-id</text>
+  <!-- 9. MatchManager self-loop, y=580 → y=600 -->
+  <path class="conn" d="M 865,580 H 920 V 600 H 865" marker-end="url(#arr)"/>
+  <rect x="868" y="562" width="104" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="876" y="574" class="num">9.</text>
+  <text x="890" y="574" class="edge">allocate match-id</text>
 
-  <!-- 10. MatchManager -> MatchSession new, y=700 -->
-  <path class="conn" d="M 895,700 H 1075" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="985" y="694" text-anchor="middle" class="edge"><tspan class="num">10.</tspan> new MatchSession(GameWorld)</text>
-
-  <!-- 11. MatchSession -> All Matched Clients, y=760 -->
-  <path class="conn" d="M 1085,760 H 1240" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="1162" y="754" text-anchor="middle" class="edge"><tspan class="num">11.</tspan> MATCH_START</text>
-
-  <!-- 12. MatchSession -> All Clients first WorldSnapshot, y=820 -->
-  <path class="conn" d="M 1085,820 H 1240" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="1162" y="814" text-anchor="middle" class="edge"><tspan class="num">12.</tspan> first WorldSnapshot · t = 0</text>
+  <!-- 10. MatchManager → Matched Clients MATCH_START, y=620 -->
+  <path class="conn" d="M 865,620 H 1000" marker-end="url(#arr)"/>
+  <rect x="884" y="602" width="116" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="890" y="614" class="num">10.</text>
+  <text x="908" y="614" class="edge">MATCH_START</text>
 
   <!-- Notes -->
-  <rect x="60" y="870" width="500" height="60" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
-  <text x="76" y="892" class="ttl" fill="#ffb53a">Handshake budget</text>
-  <text x="76" y="912" class="sub">Steps 1–4 complete in &lt; 50 ms (one RTT + auth lookup)</text>
+  <rect x="60" y="680" width="340" height="80" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="80" y="704" class="ttl">Handshake budget</text>
+  <line x1="80" y1="714" x2="380" y2="714" stroke="#d6dae0" stroke-width="1"/>
+  <text x="80" y="734" class="sub">Steps 1–4 complete in &lt; 50 ms</text>
+  <text x="80" y="752" class="sub">(one RTT + auth lookup)</text>
 
-  <rect x="600" y="870" width="540" height="60" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
-  <text x="616" y="892" class="ttl" fill="#3aedff">Pairing rule</text>
-  <text x="616" y="912" class="sub">MatchManager waits for 4 ready players (or 30 s timeout — bots fill the gap)</text>
+  <rect x="420" y="680" width="380" height="80" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="440" y="704" class="ttl">Pairing rule</text>
+  <line x1="440" y1="714" x2="780" y2="714" stroke="#d6dae0" stroke-width="1"/>
+  <text x="440" y="734" class="sub">MatchManager waits for 4 ready players</text>
+  <text x="440" y="752" class="sub">(or 30 s timeout — bots fill the gap)</text>
 
-  <rect x="1180" y="870" width="280" height="60" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4"/>
-  <text x="1196" y="892" class="ttl" fill="#daa520">Result</text>
-  <text x="1196" y="912" class="sub">Match-id known to all participants.</text>
-
-  <text x="40" y="958" class="sub">Sequence numbers (1.–12.) follow strict happens-before order across lifelines.</text>
+  <rect x="820" y="680" width="320" height="80" rx="8" fill="#fff9e6" stroke="#9c7c20" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="840" y="704" class="ttl">Result</text>
+  <line x1="840" y1="714" x2="1120" y2="714" stroke="#d6dae0" stroke-width="1"/>
+  <text x="840" y="734" class="sub">Match-id known to all participants.</text>
+  <text x="840" y="752" class="sub">Steps 1.–10. = strict happens-before.</text>
 </svg>

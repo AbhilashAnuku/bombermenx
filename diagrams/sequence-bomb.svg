@@ -1,148 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <style>
-    rect { rx: 6; ry: 6; }
-    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e8eef8; }
-    .ttl { font-weight: 700; font-size: 14px; }
-    .sub { font-size: 12px; fill: #9aa6b8; }
-    .edge { font-size: 11px; fill: #c5cbd6; }
+    text { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; fill: #1a1d24; }
+    .title { font-weight: 700; font-size: 22px; fill: #1a1d24; }
+    .ttl { font-weight: 700; font-size: 14px; fill: #1a1d24; }
+    .sub { font-size: 12px; fill: #5a626e; }
+    .edge { font-size: 12px; fill: #3a3f47; }
+    .num { font-size: 12px; font-weight: 700; fill: #1a1d24; }
+    .grp { font-weight: 700; font-size: 13px; letter-spacing: 1.2px; fill: #6a6f78; }
+    .conn { fill: none; stroke: #5a626e; stroke-width: 1.6; }
+    .life { stroke: #b0b6bf; stroke-width: 1.4; stroke-dasharray: 6 5; }
+    .bar  { fill: #fceaf3; stroke: #c2185b; stroke-width: 1; }
   </style>
   <title id="title">Sequence — PlaceBomb to Explosion</title>
   <desc id="desc">Sequence diagram of a bomb being placed by a client, simulated by the server, and broadcast as a WorldSnapshot.</desc>
   <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2533" stroke-width="0.5"/>
-    </pattern>
-    <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3aedff"/></marker>
-    <marker id="arrPink" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ff3ad9"/></marker>
-    <marker id="arrAmber" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#ffb53a"/></marker>
-    <marker id="arrGreen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#3affb5"/></marker>
+    <marker id="arr" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#5a626e"/></marker>
+    <filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow stdDeviation="1" dx="0" dy="1" flood-color="#000" flood-opacity="0.08"/></filter>
   </defs>
-  <style>
-    text { fill: #e6eef8; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .title { font-weight: 700; font-size: 22px; }
-    .ttl { font-weight: 700; font-size: 13px; }
-    .sub { font-size: 11px; fill: #94a3b8; }
-    .edge { font-size: 11px; fill: #cbd5e1; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .num { font-size: 11px; font-weight: 700; fill: #daa520; paint-order: stroke; stroke: #08090d; stroke-width: 3px; stroke-linejoin: round; }
-    .conn { fill: none; stroke-width: 2; }
-    .life { stroke: #3aedff; stroke-width: 1.4; stroke-dasharray: 6 5; opacity: 0.55; }
-    .bar  { fill: #2a0d20; stroke: #ff3ad9; stroke-width: 1; }
-  </style>
-  <rect x="0" y="0" width="1500" height="1000" fill="#08090d"/>
-  <rect x="0" y="0" width="1500" height="1000" fill="url(#grid)"/>
 
-  <text x="40" y="42" class="title" fill="#daa520">Sequence — PlaceBomb to Explosion</text>
-  <text x="40" y="64" class="sub">Client press · server-side validation · 20 Hz tick · WorldSnapshot broadcast</text>
+  <rect x="0" y="0" width="1200" height="900" fill="#ffffff"/>
+  <rect x="24" y="24" width="1152" height="852" rx="10" fill="#fdfdfb" stroke="#d6dae0" stroke-width="1.5"/>
 
-  <!-- Lifeline x-positions (7 actors, equally spaced) -->
-  <!-- Centers: 130, 320, 510, 700, 890, 1080, 1320 -->
+  <text x="60" y="68" class="title">Sequence — PlaceBomb to Explosion</text>
+  <text x="60" y="92" class="sub">Client press · server-side validation · 20 Hz tick · WorldSnapshot broadcast</text>
 
-  <!-- Lifeline header boxes (y=100, h=60) -->
-  <rect x="50"   y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="130"  y="125" text-anchor="middle" class="ttl" fill="#3affb5">Player (Client)</text>
-  <text x="130"  y="145" text-anchor="middle" class="sub">GameClient / View</text>
+  <!-- Lifeline x-centers (6 lifelines, ≥160px apart): 140, 320, 500, 680, 860, 1080 -->
+  <!-- Lifeline header rows at y=120..180 -->
 
-  <rect x="240"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="320"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">WebSocketServer</text>
-  <text x="320"  y="145" text-anchor="middle" class="sub">Netty edge</text>
+  <!-- Player (Client) - teal -->
+  <rect x="60" y="120" width="160" height="60" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="140" y="146" text-anchor="middle" class="ttl">Player (Client)</text>
+  <text x="140" y="166" text-anchor="middle" class="sub">GameClient</text>
 
-  <rect x="430"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="510"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">GameServerHandler</text>
-  <text x="510"  y="145" text-anchor="middle" class="sub">frame router</text>
+  <!-- WebSocketServer - pink -->
+  <rect x="240" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="320" y="146" text-anchor="middle" class="ttl">WebSocketServer</text>
+  <text x="320" y="166" text-anchor="middle" class="sub">Netty edge</text>
 
-  <rect x="620"  y="100" width="160" height="60" rx="8" fill="#2a0d20" stroke="#ff3ad9" stroke-width="1.6"/>
-  <text x="700"  y="125" text-anchor="middle" class="ttl" fill="#ff3ad9">MatchSession</text>
-  <text x="700"  y="145" text-anchor="middle" class="sub">tick loop</text>
+  <!-- GameServerHandler - pink -->
+  <rect x="420" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="500" y="146" text-anchor="middle" class="ttl">GameServerHandler</text>
+  <text x="500" y="166" text-anchor="middle" class="sub">frame router</text>
 
-  <rect x="810"  y="100" width="160" height="60" rx="8" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <text x="890"  y="125" text-anchor="middle" class="ttl" fill="#3aedff">GameWorld</text>
-  <text x="890"  y="145" text-anchor="middle" class="sub">authoritative sim</text>
+  <!-- MatchSession - pink -->
+  <rect x="600" y="120" width="160" height="60" rx="8" fill="#fceaf3" stroke="#c2185b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="680" y="146" text-anchor="middle" class="ttl">MatchSession</text>
+  <text x="680" y="166" text-anchor="middle" class="sub">tick loop</text>
 
-  <rect x="1000" y="100" width="160" height="60" rx="8" fill="#0a2030" stroke="#3aedff" stroke-width="1.6"/>
-  <text x="1080" y="125" text-anchor="middle" class="ttl" fill="#3aedff">Snapshotter</text>
-  <text x="1080" y="145" text-anchor="middle" class="sub">WireCodec</text>
+  <!-- GameWorld - cyan -->
+  <rect x="780" y="120" width="160" height="60" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="860" y="146" text-anchor="middle" class="ttl">GameWorld</text>
+  <text x="860" y="166" text-anchor="middle" class="sub">authoritative sim</text>
 
-  <rect x="1240" y="100" width="160" height="60" rx="8" fill="#0d2823" stroke="#3affb5" stroke-width="1.6"/>
-  <text x="1320" y="125" text-anchor="middle" class="ttl" fill="#3affb5">All Clients</text>
-  <text x="1320" y="145" text-anchor="middle" class="sub">render only</text>
+  <!-- All Clients (Snapshotter merged into MatchSession path; we use 6 lifelines total) - teal -->
+  <rect x="1000" y="120" width="160" height="60" rx="8" fill="#e6f7f4" stroke="#0b8a78" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="1080" y="146" text-anchor="middle" class="ttl">All Clients</text>
+  <text x="1080" y="166" text-anchor="middle" class="sub">render only</text>
 
-  <!-- Lifelines (vertical dashed lines from header bottom to y=900) -->
-  <line class="life" x1="130"  y1="160" x2="130"  y2="900"/>
-  <line class="life" x1="320"  y1="160" x2="320"  y2="900"/>
-  <line class="life" x1="510"  y1="160" x2="510"  y2="900"/>
-  <line class="life" x1="700"  y1="160" x2="700"  y2="900"/>
-  <line class="life" x1="890"  y1="160" x2="890"  y2="900"/>
-  <line class="life" x1="1080" y1="160" x2="1080" y2="900"/>
-  <line class="life" x1="1320" y1="160" x2="1320" y2="900"/>
+  <!-- Lifelines (y 180 → 740) -->
+  <line class="life" x1="140"  y1="180" x2="140"  y2="740"/>
+  <line class="life" x1="320"  y1="180" x2="320"  y2="740"/>
+  <line class="life" x1="500"  y1="180" x2="500"  y2="740"/>
+  <line class="life" x1="680"  y1="180" x2="680"  y2="740"/>
+  <line class="life" x1="860"  y1="180" x2="860"  y2="740"/>
+  <line class="life" x1="1080" y1="180" x2="1080" y2="740"/>
 
-  <!-- Activation bars (thin rects on lifeline; expand around active segments) -->
-  <rect class="bar" x="315"  y="200" width="10" height="40"/>   <!-- WSS while routing -->
-  <rect class="bar" x="505"  y="240" width="10" height="60"/>   <!-- handler -->
-  <rect class="bar" x="695"  y="300" width="10" height="160"/>  <!-- MatchSession -->
-  <rect class="bar" x="885"  y="340" width="10" height="120"/>  <!-- GameWorld place -->
-  <rect class="bar" x="695"  y="540" width="10" height="280"/>  <!-- MatchSession tick -->
-  <rect class="bar" x="885"  y="580" width="10" height="200"/>  <!-- GameWorld explode -->
-  <rect class="bar" x="1075" y="640" width="10" height="140"/>  <!-- Snapshotter -->
+  <!-- Activation bars -->
+  <rect class="bar" x="315" y="220" width="10" height="40"/>
+  <rect class="bar" x="495" y="260" width="10" height="60"/>
+  <rect class="bar" x="675" y="320" width="10" height="160"/>
+  <rect class="bar" x="855" y="360" width="10" height="120"/>
+  <rect class="bar" x="675" y="540" width="10" height="180"/>
+  <rect class="bar" x="855" y="580" width="10" height="120"/>
 
-  <!-- Message arrows (horizontal). Format: number . label above the line. -->
-  <!-- 1. Player -> WSS at y=200 -->
-  <path class="conn" d="M 130,200 H 315" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="222" y="194" text-anchor="middle" class="edge"><tspan class="num">1.</tspan> Envelope{ PLACE_BOMB }</text>
+  <!-- 1. Player → WSS at y=220 -->
+  <path class="conn" d="M 140,220 H 315" marker-end="url(#arr)"/>
+  <rect x="170" y="202" width="180" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="227" y="214" text-anchor="middle" class="num">1.</text>
+  <text x="240" y="214" class="edge">Envelope{ PLACE_BOMB }</text>
 
-  <!-- 2. WSS -> Handler at y=240 -->
-  <path class="conn" d="M 325,240 H 505" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="415" y="234" text-anchor="middle" class="edge"><tspan class="num">2.</tspan> route(frame)</text>
+  <!-- 2. WSS → Handler at y=260 -->
+  <path class="conn" d="M 325,260 H 495" marker-end="url(#arr)"/>
+  <rect x="368" y="242" width="100" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="378" y="254" class="num">2.</text>
+  <text x="392" y="254" class="edge">route(frame)</text>
 
-  <!-- 3. Handler -> MatchSession at y=300 -->
-  <path class="conn" d="M 515,300 H 695" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="605" y="294" text-anchor="middle" class="edge"><tspan class="num">3.</tspan> apply(input, sessionId)</text>
+  <!-- 3. Handler → MatchSession at y=320 -->
+  <path class="conn" d="M 505,320 H 675" marker-end="url(#arr)"/>
+  <rect x="538" y="302" width="120" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="548" y="314" class="num">3.</text>
+  <text x="562" y="314" class="edge">apply(input)</text>
 
-  <!-- 4. MatchSession -> GameWorld at y=360 -->
-  <path class="conn" d="M 705,360 H 885" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="795" y="354" text-anchor="middle" class="edge"><tspan class="num">4.</tspan> placeBomb(player, tile)</text>
+  <!-- 4. MatchSession → GameWorld at y=360 -->
+  <path class="conn" d="M 685,360 H 855" marker-end="url(#arr)"/>
+  <rect x="708" y="342" width="148" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="718" y="354" class="num">4.</text>
+  <text x="732" y="354" class="edge">placeBomb(player, tile)</text>
 
-  <!-- 5. GameWorld -> MatchSession return at y=420 (dashed return) -->
-  <path class="conn" d="M 885,420 H 705" stroke="#3aedff" marker-end="url(#arrCyan)" stroke-dasharray="5 4"/>
-  <text x="795" y="414" text-anchor="middle" class="edge"><tspan class="num">5.</tspan> Bomb(id, fuseMs)</text>
+  <!-- 5. GameWorld → MatchSession return at y=420 (dashed) -->
+  <path class="conn" d="M 855,420 H 685" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+  <rect x="712" y="402" width="132" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="724" y="414" class="num">5.</text>
+  <text x="738" y="414" class="edge">Bomb(id, fuseMs)</text>
 
-  <!-- 6. self-loop on MatchSession (queues event), y=480 -->
-  <path class="conn" d="M 705,480 H 760 V 510 H 705" stroke="#ff3ad9" marker-end="url(#arrPink)"/>
-  <text x="760" y="476" text-anchor="middle" class="edge"><tspan class="num">6.</tspan> queue tick event</text>
+  <!-- 6. MatchSession self-loop, y=460 → y=490 -->
+  <path class="conn" d="M 685,460 H 740 V 490 H 685" marker-end="url(#arr)"/>
+  <rect x="694" y="442" width="116" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="702" y="454" class="num">6.</text>
+  <text x="716" y="454" class="edge">queue tick event</text>
 
-  <!-- 7. tick: MatchSession -> GameWorld at y=580 (tick) -->
-  <path class="conn" d="M 705,580 H 885" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="795" y="574" text-anchor="middle" class="edge"><tspan class="num">7.</tspan> tick(dt) — fuse expires</text>
+  <!-- 7. MatchSession → GameWorld tick at y=540 -->
+  <path class="conn" d="M 685,540 H 855" marker-end="url(#arr)"/>
+  <rect x="700" y="522" width="160" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="710" y="534" class="num">7.</text>
+  <text x="724" y="534" class="edge">tick(dt) — fuse expires</text>
 
-  <!-- 8. self-loop GameWorld spawn explosion, y=640 -->
-  <path class="conn" d="M 895,640 H 950 V 670 H 895" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="950" y="634" text-anchor="middle" class="edge"><tspan class="num">8.</tspan> spawn Explosion + damage tiles</text>
+  <!-- 8. GameWorld self-loop spawn explosion, y=580 → y=610 -->
+  <path class="conn" d="M 865,580 H 920 V 610 H 865" marker-end="url(#arr)"/>
+  <rect x="870" y="562" width="80" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="878" y="574" class="num">8.</text>
+  <text x="892" y="574" class="edge">spawn Explosion</text>
 
-  <!-- 9. GameWorld -> Snapshotter, y=700 -->
-  <path class="conn" d="M 895,700 H 1075" stroke="#3aedff" marker-end="url(#arrCyan)"/>
-  <text x="985" y="694" text-anchor="middle" class="edge"><tspan class="num">9.</tspan> capture(world)</text>
+  <!-- 9. GameWorld → MatchSession return WorldSnapshot at y=660 (dashed) -->
+  <path class="conn" d="M 855,660 H 685" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+  <rect x="708" y="642" width="120" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="720" y="654" class="num">9.</text>
+  <text x="734" y="654" class="edge">WorldSnapshot</text>
 
-  <!-- 10. Snapshotter -> MatchSession at y=760 (returns snapshot) -->
-  <path class="conn" d="M 1075,760 H 705" stroke="#3aedff" marker-end="url(#arrCyan)" stroke-dasharray="5 4"/>
-  <text x="890" y="754" text-anchor="middle" class="edge"><tspan class="num">10.</tspan> WorldSnapshot</text>
+  <!-- 10. MatchSession → All Clients broadcast at y=710 -->
+  <path class="conn" d="M 685,710 H 1000" marker-end="url(#arr)"/>
+  <rect x="752" y="692" width="180" height="16" fill="#fdfdfb" opacity="0.95"/>
+  <text x="760" y="704" class="num">10.</text>
+  <text x="778" y="704" class="edge">broadcast(WorldSnapshot)</text>
 
-  <!-- 11. MatchSession -> All Clients (broadcast) at y=820 -->
-  <path class="conn" d="M 705,820 H 1240" stroke="#3affb5" marker-end="url(#arrGreen)"/>
-  <text x="970" y="814" text-anchor="middle" class="edge"><tspan class="num">11.</tspan> broadcast(WorldSnapshot)  20 Hz</text>
+  <!-- Notes -->
+  <rect x="60" y="770" width="340" height="80" rx="8" fill="#fff5dc" stroke="#b8860b" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="80" y="794" class="ttl">Latency budget</text>
+  <line x1="80" y1="804" x2="380" y2="804" stroke="#d6dae0" stroke-width="1"/>
+  <text x="80" y="824" class="sub">Steps 1–6: ≤ 5 ms · Step 7: one 50 ms tick</text>
+  <text x="80" y="842" class="sub">Step 10: ≤ 8 ms RTT typical</text>
 
-  <!-- Note: timing call-out (amber) -->
-  <rect x="60" y="870" width="500" height="60" rx="10" fill="#2b1d05" stroke="#ffb53a" stroke-width="1.4"/>
-  <text x="76" y="892" class="ttl" fill="#ffb53a">Latency budget</text>
-  <text x="76" y="912" class="sub">Steps 1–6: ≤ 5 ms · Steps 7–10: one 50 ms tick · Step 11: ≤ 8 ms RTT typical</text>
+  <rect x="420" y="770" width="380" height="80" rx="8" fill="#e3f1fa" stroke="#1565c0" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="440" y="794" class="ttl">Authority</text>
+  <line x1="440" y1="804" x2="780" y2="804" stroke="#d6dae0" stroke-width="1"/>
+  <text x="440" y="824" class="sub">Client only requests · GameWorld is the only writer</text>
+  <text x="440" y="842" class="sub">WireCodec is the only serializer</text>
 
-  <rect x="600" y="870" width="540" height="60" rx="10" fill="#0a2030" stroke="#3aedff" stroke-width="1.4"/>
-  <text x="616" y="892" class="ttl" fill="#3aedff">Authority</text>
-  <text x="616" y="912" class="sub">Client only requests; GameWorld is the only writer; Snapshotter is the only serializer.</text>
-
-  <rect x="1180" y="870" width="280" height="60" rx="10" fill="#11141c" stroke="#daa520" stroke-width="1.4"/>
-  <text x="1196" y="892" class="ttl" fill="#daa520">Result</text>
-  <text x="1196" y="912" class="sub">All clients see identical state.</text>
-
-  <!-- Step numbering legend -->
-  <text x="40" y="958" class="sub">Sequence numbers (1.–11.) match the activation segments on each lifeline.</text>
+  <rect x="820" y="770" width="320" height="80" rx="8" fill="#fff9e6" stroke="#9c7c20" stroke-width="1.4" filter="url(#sh)"/>
+  <text x="840" y="794" class="ttl">Result</text>
+  <line x1="840" y1="804" x2="1120" y2="804" stroke="#d6dae0" stroke-width="1"/>
+  <text x="840" y="824" class="sub">All clients see identical state.</text>
+  <text x="840" y="842" class="sub">Numbers 1.–10. follow happens-before order.</text>
 </svg>
