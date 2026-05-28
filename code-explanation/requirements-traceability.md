@@ -1,7 +1,7 @@
 # Requirements Traceability Matrix
 
 **Module:** Software Architecture & Design, M.Sc. Applied Computer Science
-**Supervisor:** Dr. Floriment Klinaku, SRH University Stuttgart
+**Supervisor:** the course supervisor, SRH University Stuttgart
 **Author:** Abhilash Anuku (AA), with input from Simranjot Kaur (SK) and Jithendra Chittomothu (JC)
 **Date:** 28 May 2026
 

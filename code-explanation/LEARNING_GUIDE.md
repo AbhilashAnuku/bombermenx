@@ -1,12 +1,12 @@
 # Learning Guide — Defence Q&A Preparation
 
 **Module:** Software Architecture & Design
-**Supervisor:** Dr. Floriment Klinaku, SRH University Stuttgart
+**Supervisor:** the course supervisor, SRH University Stuttgart
 **Audience:** Defence panel, 2 June 2026
 **Authors:** AA, SK, JC
 **Date:** 28 May 2026
 
-This document collects twenty questions the supervisor and panel may ask during the prototype defence, each paired with a prepared answer that an architect should be able to deliver in under ninety seconds. The answers are written for vocal delivery — short sentences, clear logical structure, named artefacts — and are calibrated to the level of detail Dr. Klinaku has expected in week-by-week tutorials.
+This document collects twenty questions the supervisor and panel may ask during the prototype defence, each paired with a prepared answer that an architect should be able to deliver in under ninety seconds. The answers are written for vocal delivery — short sentences, clear logical structure, named artefacts — and are calibrated to the level of detail the course supervisor has expected in week-by-week tutorials.
 
 ## Q1. Why JavaFX and not a web client?
 
@@ -62,7 +62,7 @@ The server is packaged as a self-contained fat JAR and a Docker image built from
 
 ## Q14. What architectural style does the project realise?
 
-A client-server architecture with an event-driven core. Inside each module the code is layered: domain at the bottom, wire and simulation in the middle, transport and rendering at the top. The combination is the most common shape for real-time multiplayer games and is the one Dr. Klinaku recommended in the week-three reference-architecture lecture as the natural fit when the dominant quality drivers are integrity and latency.
+A client-server architecture with an event-driven core. Inside each module the code is layered: domain at the bottom, wire and simulation in the middle, transport and rendering at the top. The combination is the most common shape for real-time multiplayer games and is the one the course supervisor recommended in the week-three reference-architecture lecture as the natural fit when the dominant quality drivers are integrity and latency.
 
 ## Q15. What were the architecturally significant requirements?
 

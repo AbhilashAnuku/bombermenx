@@ -34,7 +34,7 @@ deliverables/
   diagrams/                           architecture, sequence, deployment (SVG + viewer)
   uml/                                class, package, use case, activity (SVG + viewer)
   presentation/slides.html            self-contained slide deck
-  exports/                            defence-pack documents as DOCX and PDF
+  exports/                            defence-pack documents as DOCX (editable in Google Docs / Word)
   assets/                             portal images and CSS / JS
 ```
 
@@ -47,7 +47,7 @@ deliverables/
 5. `RUN_GUIDE.md` — step-by-step build and run.
 6. `LEARNING_GUIDE.md` — twenty likely defence questions with prepared answers.
 
-Each is also available as DOCX and PDF under `exports/`.
+Each is also available as DOCX under `exports/`.
 
 ## Three architects
 

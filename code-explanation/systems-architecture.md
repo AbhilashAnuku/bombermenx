@@ -2,7 +2,7 @@
 
 **Module:** Software Architecture & Design, M.Sc. Applied Computer Science
 **Institution:** SRH University Stuttgart
-**Supervisor:** Dr. Floriment Klinaku
+**Supervisor:** the course supervisor
 **Document version:** 1.0
 **Date:** 28 May 2026
 

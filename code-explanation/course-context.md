@@ -2,14 +2,14 @@
 
 **Module:** Software Architecture & Design (SAD)
 **Programme:** M.Sc. Applied Computer Science, SRH University Stuttgart
-**Supervisor:** Dr. Floriment Klinaku
+**Supervisor:** the course supervisor
 **Cohort:** Summer term 2026
 **Team:** Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC)
 **Date:** 28 May 2026 — Week 7 of 8
 
 ## What the prototype is, in the language of the module
 
-In Dr. Klinaku's module the word "prototype" has a precise meaning. It is not a sketch and it is not a finished product. It is an executable artefact that demonstrates the soundness of an architecture by realising the architecturally significant requirements end-to-end, while leaving non-significant requirements deliberately incomplete. The prototype proves that the chosen building blocks, the chosen communication style, the chosen quality-attribute tactics, and the chosen deployment shape compose into a working whole. It does not prove that every feature on the backlog is implemented.
+In the course supervisor's module the word "prototype" has a precise meaning. It is not a sketch and it is not a finished product. It is an executable artefact that demonstrates the soundness of an architecture by realising the architecturally significant requirements end-to-end, while leaving non-significant requirements deliberately incomplete. The prototype proves that the chosen building blocks, the chosen communication style, the chosen quality-attribute tactics, and the chosen deployment shape compose into a working whole. It does not prove that every feature on the backlog is implemented.
 
 BomberMen-X satisfies this definition by realising the full vertical slice from input capture through server-authoritative simulation to client rendering, for the central gameplay use cases: authenticate, join lobby, start match, place bomb, collect power-up, score, end match. The bot AI, the moderation pipeline, the haptics service, and the metrics endpoint are present because each of them exercises a quality-attribute tactic that the module asks us to defend. Voice chat, animation rigging, and stat-tracking dashboards are deliberately left as stubs because they would inflate the deliverable without exercising any architectural concept that we have not already demonstrated elsewhere.
 
@@ -46,7 +46,7 @@ The module ran weekly from mid-March to mid-May 2026. The mapping below identifi
 
 **Week 2 — Stakeholders, drivers, constraints.** The Constraints section of the arc42 spec (§2) and the Risks section (§11) draw on the stakeholder mapping exercise from this lecture.
 
-**Week 3 — Reference architectures.** This week's content is the most heavily cited. Dr. Klinaku introduced client-server, peer-to-peer, pipe-and-filter, layered, event-driven, and microkernel as canonical reference architectures, and walked through how to choose among them based on dominant quality drivers. The choice of client-server with an event-driven core was made in week three and is recorded in ADR-002. Every section of `systems-architecture.md` that names a subsystem boundary leans on the dependency-direction discipline taught in this week.
+**Week 3 — Reference architectures.** This week's content is the most heavily cited. the course supervisor introduced client-server, peer-to-peer, pipe-and-filter, layered, event-driven, and microkernel as canonical reference architectures, and walked through how to choose among them based on dominant quality drivers. The choice of client-server with an event-driven core was made in week three and is recorded in ADR-002. Every section of `systems-architecture.md` that names a subsystem boundary leans on the dependency-direction discipline taught in this week.
 
 **Week 4 — Quality attributes and tactics.** This is the second heavily-cited week. The performance, security, and maintainability tactics named in §10 of the arc42 spec and in `sad-theory-and-roles.md` come directly from the Bass/Clements/Kazman tactic catalogue introduced in this lecture.
 
@@ -72,4 +72,4 @@ We do not claim test coverage parity across modules. The core module has two tes
 
 ## Closing remark
 
-The course context places the prototype within Dr. Klinaku's pedagogy. The deliverable is not a game we built and then dressed in documentation; it is a documentation programme that happens to compile and run. Every document in the `deliverables/code-explanation` directory exists because the module's learning outcomes demand it, and every Java class in `src` exists because some document references it as the implementing artefact of a named requirement. The bidirectional traceability is the point.
+The course context places the prototype within the course supervisor's pedagogy. The deliverable is not a game we built and then dressed in documentation; it is a documentation programme that happens to compile and run. Every document in the `deliverables/code-explanation` directory exists because the module's learning outcomes demand it, and every Java class in `src` exists because some document references it as the implementing artefact of a named requirement. The bidirectional traceability is the point.

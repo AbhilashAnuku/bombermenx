@@ -1,7 +1,7 @@
 # BomberMen-X — Build and Run Guide
 
 **Project:** BomberMen-X (M.Sc. capstone, SAD module, SRH University Stuttgart)
-**Supervisor:** Dr. Floriment Klinaku
+**Supervisor:** the course supervisor
 **Document date:** 28 May 2026
 
 This document describes how to build, test, and run the BomberMen-X prototype. It targets a fresh Windows 11 or Linux developer machine. All paths in this guide are absolute or repository-relative.

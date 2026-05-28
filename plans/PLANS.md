@@ -2,7 +2,6 @@
 
 **Module:** Software Architecture & Design (SAD), M.Sc. Applied Computer Science
 **Institution:** SRH University Stuttgart
-**Supervisor:** Dr. Floriment Klinaku
 **Date:** 28 May 2026 — Week 7 of 8 (Prototype submission)
 **Final submission:** Tuesday, 02 June 2026 (Final report + presentation + viva)
 
@@ -19,7 +18,7 @@ gantt
 
     section Bootstrapping
     Maven 3-module reactor                :done,   b1, 2026-04-13, 7d
-    Domain entity skeleton (Klinaku spec) :done,   b2, 2026-04-13, 7d
+    Domain entity skeleton (the module reference spec) :done,   b2, 2026-04-13, 7d
     Repository, CI scaffolding            :done,   b3, 2026-04-20, 7d
 
     section Core simulation
@@ -52,7 +51,7 @@ gantt
 
 ### W1 – W2 — Bootstrapping (13 Apr – 26 Apr 2026)
 
-The first sprint was about laying a clean Maven foundation that would survive seven further weeks of additive work. **Abhilash (AA)** wrote the parent `pom.xml`, declared the three child modules (`bomberman-core`, `bomberman-server`, `bomberman-client`), pinned Java 17 and Jackson, and verified the reactor build on a portable Red Hat JDK 17 + Maven 3.9 install with no admin privileges. **Simranjot (SK)** sketched the first set of domain entities — `Bomberman`, `Player`, `Score`, `Bomb`, `Explosion`, `Tile`, `Arena` — using Lombok-free records and small mutable classes so they would be trivial to serialize. **Jithendra (JC)** seeded the server module with a Netty bootstrap, a placeholder WebSocket handshake, and a CI smoke script that ran `mvn clean install -DskipTests`. By end of W2 the reactor compiled, the artefact graph was clean, and the entity package matched Dr. Klinaku's domain whiteboard from the kick-off meeting.
+The first sprint was about laying a clean Maven foundation that would survive seven further weeks of additive work. **Abhilash (AA)** wrote the parent `pom.xml`, declared the three child modules (`bomberman-core`, `bomberman-server`, `bomberman-client`), pinned Java 17 and Jackson, and verified the reactor build on a portable Red Hat JDK 17 + Maven 3.9 install with no admin privileges. **Simranjot (SK)** sketched the first set of domain entities — `Bomberman`, `Player`, `Score`, `Bomb`, `Explosion`, `Tile`, `Arena` — using Lombok-free records and small mutable classes so they would be trivial to serialize. **Jithendra (JC)** seeded the server module with a Netty bootstrap, a placeholder WebSocket handshake, and a CI smoke script that ran `mvn clean install -DskipTests`. By end of W2 the reactor compiled, the artefact graph was clean, and the entity package matched the module reference spec's domain whiteboard from the kick-off meeting.
 
 ### W3 – W4 — Core simulation (27 Apr – 10 May 2026)
 
@@ -93,7 +92,7 @@ Legend: ✓ done · ⌛ in progress · • pending
 
 ### Week 8 (29 May – 02 June 2026)
 
-Week 8 is non-negotiable. The deliverable on Tuesday 02 June 2026 is the **final architecture report (PDF + DOCX)**, the **slide deck**, and a **15-minute viva** with Dr. Klinaku.
+Week 8 is non-negotiable. The deliverable on Tuesday 02 June 2026 is the **final architecture report (PDF + DOCX)**, the **slide deck**, and a **15-minute viva** with the course supervisor.
 
 **Thursday 29 May 2026** — AA freezes the architecture report HTML (`deliverables/architecture-report-en.html`), exports DOCX and PDF into `deliverables/exports/`. SK records a 90-second screen capture of a local match (server + two clients + one bot). JC runs `docker compose -f infra/docker-compose.yml up` end-to-end on a clean machine and pastes the log into `deliverables/build/`.
 
@@ -135,7 +134,7 @@ If the prototype passes, the team intends to harden BomberMen-X into a publishab
 - **Audio.** `AudioBus` and `SpatialAudio` compile but the sample bank is not bundled. Demo runs muted.
 - **OAuth.** Dev provider only.
 
-These deferrals are deliberate — they preserve the prototype scope agreed with Dr. Klinaku at the W3 review.
+These deferrals are deliberate — they preserve the prototype scope agreed with the course supervisor at the W3 review.
 
 ---
 
@@ -146,7 +145,7 @@ These deferrals are deliberate — they preserve the prototype scope agreed with
 | Demo machine has no JDK 17                       | Low        | High   | JC    | Bring a USB with portable JDK + Maven; pre-run `mvn package` at 08:00.     |
 | JavaFX module-path failure on submission laptop  | Medium     | High   | SK    | Ship a fat-jar built with shaded JavaFX; verified on Friday 30 May.        |
 | Port 8080 blocked by SRH network                 | Medium     | Medium | JC    | Fall back to `--port=18080` flag in `BombServerApplication`; tested.       |
-| Live coding question from Dr. Klinaku            | Medium     | Medium | AA    | All three architects rehearse the entity tree and the `WireCodec` path.    |
+| Live coding question from the course supervisor            | Medium     | Medium | AA    | All three architects rehearse the entity tree and the `WireCodec` path.    |
 | Slide deck overruns 15 min                       | Medium     | Medium | AA    | Friday + Sunday rehearsals with stopwatch; cut slide 9 if needed.          |
 | Last-minute Maven dependency download failure    | Low        | High   | AA    | Pre-populate `~/.m2/repository` on the demo laptop on Sunday 01 June.      |
 

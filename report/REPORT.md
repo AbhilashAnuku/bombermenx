@@ -3,7 +3,7 @@
 **Module:** Software Architecture & Design (SAD)
 **Programme:** M.Sc. Applied Computer Science
 **Institution:** SRH University Stuttgart
-**Supervisor:** Dr. Floriment Klinaku
+**Supervisor:** the course supervisor
 **Report date:** 28 May 2026 — Week 7 of 8 (Prototype)
 **Final submission:** Tuesday, 02 June 2026
 
@@ -13,7 +13,7 @@
 
 BomberMen-X is a distributed, server-authoritative multiplayer arena game built as the capstone deliverable for the SAD module of the M.Sc. Applied Computer Science programme at SRH University Stuttgart. The system is implemented as a three-module Maven 17 reactor — a shared core library, a Netty-based WebSocket server, and a JavaFX desktop client — and is themed around an Indian-festival mandala visual identity (teal #008080, turmeric #ffc107, henna #ec407a, gold #daa520 on aubergine #150a1f).
 
-At the close of Week 7 the prototype is feature-complete against the scope agreed with Dr. Klinaku at the Week 3 review: twelve domain entities matching the supervisor's whiteboard specification, a deterministic 60 Hz server-authoritative tick, a JSON-over-WebSocket wire protocol with strict envelope typing, and a JavaFX client that renders the arena and HUD in the mandala palette. Three automated tests cover the wire codec, the world simulation, and the chat moderation layer. The build is green across all three modules. The deliverables portal at `deliverables/index.html` cross-links 33+ HTML pages covering the architecture report, code-explanation walkthroughs, diagrams, and exports.
+At the close of Week 7 the prototype is feature-complete against the scope agreed with the course supervisor at the Week 3 review: twelve domain entities matching the supervisor's whiteboard specification, a deterministic 60 Hz server-authoritative tick, a JSON-over-WebSocket wire protocol with strict envelope typing, and a JavaFX client that renders the arena and HUD in the mandala palette. Three automated tests cover the wire codec, the world simulation, and the chat moderation layer. The build is green across all three modules. The deliverables portal at `deliverables/index.html` cross-links 33+ HTML pages covering the architecture report, code-explanation walkthroughs, diagrams, and exports.
 
 Week 8 is reserved exclusively for documentation polish, rehearsal, and submission. No new code is planned. The final architecture report (PDF + DOCX + HTML), the presentation slides, and the viva are scheduled for Tuesday 02 June 2026.
 
@@ -21,7 +21,7 @@ Week 8 is reserved exclusively for documentation polish, rehearsal, and submissi
 
 ## 2. Module context
 
-The Software Architecture & Design module at SRH University Stuttgart asks each capstone team to design, document, and prototype a non-trivial distributed system that exercises the full spectrum of an architect's responsibilities: domain modelling, decomposition into building blocks, runtime behaviour, deployment, and explicit quality-attribute analysis. The deliverable shape follows arc42 conventions and is examined through both written report and oral viva. Dr. Floriment Klinaku, the module lead, set the additional constraint that the domain model must be expressed as a clean, named entity set agreed at the Week 3 review; that constraint shaped much of the team's work between Weeks 3 and 5.
+The Software Architecture & Design module at SRH University Stuttgart asks each capstone team to design, document, and prototype a non-trivial distributed system that exercises the full spectrum of an architect's responsibilities: domain modelling, decomposition into building blocks, runtime behaviour, deployment, and explicit quality-attribute analysis. The deliverable shape follows arc42 conventions and is examined through both written report and oral viva. the course supervisor, the module lead, set the additional constraint that the domain model must be expressed as a clean, named entity set agreed at the Week 3 review; that constraint shaped much of the team's work between Weeks 3 and 5.
 
 The chosen problem — a Bomberman-style arena with networked play — was selected because it forces every architectural concern into the open: an authoritative simulation, a lossy state-replication protocol, a real-time UI, and a deployment story that has to survive both a local demo and a containerised target. None of the three architects had built a real-time multiplayer system before; the project is therefore as much a learning vehicle as a graded artefact.
 
@@ -35,7 +35,7 @@ The chosen problem — a Bomberman-style arena with networked play — was selec
 | Simranjot Kaur             | SK       | UI/UX, JavaFX client, gameplay engine (movement, bomb placement, scoring), HUD overlay, visual identity (Mandala).   |
 | Jithendra Chittomothu      | JC       | Networking, server lifecycle, bot AI, match management, deployment pipeline, metrics endpoint.                       |
 
-The three architects met weekly with Dr. Klinaku and self-organised the intervening days. Each sprint closed with a short Friday handover; the team treated the architects as peers, not as a hierarchy. The README of each Maven module lists its primary owner so reviewers can route questions correctly.
+The three architects met weekly with the course supervisor and self-organised the intervening days. Each sprint closed with a short Friday handover; the team treated the architects as peers, not as a hierarchy. The README of each Maven module lists its primary owner so reviewers can route questions correctly.
 
 ---
 
@@ -51,7 +51,7 @@ The build is a Maven 3-module reactor pinned to Java 17 (`com.bombermenx:bomberm
 
 The reactor builds with portable tooling (Red Hat JDK 17 at `C:\Program Files\RedHat\java-17-openjdk-17.0.19.0.10-1` and a portable Maven 3.9 at `~/tools/maven/bin/mvn.cmd`). No machine-level installation is required.
 
-### 4.2 Domain entities (12, matching Dr. Klinaku's specification)
+### 4.2 Domain entities (12, matching the course supervisor's specification)
 
 The entity package `com.bombermenx.core.entity` and the world package `com.bombermenx.core.world` together realise the twelve entities the supervisor stipulated:
 
@@ -66,7 +66,7 @@ The entity package `com.bombermenx.core.entity` and the world package `com.bombe
 - `ArmorBonus`, `ExtraBombBonus`, `FlameBonus`, `KickBonus`, `LifeBonus`, `SpeedBonus`, `ThrowBonus`.
 - `PowerUpItem` — a placed-on-tile adapter that wraps a `Bonus` for the renderer.
 
-The geometry helpers (`TilePos`, `Direction`) and the enums (`PowerUpType`, `TileType`, `ArenaTheme`) round out the model. The deliberate choice to keep `Bonus` as a polymorphic class hierarchy — rather than collapsing it to an enum — reflects Dr. Klinaku's spec and gives the team a clean home for per-bonus behaviour (e.g., armour absorbs one hit, life adds a heart).
+The geometry helpers (`TilePos`, `Direction`) and the enums (`PowerUpType`, `TileType`, `ArenaTheme`) round out the model. The deliberate choice to keep `Bonus` as a polymorphic class hierarchy — rather than collapsing it to an enum — reflects the course supervisor's spec and gives the team a clean home for per-bonus behaviour (e.g., armour absorbs one hit, life adds a heart).
 
 ### 4.3 Server
 
@@ -138,7 +138,7 @@ A scripted smoke test on a clean Windows 11 laptop confirmed, in order:
 ### AA (Abhilash Anuku)
 
 1. **A Maven multi-module reactor is worth the upfront cost.** The discipline of forcing every cross-module reference through a declared dependency caught two circular-import attempts early and made the wire codec''s home in `bomberman-core` obvious.
-2. **Requirements traceability is cheap if it lives next to the code.** The traceability matrix in `deliverables/code-explanation/` ties each spec line to a class, and that mapping has answered every "where is X" question Dr. Klinaku has asked.
+2. **Requirements traceability is cheap if it lives next to the code.** The traceability matrix in `deliverables/code-explanation/` ties each spec line to a class, and that mapping has answered every "where is X" question the course supervisor has asked.
 3. **Portable tooling earns its keep.** Pinning JDK 17 and Maven 3.9 to a USB-droppable directory removed an entire class of "works on my machine" failures during the W5 cross-laptop test.
 
 ### SK (Simranjot Kaur)
