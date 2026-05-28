@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 880" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="depTitle depDesc">
   <title id="depTitle">Deployment view</title>
   <desc id="depDesc">User device runs the JavaFX client and browser play.html with optional gamepad. The GCP europe-west region hosts Cloud Run, Cloud SQL Postgres, and Memorystore Redis. GitHub Actions builds container images, publishes to Artifact Registry, and deploys to Cloud Run.</desc>
@@ -69,7 +69,7 @@
 
     <!-- Cloud Run -->
     <rect x="480" y="170" width="520" height="170" rx="6" fill="#11141c" stroke="#ff3ad9"/>
-    <text x="500" y="198" class="lbl ttl" fill="#ff3ad9">Cloud Run service - bomb-server</text>
+    <text x="500" y="198" class="lbl ttl" fill="#ff3ad9">Cloud Run service - bomberman-server</text>
     <text x="500" y="218" class="sub">512 MiB / 1 vCPU free tier - autoscale 0..3</text>
     <line x1="500" y1="228" x2="980" y2="228" stroke="#1f2533"/>
     <text x="500" y="250" class="edge">Container from Artifact Registry</text>
@@ -103,7 +103,7 @@
     <text x="500" y="608" class="lbl ttl" fill="#ffb53a">Alternative - self-hosted on one VM (Compose)</text>
     <text x="500" y="628" class="sub">If GCP free quota is exhausted, fall back to docker-compose on a single 2 vCPU VM</text>
     <line x1="500" y1="638" x2="980" y2="638" stroke="#1f2533"/>
-    <text x="500" y="660" class="edge">bomb-server + postgres:16 + redis:7 in the same Compose stack</text>
+    <text x="500" y="660" class="edge">bomberman-server + postgres:16 + redis:7 in the same Compose stack</text>
     <text x="500" y="678" class="edge">Caddy reverse proxy terminates TLS and forwards /ws</text>
     <text x="500" y="696" class="edge">Same DNS name; deploy script picks one branch via TARGET=gcp|vm</text>
     <text x="500" y="714" class="edge">Daily pg_dump to GCS bucket</text>
@@ -134,7 +134,7 @@
     <text x="1100" y="498" class="lbl ttl" fill="#3aedff">deploy.yml</text>
     <text x="1100" y="518" class="sub">manual trigger</text>
     <line x1="1100" y1="528" x2="1320" y2="528" stroke="#1f2533"/>
-    <text x="1100" y="550" class="edge">gcloud run deploy bomb-server</text>
+    <text x="1100" y="550" class="edge">gcloud run deploy bomberman-server</text>
     <text x="1100" y="568" class="edge">Traffic shift 10 then 100</text>
     <text x="1100" y="586" class="edge">Rollback on health failure</text>
   </g>

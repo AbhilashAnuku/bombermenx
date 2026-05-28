@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="seqTitle seqDesc">
   <title id="seqTitle">Sequence — bomb place to kill</title>
   <desc id="seqDesc">A player presses fire, the input reaches the server, GameWorld plants the bomb, the tick loop counts down the fuse, an Explosion is created, a victim's Player is killed, and the result is broadcast back to all clients.</desc>
@@ -31,7 +31,7 @@
   <g>
     <rect x="80" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
     <text x="140" y="91" class="lbl head" text-anchor="middle" fill="#3affb5">GameClient</text>
-    <text x="140" y="106" class="sub" text-anchor="middle">bomb-client .net</text>
+    <text x="140" y="106" class="sub" text-anchor="middle">bomberman-client .net</text>
   </g>
   <g>
     <rect x="300" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
@@ -46,7 +46,7 @@
   <g>
     <rect x="740" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
     <text x="800" y="91" class="lbl head" text-anchor="middle" fill="#3aedff">GameWorld</text>
-    <text x="800" y="106" class="sub" text-anchor="middle">bomb-core .sim</text>
+    <text x="800" y="106" class="sub" text-anchor="middle">bomberman-core .sim</text>
   </g>
   <g>
     <rect x="960" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#3aedff" stroke-width="2"/>

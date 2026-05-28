@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Architecture Spec (arc42) - BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Code Explanation</span>
+    <span class="sep">/</span>
+    <span class="title">Architecture Spec (arc42)</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">arc42 &middot; C&amp;C &middot; Client-Server</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+<main class="container">
+  <div class="meta">Source: <code>architecture-spec-arc42.md</code></div>
+  <article id="content"></article>
+</main>
+<footer class="footer">
+  <div>Built by team BomberMan-X &middot; Driven by hunger.</div>
+  <div>AA &middot; SK &middot; JC &mdash; three M.Sc. students, no CEO.</div>
+  <div class="src">Rendered from <code>architecture-spec-arc42.md</code></div>
+</footer>
+<script type="text/markdown" id="md-src">
+# Bomberman Online — Software Architecture Specification (arc42)
+
+| Item | Details |
+| --- | --- |
+| Course | Software Architecture and Development (SAD) |
+| Programme | M.Sc. Applied Computer Science |
+| University | SRH University of Applied Sciences — Campus Stuttgart |
+| Professor | Dr. Floriment Klinaku |
+| Architecture template | arc42 |
+| Main viewtype | Component-and-Connector (C&C) |
+| Architecture style | Client-Server |
+| Project type | Distributed multiplayer Bomberman game |
+| Prepared by | Abhilash Anuku (AA), Simranjot Kaur (SK), Jithendra Chittomothu (JC) |
+
+Final submission. Aligned with the project domain model, the
+requirements specification, the Lastenheft, and the Week 3 / Week 4
+lecture material.
+
+---
+
+## Architecture Documentation Approach
+
+We use the arc42 template because it gives a known order: goals,
+constraints, scope, viewpoint, strategy, building blocks, runtime,
+deployment, cross-cutting, decisions, quality, risks, traceability,
+glossary. The professor's spec asks for the same shape.
+
+The main viewtype is **Component-and-Connector (C&C)**. Our system is
+a distributed game with a runtime that matters more than the static
+package layout — what tells the story is which process holds which
+component and how messages travel between them. C&C is the viewtype
+that captures that.
+
+The selected style is **Client-Server**. Multiple clients connect to
+one game server. The server owns the official state; clients send
+intents and render snapshots. Event broadcasting (server → all
+clients) is a supporting mechanism within that style.
+
+---
+
+## 1. Introduction and Goals
+
+### 1.1 Project overview
+
+Bomberman Online is a real-time multiplayer game. Each player
+controls one Bomberman in a shared grid arena. Players move, place
+bombs, destroy walls, collect bonuses, and try to eliminate each
+other. A match ends when one Bomberman remains alive or the configured
+match time expires.
+
+Client and server are separate processes. The client handles input
+and display. The server runs the official simulation and the rules.
+
+### 1.2 Main architecture goals
+
+| Goal | What it means in our code |
+| --- | --- |
+| Real-time multiplayer | 60 Hz authoritative tick (`GameWorld.tick`), snapshot broadcast every tick |
+| Fair gameplay | Server rejects invalid intents; clients cannot mutate state directly |
+| Consistent game state | All clients render the same `WorldSnapshot` |
+| Maintainability | Twelve named systems, no god-class, each system has a primary owner |
+| Extensibility | New `Bonus` subclass = one file under `src/bomberman-core/.../world/` |
+| Testability | Movement, bomb fuse, explosion, bonus, score covered by unit tests |
+| Understandability | Defensible in an exam by reading `GameWorld.java` and three poms |
+
+---
+
+## 2. Architecture Constraints
+
+### 2.1 Technical constraints
+
+| Constraint | Where it shows in our code |
+| --- | --- |
+| Client–server only | `bomberman-server` and `bomberman-client` never depend on each other |
+| Server authority | All mutations happen in `GameWorld`; client never writes state |
+| Real-time | 60 Hz fixed tick, snapshot piggy-backs each tick |
+| Java-based desktop client | `bomberman-client` is Java 17 + JavaFX 21 |
+| 2 to 4 players per match | `ServerConfig.maxPlayersPerMatch`, enforced in `MatchManager` |
+| Grid arena | `Arena` holds `TileType[]`; `Tile` is the row/col object |
+| Configurable values | `GameConfig.java` is the single constants file |
+
+### 2.2 Project constraints
+
+- MVP first. Advanced AI, mobile clients, tournaments are out.
+- Academic submission. Architecture has to be defensible and
+  traceable to the brief.
+- No microservices. The project is small; one server process per match.
+- No mandatory database for MVP. In-memory match state is enough.
+  Persistence hooks (Postgres / Redis) exist but are disabled by
+  default (`BX_PERSISTENCE=false`).
+
+---
+
+## 3. System Scope and Context
+
+### 3.1 System boundary
+
+**Inside the system:**
+- Client Application (one per player)
+- Game Server (one per host)
+- Match Management
+- Arena Management
+- Movement Validation
+- Bomb Management
+- Explosion Management
+- Bonus Management
+- Score Management
+- Network Communication
+
+**Outside the system:**
+- Player (the human)
+- Host / Administrator (whoever starts the server)
+- Network environment
+
+### 3.2 Context diagram
+
+```
++----------------+
+|     Player     |
++----------------+
+        |
+        | keyboard / gamepad input
+        v
++------------------------+
+|   Client Application   |
+| (bomberman-client)     |
++------------------------+
+        |
+        | join, move, place-bomb commands
+        v
++----------------------------+
+|     Bomberman Game Server  |
+| (bomberman-server)         |
++----------------------------+
+        |
+        | snapshot, kill-feed, match-end
+        v
++------------------------+
+|   Client Application   |
+| (other players)        |
++------------------------+
+        |
+        v
++----------------+
+|     Player     |
++----------------+
+```
+
+The player talks only to the client. The client talks only to the
+server. The server is the only one that mutates state.
+
+---
+
+## 4. Viewpoint Selection
+
+### 4.1 Selected viewpoint
+
+**Component-and-Connector (C&C).** Bomberman Online is a runtime
+system: clients and server are processes that exchange messages. The
+question "what runs where, and how do they talk?" matters more than
+"which package owns which class." C&C answers that question directly.
+
+### 4.2 Why C&C fits
+
+| C&C concept | Bomberman example |
+| --- | --- |
+| Component | Client Application, Game Server, Match Manager, Bomb Manager |
+| Connector | WebSocket, command envelope, snapshot broadcast |
+| Port | Client network port, server command port |
+| Role | Sender, receiver, broadcaster |
+| Configuration | 2–4 clients connected to one server, one match per session |
+
+---
+
+## 5. Solution Strategy
+
+### 5.1 Selected architecture style
+
+**Client-Server.** The clients send `MOVE`, `BOMB_PLACE`, `ABILITY`,
+`JOIN`. The server validates and broadcasts. The server is the
+authority.
+
+### 5.2 Why Client-Server (not the alternatives)
+
+| Alternative considered | Why rejected |
+| --- | --- |
+| Peer-to-peer | No single authority means no cheat resistance and very hard synchronisation |
+| Microservices | Overkill for a two-week MVP; would add latency between match logic components |
+| Pure event-driven (no central server) | Hard to enforce match rules; no obvious single source of truth |
+
+Event broadcasting (snapshot every tick) is a supporting mechanism,
+not the primary style.
+
+---
+
+## 6. Architecture Configuration
+
+| Configuration item | Value |
+| --- | --- |
+| Client applications | 2 to 4 (humans + bots filling empty seats) |
+| Game server processes | 1 per host machine |
+| Active matches per server | 1+ (each in its own `MatchSession` with its own tick thread) |
+| Arena per match | 1 |
+| Inter-process communication | WebSocket over TCP, JSON-encoded envelopes |
+
+### 6.1 Architecture configuration diagram
+
+```
++----------------+   +----------------+   +----------------+   +----------------+
+| Client (P1)    |   | Client (P2)    |   | Client (P3)    |   | Client (P4)    |
+| bomberman-     |   | bomberman-     |   | bomberman-     |   | bomberman-     |
+| client         |   | client         |   | client         |   | client         |
++--------+-------+   +--------+-------+   +--------+-------+   +--------+-------+
+         \                    |                    |                    /
+          \                   |                    |                   /
+           \                  v                    v                  /
+            \         +-----------------------------+                 /
+             \------> |   Bomberman Game Server     | <--------------/
+                      |   (bomberman-server)        |
+                      |   - Netty WebSocket gateway |
+                      |   - Match Manager           |
+                      |   - Per-match tick thread   |
+                      |   - Authoritative GameWorld |
+                      +-----------------------------+
+```
+
+---
+
+## 7. C&C Building Block View
+
+### 7.1 Level 1 — main system components
+
+```
+Bomberman Online System
+├── Client Application       (bomberman-client process)
+├── Game Server              (bomberman-server process)
+└── Shared Domain Model      (bomberman-core library, linked into both)
+```
+
+### 7.2 Level 2 — C&C diagram
+
+```
++-----------------------+     Network Connector      +------------------------+
+|   Client Application  | <------------------------> |      Game Server       |
++-----------------------+                            +------------------------+
+| - User Interface      |                            | - Network Handler      |
+|   (MainMenuView,      |                            |   (WebSocketServer)    |
+|    LobbyView,         |                            | - Match Manager        |
+|    ArenaView)         |                            |   (MatchManager)       |
+| - Input Handler       |                            | - Game State Manager   |
+|   (GamepadPoller,     |                            |   (GameWorld)          |
+|    keyboard binding)  |                            | - Movement Validator   |
+| - Renderer            |                            |   (GameWorld.applyPlayerInputs) |
+|   (ArenaRenderer,     |                            | - Bomb Manager         |
+|    ParticleSystem,    |                            |   (GameWorld.placeBomb / tickBombs) |
+|    MandalaTheme)      |                            | - Explosion Manager    |
+| - Client State View   |                            |   (GameWorld.detonate) |
+|   (snapshot buffer)   |                            | - Bonus Manager        |
+| - Client Network Port |                            |   (GameWorld.collectPickups + Bonus*) |
+|   (GameClient)        |                            | - Score Manager        |
++-----------------------+                            |   (Score.java)         |
+                                                     +------------------------+
+```
+
+### 7.3 Note: architectural components vs domain classes
+
+The architectural components on the right are **runtime
+responsibilities**, not domain classes. The domain classes
+(`GameServer`, `Client`, `Match`, `Player`, `Bomberman`, `Arena`,
+`Tile`, `Bomb`, `Explosion`, `Bonus`, `Score`) are the data the
+managers operate on. The next two sections (8 and 17) make that
+mapping explicit.
+
+---
+
+## 8. Components and Responsibilities
+
+### 8.1 Client Application — `bomberman-client`
+
+Reads input, sends commands, receives snapshots, draws the result.
+Never decides whether a move is valid.
+
+Code: `MainMenuView`, `LobbyView`, `ArenaView`, `GameClient`,
+`ArenaRenderer`, `GamepadPoller`, `MandalaTheme`, `MandalaArt`.
+
+### 8.2 Game Server — `bomberman-server`
+
+The central authority. Accepts clients, maintains official state,
+validates actions, broadcasts updates, enforces rules.
+
+Code entry point: `BombServerApplication.main()` → `GameServer`
+facade → `WebSocketServer` + `MatchManager`.
+
+### 8.3 Match Manager
+
+Domain classes: `Match`. Responsibilities: create match, wait for
+2–4 players, start, track status, finish, allow restart.
+
+Code: `MatchManager.java`, `MatchSession.java`, `Match.java`.
+
+### 8.4 Game State Manager
+
+Domain classes: `Match`, `Arena`, `Tile`, `Player`, `Bomberman`,
+`Bomb`, `Explosion`, `Bonus`, `Score`.
+
+Responsibilities: store current arena state, update Bomberman
+positions, update bombs, update explosion effects, update bonus
+collection, update player status.
+
+Code: `GameWorld.java` (the single owner of mutable match state).
+
+### 8.5 Movement Validator
+
+Domain classes: `Bomberman`, `Tile`, `Arena`, `Bomb`.
+
+Responsibilities: check target tile is inside arena; check tile is
+walkable; prevent movement through walls; prevent movement through
+bombs (unless a bonus allows it); prevent eliminated players from
+moving.
+
+Code: `GameWorld.applyPlayerInputs()`.
+
+### 8.6 Bomb Manager
+
+Domain classes: `Bomb`, `Bomberman`, `Tile`.
+
+Responsibilities: create bomb at owner's tile, store owner id,
+track explosion time, enforce bomb-limit, trigger explosion when
+fuse expires.
+
+Code: `GameWorld.placeBomb()`, `GameWorld.tickBombs()`.
+
+### 8.7 Explosion Manager
+
+Domain classes: `Explosion`, `Bomb`, `Tile`, `Bomberman`.
+
+Responsibilities: create explosion; calculate affected tiles (four
+rays); destroy breakable walls; eliminate Bombermen in range;
+trigger chain reactions; stop at solid walls.
+
+Code: `GameWorld.detonate()`, `GameWorld.rayHits()`.
+
+### 8.8 Bonus Manager
+
+Domain classes: `Bonus`, `FlameBonus`, `SpeedBonus`, `KickBonus`,
+`LifeBonus`, `ArmorBonus`, `Bomberman`, `Tile`.
+
+Responsibilities: detect bonus collection, apply bonus effect,
+remove bonus from tile, update Bomberman attributes.
+
+Code: `GameWorld.collectPickups()`, `Player.applyPowerUp()`,
+`Bonus.applyTo()` and its seven subclasses.
+
+### 8.9 Score Manager
+
+Domain classes: `Score`, `Player`, `Match`.
+
+Responsibilities: count steps taken, count bombs placed, count
+players killed, count bonuses collected, calculate total points,
+prepare final ranking.
+
+Code: `Score.java`, increments wired into `GameWorld`
+(`p.recordStep()`, `p.recordBombPlaced()`, `Score.recordPlayerKilled()`,
+`Score.recordBonusCollected()`).
+
+---
+
+## 9. Ports and Interfaces
+
+### 9.1 Client Application ports
+
+| Port | Purpose | Code |
+| --- | --- | --- |
+| Input Port | Keyboard + gamepad events | `ArenaView` key binding, `GamepadPoller` |
+| Network Output Port | Send commands to server | `GameClient.send()` |
+| Network Input Port | Receive snapshots from server | `GameClient` Netty inbound handler |
+| Display Port | Render the world | `ArenaRenderer` on JavaFX `AnimationTimer` |
+
+### 9.2 Game Server ports
+
+| Port | Purpose | Code |
+| --- | --- | --- |
+| Command Input Port | Receive move/bomb/join/ability commands | `WebSocketServer` + `GameServerHandler.channelRead0` |
+| Event Output Port | Broadcast validated events | `MatchSession.broadcast(Envelope)` |
+| Administration Port | Start/restart matches | `MatchManager` API, also hit by `/health` and `/metrics` |
+| State Access Port | Read/write the official match state | `GameWorld` public API (internal to server only) |
+
+### 9.3 Main interfaces (message-level)
+
+`JOIN`, `LEAVE`, `MATCH_START`, `MOVE`, `BOMB_PLACE`, `ABILITY`,
+`CHAT`, `SNAPSHOT`, `KILL_FEED`, `MATCH_END`. Enum at
+`src/bomberman-core/.../net/MessageType.java`.
+
+---
+
+## 10. Connectors
+
+In C&C, connectors are first-class — not just wires. We have three.
+
+### 10.1 Network Connector
+
+| Field | Value |
+| --- | --- |
+| Name | Client–Server Network Connector |
+| Type | Request/Response + Event Broadcast |
+| Connected components | Client Application ↔ Game Server |
+| Protocol | WebSocket (over TCP) |
+| Client→Server payloads | Join, move command, place-bomb command, ability, chat |
+| Server→Client payloads | World snapshot, kill-feed, match-end, welcome |
+| Wire format | JSON envelope `{v, t, seq, ts, p}` |
+| Code | `WebSocketServer.java` (server side), `GameClient.java` (client side), `Envelope.java` + `WireCodec.java` (shared) |
+
+### 10.2 Command Connector
+
+Synchronous-style request from client to server. The client posts an
+intent; the server validates and either commits or drops it. No
+explicit ack — the next `SNAPSHOT` is the implicit acknowledgement.
+
+`MoveCommand` (movement direction), `PlaceBombCommand`,
+`JoinMatchCommand`, `CollectBonus` (implicit — collection happens by
+stepping onto a bonus tile).
+
+### 10.3 Event Broadcast Connector
+
+Server → all subscribed clients. Used for state-change announcements.
+
+`PlayerMovedEvent`, `BombPlacedEvent`, `ExplosionCreatedEvent`,
+`BonusCollectedEvent`, `PlayerEliminatedEvent`, `ScoreUpdatedEvent`,
+`MatchFinishedEvent`. In our wire model these are folded into the
+60 Hz `SNAPSHOT` plus the discrete `KILL_FEED` and `MATCH_END`
+envelopes.
+
+---
+
+## 11. Runtime View
+
+### 11.1 Player Joins Match
+
+1. Player opens the client (`MainMenuView`); enters name + server URL.
+2. Client sends `JOIN` to the server (`GameClient.connectAsync`).
+3. `WebSocketServer` accepts; `SessionRegistry` creates a `ClientSession`.
+4. `MatchManager` checks for a `MatchSession` accepting players, or
+   creates a new one.
+5. If player count is below `maxPlayersPerMatch`, `MatchSession`
+   adds the player.
+6. `GameWorld.addPlayer()` creates the `Player` (with its `Bomberman`
+   and `Score`) and places the pawn at a spawn tile.
+7. Server broadcasts `WELCOME` + `LOBBY` snapshot.
+
+Domain classes touched: `Client`, `GameServer`, `Match`, `Player`,
+`Bomberman`, `Arena`, `Tile`.
+
+### 11.2 Move Bomberman
+
+1. Player presses a movement key (`ArenaView` key handler).
+2. Client builds an `InputFrame` and sends `MOVE` envelope.
+3. Server lands it on the Netty I/O thread, decodes, deposits into
+   the per-player input slot (`world.inputFor(playerId)`).
+4. The tick thread reads the slot; `GameWorld.applyPlayerInputs()`:
+   - Direction set as `facing`.
+   - If step cooldown is 0 and the target tile is walkable + no
+     bomb, commit the new position.
+   - `p.recordStep()` updates `Score.stepsTaken`.
+   - If the new tile has a bonus, `collectPickups` applies it.
+5. Next tick, `Snapshotter` produces a `WorldSnapshot`;
+   `MatchSession.broadcast` ships it to every client.
+6. Clients render the new position.
+
+Domain classes touched: `Player`, `Bomberman`, `Tile`, `Arena`,
+`Bonus`, `Score`.
+
+### 11.3 Place Bomb
+
+1. Player presses the bomb key.
+2. Client sends `BOMB_PLACE` envelope.
+3. Server's tick thread reads the input.
+4. `placeBomb(p)` checks: alive? bomb capacity left? no bomb already
+   on this tile? If yes, construct a new `Bomb` with the player's
+   bomb power and a themed fuse time.
+5. `p.recordBombPlaced()` updates `Score.bombsPlaced`.
+6. Snapshot reflects the new bomb on the next broadcast.
+
+Domain classes touched: `Bomberman`, `Bomb`, `Tile`, `Score`,
+`GameServer`.
+
+### 11.4 Bomb Explodes
+
+1. `tickBombs()` runs every tick; when a bomb's `fuseTicks` hits 0,
+   it's added to a "primed" list.
+2. `detonate(b)` creates an `Explosion`; calls `rayHits()` in each
+   of the four directions to compute affected tiles.
+3. DESTRUCTIBLE tiles in range are rewritten to FLOOR (potentially
+   spawning a `PowerUpItem`).
+4. Any unfused bomb on an affected tile is primed → chain reaction.
+5. Any non-shielded `Bomberman` on an affected tile takes damage:
+   `Player.kill()` decrements `Bomberman.lives`, sets `alive=false`
+   at zero, and `Score.recordPlayerKilled` increments the killer.
+6. `KILL_FEED` envelope per kill.
+7. Snapshot carries the new arena state.
+
+Domain classes touched: `Bomb`, `Explosion`, `Tile`, `Bomberman`,
+`Player`, `Score`, `Arena`.
+
+### 11.5 Match Ends
+
+1. `GameWorld.tick()` checks the end condition each tick: `alive
+   count ≤ 1` or `elapsed ≥ match-time-cap`.
+2. `MatchSession.stop()` is invoked: flips `Match.Status` to
+   `FINISHED`, shuts down the tick executor, builds the final
+   ranking, broadcasts `MATCH_END`.
+3. Clients display the ranking screen.
+
+Domain classes touched: `Match`, `Player`, `Bomberman`, `Score`,
+`GameServer`, `Client`.
+
+### 11.6 Runtime flow — Place bomb + explosion
+
+```
+Player ──presses bomb key──> ArenaView
+                                │
+                                ▼ BOMB_PLACE envelope
+                             GameClient ──WebSocket──> WebSocketServer
+                                                            │
+                                                            ▼ decode
+                                                        GameServerHandler
+                                                            │
+                                                            ▼ inputFor(p).placeBomb=true
+                                                          (per-player input slot)
+                                                            │
+                                                            ▼ next tick
+                                                        GameWorld.applyPlayerInputs
+                                                            │   canPlaceBomb? bombAt? alive?
+                                                            ▼ yes → placeBomb(p)
+                                                        new Bomb on tile, Score.bombsPlaced++
+                                                            │
+                                                            ▼ each tick
+                                                        GameWorld.tickBombs
+                                                            │   fuseTicks==0?
+                                                            ▼ yes → detonate(b)
+                                                        new Explosion, rayHits() × 4
+                                                        destroy DESTRUCTIBLE tiles
+                                                        kill Bombermen in range
+                                                        chain-detonate adjacent bombs
+                                                            │
+                                                            ▼
+                                                        Snapshotter → WorldSnapshot
+                                                            │
+                                                            ▼ broadcast
+                                                  ┌────────────┬────────────┬────────────┐
+                                                  ▼            ▼            ▼            ▼
+                                              Client P1    Client P2    Client P3    Client P4
+                                              (render)     (render)     (render)     (render)
+```
+
+---
+
+## 12. Deployment View
+
+### 12.1 Local development deployment
+
+```
+Player Computer 1                       Player Computer 2
++-------------------+                   +-------------------+
+| bomberman-client  |                   | bomberman-client  |
+| (JavaFX JVM)      |                   | (JavaFX JVM)      |
++-------------------+                   +-------------------+
+         |                                       |
+         +--------------- LAN --------------+    |
+                                            |    |
+                                            v    v
+                                   +-------------------+
+                                   | bomberman-server  |
+                                   | (Netty JVM)       |
+                                   | + optional        |
+                                   |   Postgres / Redis|
+                                   |   (Docker Compose)|
+                                   +-------------------+
+```
+
+Build artifacts: `src/bomberman-server/target/bomberman-server.jar`
+(executable shaded jar), `bomberman-client` JavaFX module
+(run via `mvn javafx:run`).
+
+### 12.2 Production deployment (free-tier)
+
+- Server container built from `Dockerfile.server` (multi-stage Maven
+  + Temurin 17 JRE).
+- Hosts on Google Cloud Run (`deploy-cloudrun.yml`), 512 MiB RAM,
+  1 vCPU, autoscale 0–3.
+- Postgres + Redis as optional sidecars when `BX_PERSISTENCE=true`.
+- Persistent state is not part of the MVP; in-memory match state
+  is the default.
+
+---
+
+## 13. Cross-Cutting Concepts
+
+### 13.1 Server-authoritative state
+
+The server is the only component allowed to decide the official game
+state. Clients request actions; the server validates; the server
+updates; clients display the result. Prevents cheating, keeps all
+clients consistent, makes debugging deterministic (the server's tick
+log IS the history).
+
+Code: every mutation in `GameWorld.java` happens on the server's
+per-match tick thread. The client never writes its own `WorldSnapshot`.
+
+### 13.2 Game-event communication
+
+State changes are framed as events (snapshots + `KILL_FEED` +
+`MATCH_END`). Adding a new event = adding one `MessageType` value +
+one DTO record. No new sockets, no new threads.
+
+### 13.3 Validation before state change
+
+Every important action passes a guard before mutating state.
+
+- Movement: target tile is inside arena, walkable, not blocked by a
+  bomb, player is alive.
+- Bomb placement: player alive, bomb capacity left, no bomb already
+  on tile.
+- Bonus collection: tile actually carries an uncollected pickup.
+- Disconnection: graceful — no zombie players in the world.
+
+### 13.4 Separation of responsibilities
+
+Each manager has one job. `MovementValidator` only validates
+movement. `BombManager` only handles bombs. `Score` only counts
+score. If you want to change how scoring works, you change one file.
+
+### 13.5 Determinism
+
+Same seed + same ordered input log = byte-identical world state.
+Implications: replays are free, integration tests don't flake, and
+cheat detection by re-simulation is possible.
+
+Code rules: no floating point in the simulation loop; no
+`HashMap` iteration; one seeded `Random` per match; no threading
+inside a single tick.
+
+---
+
+## 14. Architecture Decisions
+
+### ADR-01: Use Client-Server architecture
+
+| Item | Description |
+| --- | --- |
+| Context | Bomberman Online requires multiple clients in the same arena. |
+| Decision | Central game server + multiple clients. |
+| Reason | Server maintains one official state and validates actions. |
+| Consequence | Fairness and consistency improve. Network latency becomes a factor. |
+
+### ADR-02: Use server-authoritative game state
+
+| Item | Description |
+| --- | --- |
+| Context | Players must not be able to cheat by modifying local state. |
+| Decision | Server owns the official state of `Match`, `Arena`, `Player`, `Bomb`, `Bonus`, `Score`. |
+| Reason | Prevents invalid actions; keeps all clients synchronised. |
+| Consequence | Server logic gets more complex. Gameplay becomes fair. |
+
+### ADR-03: Use component separation on the server
+
+| Item | Description |
+| --- | --- |
+| Context | Game logic includes movement, bombs, explosions, bonuses, scoring. |
+| Decision | Split server logic into named managers and validators. |
+| Reason | Improves readability, maintainability, testability. |
+| Consequence | More components and classes exist. Responsibilities become clearer. |
+
+### ADR-04: Use event-based updates
+
+| Item | Description |
+| --- | --- |
+| Context | Clients must be informed whenever the game state changes. |
+| Decision | Server broadcasts game events (snapshot + kill-feed + match-end). |
+| Reason | Works well for real-time multiplayer. |
+| Consequence | Event ordering and synchronisation need careful handling — we use a sequence number per envelope and one snapshot per tick. |
+
+---
+
+## 15. Quality Requirements
+
+### 15.1 Quality scenarios
+
+| Quality attribute | Scenario | Status |
+| --- | --- | --- |
+| Performance | A player moves; all clients see the new position within 1 s under normal network. | met — 60 Hz snapshot + sub-100 ms LAN RTT |
+| Consistency | A bomb explodes; all clients see the same result. | met — single authoritative `GameWorld` |
+| Fairness | An invalid move is rejected; previous valid state is kept. | met — `applyPlayerInputs` no-ops on invalid intents |
+| Reliability | One client disconnects; the match continues. | met — `removePlayer` cleans up subscriber list, tick continues |
+| Maintainability | New bonus type added; only bonus logic changes. | met — `Bonus` subclass + one `PowerUpType` value |
+| Testability | Movement, explosion, bonus, score testable independently. | met — `GameWorldTest` covers each |
+| Extensibility | New bonuses without redesigning the server. | met — `Bonus.of(type)` factory |
+
+### 15.2 Quality trade-offs
+
+| Decision | Positive | Negative |
+| --- | --- | --- |
+| Server-authoritative state | Fair, consistent | More server load |
+| Real-time snapshot every tick | Smoother UX | Higher network dependency |
+| Component separation | Easier to maintain | More classes |
+| Event-based comms | Flexible | Careful ordering needed |
+| MVP scope | Easier to ship | Some features postponed |
+
+---
+
+## 16. Risks and Technical Debt
+
+| Risk | Explanation | Mitigation |
+| --- | --- | --- |
+| Network latency | Delayed messages hurt feel. | Snapshots stay small and arrive every 60 Hz tick; the client renders each one directly. |
+| State inconsistency | Clients drift if updates missed. | Server is authoritative; clients re-snapshot on connect. |
+| God-class server | A monolithic `MatchSession` would be unmaintainable. | Split into MatchManager / GameWorld / Snapshotter / Bot etc. |
+| Bomb/explosion complexity | Chain reactions are tricky. | `tickBombs` unit-tested; chain logic isolated in `detonate`. |
+| Feature overload | Easy to over-scope and miss the MVP. | Spec lists "out of scope" up front; we stuck to it. |
+| Weak validation | Invalid intent could break a match. | Every server-side mutation has a guard. |
+| Server failure | Single point of failure mid-match. | Tag every commit as deployable; restart drains gracefully. Persistence is roadmap. |
+
+---
+
+## 17. Traceability from Domain Model to Architecture
+
+| Domain class | Architectural component | Code file |
+| --- | --- | --- |
+| GameServer | Game Server | `src/bomberman-server/.../GameServer.java` |
+| Client | Client Application | `src/bomberman-client/.../GameClient.java` + `ClientSession` (server-side handle) |
+| Match | Match Manager | `src/bomberman-server/.../match/Match.java`, `MatchManager.java` |
+| Player | Match Manager / Game State Manager | `src/bomberman-core/.../entity/Player.java` |
+| Bomberman | Game State Manager / Movement Validator | `src/bomberman-core/.../entity/Bomberman.java` |
+| Arena | Game State Manager | `src/bomberman-core/.../world/Arena.java` |
+| Tile | Game State Manager / Movement Validator | `src/bomberman-core/.../world/Tile.java`, `TileType.java` |
+| Bomb | Bomb Manager | `src/bomberman-core/.../entity/Bomb.java` |
+| Explosion | Explosion Manager | `src/bomberman-core/.../entity/Explosion.java` |
+| Bonus (+ subclasses) | Bonus Manager | `src/bomberman-core/.../world/Bonus.java`, `FlameBonus.java` etc. |
+| Score | Score Manager | `src/bomberman-core/.../entity/Score.java` |
+
+---
+
+## 18. Traceability from Requirements to Architecture
+
+| Requirement area | FR range | Architecture components |
+| --- | --- | --- |
+| Client-server connection | FR-01..FR-07 | Client Application, Game Server, Network Connector |
+| Match handling | FR-08..FR-16 | Match Manager |
+| Player handling | FR-17..FR-24 | Match Manager, Game State Manager |
+| Movement | FR-25..FR-33 | Movement Validator, Game State Manager |
+| Arena and tiles | FR-34..FR-46 | Game State Manager |
+| Bombs | FR-47..FR-55 | Bomb Manager |
+| Explosions | FR-56..FR-62 | Explosion Manager |
+| Bonuses | FR-63..FR-71 | Bonus Manager |
+| Scores | FR-72..FR-80 | Score Manager |
+| Synchronisation | FR-81..FR-86 | Network Handler, Game Server |
+
+Per-FR file mapping lives in
+`deliverables/code-explanation/requirements-traceability.md`.
+
+---
+
+## 19. Glossary
+
+| Term | Meaning |
+| --- | --- |
+| Architecture | The principal structure and design decisions of the system. |
+| Component | A runtime unit that encapsulates functionality or data. |
+| Connector | A mechanism that lets components communicate. |
+| C&C viewtype | Viewtype focused on runtime components and their interactions. |
+| Client-Server style | Clients request services from a central server. |
+| GameServer | Central component managing match state and validating actions. |
+| Client | Player-side application that sends commands and displays game state. |
+| Match | One running game session. |
+| Arena | Grid-based battlefield of the game. |
+| Tile | One cell inside the arena. |
+| Bomb | Object placed by a Bomberman that explodes after a timer. |
+| Explosion | Effect created by a bomb that affects tiles and Bombermen. |
+| Bonus | Power-up collected by a Bomberman. |
+| Score | Player statistics and points. |
+
+---
+
+## 20. Short Explanation for Exam
+
+Bomberman Online uses the **arc42** template for architecture
+documentation. The main viewtype is **Component-and-Connector**
+because the system is distributed and runtime interaction is what
+matters most.
+
+The architecture style is **Client-Server**. Each player uses a
+client application; the central game server owns the official state.
+The client only sends commands (move, place bomb). The server
+validates, updates the match, and broadcasts the result to all
+clients. This guarantees fairness — players can't directly change
+score, bombs, positions, or match state — and consistency, because
+all clients render snapshots from the same authority.
+
+Inside the server, the logic is split into named architectural
+components: **Match Manager, Movement Validator, Bomb Manager,
+Explosion Manager, Bonus Manager, Score Manager**, all sitting on top
+of a single **Game State Manager** (`GameWorld`). This separation
+makes the system easier to read, test, and extend.
+
+Event broadcasting (snapshot every tick, plus discrete kill-feed and
+match-end events) is a supporting mechanism inside the Client-Server
+style.
+
+---
+
+## 21. Final Submission Summary
+
+This specification matches the Week 3 and Week 4 lecture checklist:
+
+| Required item | Where covered |
+| --- | --- |
+| Architecture as principal design decisions | Section 14 (ADR-01..04), Section 5 |
+| Components, connectors, configuration | Sections 7, 8, 9, 10, 6 |
+| Architecture style | Sections 5, 20 |
+| C&C viewtype | Section 4, Section 7 |
+| Client-Server style | Sections 5, 20 |
+| Runtime behaviour | Section 11 (five scenarios + flow diagram) |
+| Deployment | Section 12 |
+| Quality requirements | Section 15 (7 scenarios + trade-offs) |
+| Architecture decisions | Section 14 |
+| Risks and trade-offs | Sections 16 and 15.2 |
+| Traceability to domain model | Section 17 |
+| Traceability to requirements | Section 18 |
+
+The spec is also directly traceable to:
+- The Lastenheft (Prof. Becker / M. Frank, TU Chemnitz SS 17).
+- The Bomberman Online Requirements Specification (Dr. Klinaku, SRH
+  Stuttgart, 2nd assignment).
+- The submitted UML domain model.
+
+---
+
+## 22. Sources Used
+
+1. Software Architecture and Development lecture material, Week 3:
+   *Specifying Software Architecture*. SRH University of Applied
+   Sciences, Summer Semester 2026.
+2. Software Architecture and Development lecture material, Week 4:
+   *Architecture Styles*. SRH University of Applied Sciences, Summer
+   Semester 2026.
+3. Bomberman project description / Lastenheft, Prof. Becker /
+   M. Frank, TU Chemnitz, SS 17.
+4. Submitted Bomberman UML domain model.
+5. Bomberman Online Requirements Specification, Dr. Floriment
+   Klinaku, SRH Stuttgart.
+6. arc42 template documentation, https://arc42.org.
+
+</script>
+</body>
+</html>

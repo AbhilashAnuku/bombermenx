@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="umlTitle umlDesc">
-  <title id="umlTitle">UML class diagram — bomb-client</title>
+  <title id="umlTitle">UML class diagram — bomberman-client</title>
   <desc id="umlDesc">Client classes laid out in four columns: launcher and UI scenes, networking, rendering pipeline, and input / audio / safety. ClientLauncher is the primary entry point.</desc>
 
   <defs>
@@ -33,7 +33,7 @@
   <rect width="1600" height="1100" fill="#08090d"/>
   <rect width="1600" height="1100" fill="url(#grid)"/>
 
-  <text x="800" y="36" class="lbl ttl" text-anchor="middle">UML — bomb-client (JavaFX)</text>
+  <text x="800" y="36" class="lbl ttl" text-anchor="middle">UML — bomberman-client (JavaFX)</text>
   <text x="800" y="58" class="lbl stereo" text-anchor="middle">ClientLauncher is the primary entry. SceneRouter swaps views; GameClient handles the WebSocket; ArenaRenderer paints each frame.</text>
 
   <text x="180" y="92" class="lbl grp">.client + .ui (scenes)</text>
@@ -53,10 +53,10 @@
     <text x="72" y="202" class="member">- router : SceneRouter</text>
     <text x="72" y="218" class="member">- client : GameClient</text>
     <line x1="60" y1="228" x2="300" y2="228" stroke="#1f2533"/>
-    <text x="72" y="246" class="member">+ start(stage)</text>
-    <text x="72" y="262" class="member">+ stop()</text>
-    <text x="72" y="278" class="member">+ main(args)</text>
-    <text x="72" y="294" class="member">+ config() : Cfg</text>
+    <text x="72" y="246" class="member">+ start(stage) : void</text>
+    <text x="72" y="262" class="member">  // calls MandalaTheme.apply</text>
+    <text x="72" y="278" class="member">+ main(args) : void [static]</text>
+    <text x="72" y="294" class="member">  // launch(args)</text>
   </g>
 
   <!-- SceneRouter -->
@@ -65,25 +65,26 @@
     <text x="180" y="352" class="cls" text-anchor="middle">SceneRouter</text>
     <line x1="60" y1="362" x2="300" y2="362" stroke="#1f2533"/>
     <text x="72" y="380" class="member">- stage : Stage</text>
-    <text x="72" y="396" class="member">- theme : TronTheme</text>
+    <text x="72" y="396" class="member">- root : StackPane</text>
     <text x="72" y="412" class="member">- current : View</text>
     <line x1="60" y1="422" x2="300" y2="422" stroke="#1f2533"/>
-    <text x="72" y="440" class="member">+ goMenu()</text>
-    <text x="72" y="456" class="member">+ goLobby()</text>
-    <text x="72" y="472" class="member">+ goArena(matchId)</text>
-    <text x="72" y="488" class="member">+ back()</text>
+    <text x="72" y="440" class="member">+ show(view) : void</text>
+    <text x="72" y="456" class="member">+ getStage() : Stage</text>
+    <text x="72" y="472" class="member">+ getRoot() : StackPane</text>
+    <text x="72" y="488" class="member">«interface» View</text>
   </g>
 
-  <!-- TronTheme -->
+  <!-- MandalaTheme (theme utility) -->
   <g>
     <rect x="60" y="520" width="240" height="130" rx="4" fill="#11141c" stroke="#94a3b8"/>
-    <text x="180" y="542" class="cls" text-anchor="middle">TronTheme</text>
-    <line x1="60" y1="552" x2="300" y2="552" stroke="#1f2533"/>
-    <text x="72" y="570" class="member">+ CYAN, PINK, AMBER</text>
-    <text x="72" y="586" class="member">+ BG, PANEL, INK</text>
-    <line x1="60" y1="596" x2="300" y2="596" stroke="#1f2533"/>
-    <text x="72" y="614" class="member">+ apply(scene)</text>
-    <text x="72" y="630" class="member">+ neonStroke(node)</text>
+    <text x="180" y="538" class="lbl stereo" text-anchor="middle">&lt;&lt;utility&gt;&gt;</text>
+    <text x="180" y="554" class="cls" text-anchor="middle">MandalaTheme</text>
+    <line x1="60" y1="562" x2="300" y2="562" stroke="#1f2533"/>
+    <text x="72" y="580" class="member">+ NEON_CYAN, NEON_MAGENTA,</text>
+    <text x="72" y="596" class="member">+ VAYU_ACCENT, AGNI_ACCENT</text>
+    <line x1="60" y1="606" x2="300" y2="606" stroke="#1f2533"/>
+    <text x="72" y="624" class="member">+ apply(scene)</text>
+    <text x="72" y="640" class="member">+ playerColor(slot)</text>
   </g>
 
   <!-- MainMenuView -->
@@ -91,9 +92,9 @@
     <rect x="60" y="670" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="180" y="692" class="cls" text-anchor="middle">MainMenuView</text>
     <line x1="60" y1="702" x2="300" y2="702" stroke="#1f2533"/>
-    <text x="72" y="720" class="member">+ root() : Parent</text>
-    <text x="72" y="736" class="member">+ onPlay()</text>
-    <text x="72" y="752" class="member">+ onQuit()</text>
+    <text x="72" y="720" class="member">+ MainMenuView(router)</text>
+    <text x="72" y="736" class="member">+ getRoot() : Parent</text>
+    <text x="72" y="752" class="member">  implements View</text>
   </g>
 
   <!-- LobbyView -->
@@ -101,9 +102,9 @@
     <rect x="60" y="790" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="180" y="812" class="cls" text-anchor="middle">LobbyView</text>
     <line x1="60" y1="822" x2="300" y2="822" stroke="#1f2533"/>
-    <text x="72" y="840" class="member">+ root() : Parent</text>
-    <text x="72" y="856" class="member">+ update(lobby)</text>
-    <text x="72" y="872" class="member">+ onReady()</text>
+    <text x="72" y="840" class="member">+ getRoot() : Parent</text>
+    <text x="72" y="856" class="member">+ onShown()</text>
+    <text x="72" y="872" class="member">+ onHidden()</text>
   </g>
 
   <!-- RankingsView -->
@@ -111,9 +112,9 @@
     <rect x="60" y="910" width="240" height="100" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="180" y="932" class="cls" text-anchor="middle">RankingsView</text>
     <line x1="60" y1="942" x2="300" y2="942" stroke="#1f2533"/>
-    <text x="72" y="960" class="member">+ root() : Parent</text>
-    <text x="72" y="976" class="member">+ load(page)</text>
-    <text x="72" y="992" class="member">+ refresh()</text>
+    <text x="72" y="960" class="member">+ RankingsView(router)</text>
+    <text x="72" y="976" class="member">+ getRoot() : Parent</text>
+    <text x="72" y="992" class="member">  Row{rank,player,wins,score}</text>
   </g>
 
   <!-- COLUMN 2 -->
@@ -127,10 +128,10 @@
     <text x="432" y="202" class="member">- renderer : ArenaRenderer</text>
     <text x="432" y="218" class="member">- timer : AnimationTimer</text>
     <line x1="420" y1="228" x2="680" y2="228" stroke="#1f2533"/>
-    <text x="432" y="246" class="member">+ root() : Parent</text>
-    <text x="432" y="262" class="member">+ start()</text>
-    <text x="432" y="278" class="member">+ stop()</text>
-    <text x="432" y="294" class="member">+ onFrame(dt)</text>
+    <text x="432" y="246" class="member">+ ArenaView(router, client)</text>
+    <text x="432" y="262" class="member">+ getRoot() : Parent</text>
+    <text x="432" y="278" class="member">+ onShown()</text>
+    <text x="432" y="294" class="member">+ onHidden()</text>
   </g>
 
   <!-- HudOverlay -->
@@ -138,12 +139,12 @@
     <rect x="420" y="320" width="260" height="140" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="550" y="342" class="cls" text-anchor="middle">HudOverlay</text>
     <line x1="420" y1="352" x2="680" y2="352" stroke="#1f2533"/>
-    <text x="432" y="370" class="member">- score : Map&lt;Id, Int&gt;</text>
-    <text x="432" y="386" class="member">- timer : double</text>
+    <text x="432" y="370" class="member">- node : Node</text>
+    <text x="432" y="386" class="member">- root : StackPane</text>
     <line x1="420" y1="396" class="line" x2="680" y2="396" stroke="#1f2533"/>
-    <text x="432" y="414" class="member">+ draw(gc, w)</text>
-    <text x="432" y="430" class="member">+ flashKill(id)</text>
-    <text x="432" y="446" class="member">+ setRtt(ms)</text>
+    <text x="432" y="414" class="member">+ HudOverlay()</text>
+    <text x="432" y="430" class="member">+ getNode() : Node</text>
+    <text x="432" y="446" class="member">+ update(snap, playerId, rttMs)</text>
   </g>
 
   <!-- GameClient -->
@@ -152,42 +153,16 @@
     <text x="550" y="502" class="cls" text-anchor="middle">GameClient</text>
     <line x1="420" y1="512" x2="680" y2="512" stroke="#1f2533"/>
     <text x="432" y="530" class="member">- channel : Channel</text>
-    <text x="432" y="546" class="member">- codec : WireCodec</text>
-    <text x="432" y="562" class="member">- inbox : Queue&lt;Envelope&gt;</text>
-    <text x="432" y="578" class="member">- world : GameWorld (mirror)</text>
-    <text x="432" y="594" class="member">- listeners : List</text>
+    <text x="432" y="546" class="member">- playerId : String</text>
+    <text x="432" y="562" class="member">- rttMs : long</text>
+    <text x="432" y="578" class="member">- listeners : List</text>
+    <text x="432" y="594" class="member">  «AutoCloseable»</text>
     <line x1="420" y1="604" x2="680" y2="604" stroke="#1f2533"/>
-    <text x="432" y="622" class="member">+ connect(url)</text>
-    <text x="432" y="638" class="member">+ send(env)</text>
-    <text x="432" y="654" class="member">+ poll() : Envelope</text>
-    <text x="432" y="670" class="member">+ onSnapshot(s)</text>
+    <text x="432" y="622" class="member">+ connectAsync() : void</text>
+    <text x="432" y="638" class="member">+ sendInput(frame) : void</text>
+    <text x="432" y="654" class="member">+ setSnapshotListener(c)</text>
+    <text x="432" y="670" class="member">+ setStatusListener(c)</text>
     <text x="432" y="686" class="member">+ close()</text>
-  </g>
-
-  <!-- ConnectionState -->
-  <g>
-    <rect x="420" y="720" width="260" height="120" rx="4" fill="#11141c" stroke="#94a3b8"/>
-    <text x="550" y="740" class="lbl stereo" text-anchor="middle">&lt;&lt;enum&gt;&gt;</text>
-    <text x="550" y="758" class="cls" text-anchor="middle">ConnectionState</text>
-    <line x1="420" y1="768" x2="680" y2="768" stroke="#1f2533"/>
-    <text x="432" y="786" class="member">DISCONNECTED,</text>
-    <text x="432" y="802" class="member">CONNECTING, AUTH,</text>
-    <text x="432" y="818" class="member">LOBBY, IN_MATCH</text>
-  </g>
-
-  <!-- Reconciler -->
-  <g>
-    <rect x="420" y="860" width="260" height="170" rx="4" fill="#11141c" stroke="#94a3b8"/>
-    <text x="550" y="882" class="cls" text-anchor="middle">Reconciler</text>
-    <text x="550" y="898" class="lbl stereo" text-anchor="middle">client-side prediction</text>
-    <line x1="420" y1="908" x2="680" y2="908" stroke="#1f2533"/>
-    <text x="432" y="926" class="member">- pending : Deque&lt;Input&gt;</text>
-    <text x="432" y="942" class="member">- lastAckSeq : long</text>
-    <line x1="420" y1="952" x2="680" y2="952" stroke="#1f2533"/>
-    <text x="432" y="970" class="member">+ predict(in) : void</text>
-    <text x="432" y="986" class="member">+ apply(snap)</text>
-    <text x="432" y="1002" class="member">+ rewind() : void</text>
-    <text x="432" y="1018" class="member">+ pendingCount() : int</text>
   </g>
 
   <!-- COLUMN 3 -->
@@ -197,16 +172,16 @@
     <text x="910" y="142" class="cls" text-anchor="middle">ArenaRenderer</text>
     <line x1="780" y1="152" x2="1040" y2="152" stroke="#1f2533"/>
     <text x="792" y="170" class="member">- gc : GraphicsContext</text>
-    <text x="792" y="186" class="member">- atlas : SpriteAtlas</text>
-    <text x="792" y="202" class="member">- camera : Camera</text>
-    <text x="792" y="218" class="member">- shake : CameraShake</text>
-    <text x="792" y="234" class="member">- particles : ParticleSystem</text>
-    <text x="792" y="250" class="member">- post : PostFx</text>
+    <text x="792" y="186" class="member">- particles : ParticleSystem</text>
+    <text x="792" y="202" class="member">- shake : CameraShake</text>
+    <text x="792" y="218" class="member">- post : PostFx</text>
+    <text x="792" y="234" class="member">  uses ParticleSystem,</text>
+    <text x="792" y="250" class="member">  CameraShake, PostFx</text>
     <line x1="780" y1="260" x2="1040" y2="260" stroke="#1f2533"/>
-    <text x="792" y="278" class="member">+ draw(w, t)</text>
-    <text x="792" y="294" class="member">+ drawArena(a)</text>
-    <text x="792" y="310" class="member">+ drawEntities(w)</text>
-    <text x="792" y="326" class="member">+ resize(w, h)</text>
+    <text x="792" y="278" class="member">+ render(canvas, snap,</text>
+    <text x="792" y="294" class="member">    playerId) : void</text>
+    <text x="792" y="310" class="member">  // paints one frame</text>
+    <text x="792" y="326" class="member">  to the Canvas</text>
   </g>
 
   <!-- ParticleSystem -->
@@ -214,13 +189,13 @@
     <rect x="780" y="360" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="910" y="382" class="cls" text-anchor="middle">ParticleSystem</text>
     <line x1="780" y1="392" x2="1040" y2="392" stroke="#1f2533"/>
-    <text x="792" y="410" class="member">- pool : Particle[]</text>
-    <text x="792" y="426" class="member">- live : int</text>
+    <text x="792" y="410" class="member">- particles : List</text>
+    <text x="792" y="426" class="member">- rng : Random</text>
     <line x1="780" y1="436" x2="1040" y2="436" stroke="#1f2533"/>
-    <text x="792" y="454" class="member">+ emit(p, n)</text>
-    <text x="792" y="470" class="member">+ tick(dt)</text>
-    <text x="792" y="486" class="member">+ render(gc)</text>
-    <text x="792" y="502" class="member">+ clear()</text>
+    <text x="792" y="454" class="member">+ spawnExplosion(x,y,col,n)</text>
+    <text x="792" y="470" class="member">+ spawnSpark / spawnHalo</text>
+    <text x="792" y="486" class="member">+ update(dt) / draw(gc)</text>
+    <text x="792" y="502" class="member">+ activeCount():int / clear()</text>
   </g>
 
   <!-- CameraShake -->
@@ -231,9 +206,9 @@
     <text x="792" y="590" class="member">- amp : double</text>
     <text x="792" y="606" class="member">- decay : double</text>
     <line x1="780" y1="616" x2="1040" y2="616" stroke="#1f2533"/>
-    <text x="792" y="634" class="member">+ kick(power)</text>
-    <text x="792" y="650" class="member">+ offset(dt) : XY</text>
-    <text x="792" y="666" class="member">+ isShaking()</text>
+    <text x="792" y="634" class="member">+ kick(power) / update(dt)</text>
+    <text x="792" y="650" class="member">+ offsetX() : double</text>
+    <text x="792" y="666" class="member">+ offsetY() : double</text>
   </g>
 
   <!-- PostFx -->
@@ -245,22 +220,22 @@
     <text x="792" y="766" class="member">- scanlines : boolean</text>
     <text x="792" y="782" class="member">- chroma : double</text>
     <line x1="780" y1="792" x2="1040" y2="792" stroke="#1f2533"/>
-    <text x="792" y="810" class="member">+ apply(canvas)</text>
-    <text x="792" y="826" class="member">+ enable(name)</text>
-    <text x="792" y="842" class="member">+ snapshot() : Image</text>
+    <text x="792" y="810" class="member">+ draw(gc, w, h) : void</text>
+    <text x="792" y="826" class="member">  // bloom + scanlines</text>
+    <text x="792" y="842" class="member">  // + chroma overlay</text>
   </g>
 
-  <!-- Camera -->
+  <!-- MandalaArt -->
   <g>
     <rect x="780" y="880" width="260" height="150" rx="4" fill="#11141c" stroke="#94a3b8"/>
-    <text x="910" y="902" class="cls" text-anchor="middle">Camera</text>
-    <line x1="780" y1="912" x2="1040" y2="912" stroke="#1f2533"/>
-    <text x="792" y="930" class="member">- x, y : double</text>
-    <text x="792" y="946" class="member">- zoom : double</text>
-    <line x1="780" y1="956" x2="1040" y2="956" stroke="#1f2533"/>
-    <text x="792" y="974" class="member">+ follow(p)</text>
-    <text x="792" y="990" class="member">+ toScreen(tp)</text>
-    <text x="792" y="1006" class="member">+ toWorld(sx, sy)</text>
+    <text x="910" y="900" class="lbl stereo" text-anchor="middle">&lt;&lt;utility&gt;&gt;</text>
+    <text x="910" y="916" class="cls" text-anchor="middle">MandalaArt</text>
+    <line x1="780" y1="924" x2="1040" y2="924" stroke="#1f2533"/>
+    <text x="792" y="942" class="member">- MandalaArt()  // private</text>
+    <line x1="780" y1="952" x2="1040" y2="952" stroke="#1f2533"/>
+    <text x="792" y="970" class="member">+ mandalaPanel(w,h,seed)</text>
+    <text x="792" y="986" class="member">    : Canvas [static]</text>
+    <text x="792" y="1002" class="member">+ draw(gc,w,h,seed) [static]</text>
   </g>
 
   <!-- COLUMN 4 -->
@@ -269,14 +244,14 @@
     <rect x="1140" y="120" width="260" height="170" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="1270" y="142" class="cls" text-anchor="middle">GamepadPoller</text>
     <line x1="1140" y1="152" x2="1400" y2="152" stroke="#1f2533"/>
-    <text x="1152" y="170" class="member">- pad : Gamepad</text>
-    <text x="1152" y="186" class="member">- deadzone : double</text>
-    <text x="1152" y="202" class="member">- lastInput : PlayerInput</text>
+    <text x="1152" y="170" class="member">- running : boolean</text>
+    <text x="1152" y="186" class="member">- direction : Direction</text>
+    <text x="1152" y="202" class="member">  «AutoCloseable»</text>
     <line x1="1140" y1="212" x2="1400" y2="212" stroke="#1f2533"/>
-    <text x="1152" y="230" class="member">+ poll() : PlayerInput</text>
-    <text x="1152" y="246" class="member">+ isConnected()</text>
-    <text x="1152" y="262" class="member">+ axis(i) : double</text>
-    <text x="1152" y="278" class="member">+ button(i) : boolean</text>
+    <text x="1152" y="230" class="member">+ start() / close()</text>
+    <text x="1152" y="246" class="member">+ currentDirection() : Direction</text>
+    <text x="1152" y="262" class="member">+ consumeBombPress() : boolean</text>
+    <text x="1152" y="278" class="member">+ isActive() : boolean</text>
   </g>
 
   <!-- HapticsService -->
@@ -284,13 +259,13 @@
     <rect x="1140" y="310" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="1270" y="332" class="cls" text-anchor="middle">HapticsService</text>
     <line x1="1140" y1="342" x2="1400" y2="342" stroke="#1f2533"/>
-    <text x="1152" y="360" class="member">- pad : Gamepad</text>
-    <text x="1152" y="376" class="member">- mute : boolean</text>
+    <text x="1152" y="360" class="member">- running : boolean</text>
+    <text x="1152" y="376" class="member">  «AutoCloseable»</text>
     <line x1="1140" y1="386" x2="1400" y2="386" stroke="#1f2533"/>
-    <text x="1152" y="404" class="member">+ pulse(ms, amp)</text>
-    <text x="1152" y="420" class="member">+ rumble(low, high)</text>
-    <text x="1152" y="436" class="member">+ stop()</text>
-    <text x="1152" y="452" class="member">+ setMute(b)</text>
+    <text x="1152" y="404" class="member">+ start(controllers) / close()</text>
+    <text x="1152" y="420" class="member">+ pulse(amp, ms)</text>
+    <text x="1152" y="436" class="member">+ pulseFor(name)</text>
+    <text x="1152" y="452" class="member">+ isActive() : boolean</text>
   </g>
 
   <!-- AudioBus -->
@@ -298,14 +273,14 @@
     <rect x="1140" y="490" width="260" height="170" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="1270" y="512" class="cls" text-anchor="middle">AudioBus</text>
     <line x1="1140" y1="522" x2="1400" y2="522" stroke="#1f2533"/>
-    <text x="1152" y="540" class="member">- master : float</text>
-    <text x="1152" y="556" class="member">- music : float</text>
-    <text x="1152" y="572" class="member">- sfx : float</text>
+    <text x="1152" y="540" class="member">- sfx : double</text>
+    <text x="1152" y="556" class="member">- music : double</text>
+    <text x="1152" y="572" class="member">- muted : boolean</text>
     <line x1="1140" y1="582" x2="1400" y2="582" stroke="#1f2533"/>
-    <text x="1152" y="600" class="member">+ play(id)</text>
-    <text x="1152" y="616" class="member">+ loop(id)</text>
-    <text x="1152" y="632" class="member">+ stop(id)</text>
-    <text x="1152" y="648" class="member">+ setMaster(v)</text>
+    <text x="1152" y="600" class="member">+ setSfx/Music/VoiceVolume(v)</text>
+    <text x="1152" y="616" class="member">+ setMuted(b) / isMuted()</text>
+    <text x="1152" y="632" class="member">+ playSpatial(id, x, y, z)</text>
+    <text x="1152" y="648" class="member">+ playUi(id)</text>
   </g>
 
   <!-- SpatialAudio -->
@@ -313,13 +288,13 @@
     <rect x="1140" y="680" width="260" height="160" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="1270" y="702" class="cls" text-anchor="middle">SpatialAudio</text>
     <line x1="1140" y1="712" x2="1400" y2="712" stroke="#1f2533"/>
-    <text x="1152" y="730" class="member">- listener : TilePos</text>
-    <text x="1152" y="746" class="member">- maxDistance : double</text>
+    <text x="1152" y="730" class="member">+ MAX_DISTANCE [static]</text>
+    <text x="1152" y="746" class="member">+ PAN_SATURATION [static]</text>
     <line x1="1140" y1="756" class="line" x2="1400" y2="756" stroke="#1f2533"/>
-    <text x="1152" y="774" class="member">+ playAt(id, tp)</text>
-    <text x="1152" y="790" class="member">+ setListener(tp)</text>
-    <text x="1152" y="806" class="member">+ attenuation(d)</text>
-    <text x="1152" y="822" class="member">+ pan(tp) : double</text>
+    <text x="1152" y="774" class="member">+ compute(...) : PanGain</text>
+    <text x="1152" y="790" class="member">    [static]</text>
+    <text x="1152" y="806" class="member">  record PanGain{pan, gain}</text>
+    <text x="1152" y="822" class="member">  «utility»</text>
   </g>
 
   <!-- AgeGate -->
@@ -327,14 +302,14 @@
     <rect x="1140" y="860" width="260" height="170" rx="4" fill="#11141c" stroke="#94a3b8"/>
     <text x="1270" y="882" class="cls" text-anchor="middle">AgeGate</text>
     <line x1="1140" y1="892" x2="1400" y2="892" stroke="#1f2533"/>
-    <text x="1152" y="910" class="member">- minAge : int</text>
-    <text x="1152" y="926" class="member">- verified : boolean</text>
+    <text x="1152" y="910" class="member">  «utility» (private ctor)</text>
+    <text x="1152" y="926" class="member">  enum AgeClass{UNDER_13,</text>
     <line x1="1140" y1="936" x2="1400" y2="936" stroke="#1f2533"/>
-    <text x="1152" y="954" class="member">+ prompt()</text>
-    <text x="1152" y="970" class="member">+ accept(dob)</text>
-    <text x="1152" y="986" class="member">+ isAdult()</text>
-    <text x="1152" y="1002" class="member">+ persistConsent()</text>
-    <text x="1152" y="1018" class="member">+ revoke()</text>
+    <text x="1152" y="954" class="member">    TEEN_13_17, ADULT_18_PLUS}</text>
+    <text x="1152" y="970" class="member">+ loadStored() : AgeClass [static]</text>
+    <text x="1152" y="986" class="member">+ persist(ageClass) [static]</text>
+    <text x="1152" y="1002" class="member">+ prompt() : AgeClass [static]</text>
+    <text x="1152" y="1018" class="member">  </text>
   </g>
 
   <!-- CONNECTORS -->
@@ -345,7 +320,7 @@
   <path d="M 300 200 L 420 540" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
   <text x="340" y="370" class="edgelbl">owns</text>
 
-  <!-- SceneRouter -> TronTheme -->
+  <!-- SceneRouter -> MandalaTheme (uses) -->
   <path d="M 180 500 L 180 520" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
 
   <!-- SceneRouter -> MainMenuView, LobbyView, RankingsView, ArenaView (assoc) -->
@@ -364,20 +339,12 @@
   <!-- ArenaView -> GameClient (assoc) -->
   <path d="M 550 300 L 600 300 L 600 480" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
 
-  <!-- GameClient -> Reconciler (composition) -->
-  <path d="M 550 700 L 550 860" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
-
-  <!-- GameClient -> ConnectionState -->
-  <path d="M 680 600 L 720 600 L 720 770 L 680 770" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)"/>
-
   <!-- ArenaRenderer -> ParticleSystem (composition) -->
   <path d="M 910 340 L 910 360" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
   <!-- ArenaRenderer -> CameraShake (composition) -->
   <path d="M 980 340 L 980 540" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
   <!-- ArenaRenderer -> PostFx (composition) -->
   <path d="M 1020 340 L 1020 700" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
-  <!-- ArenaRenderer -> Camera (composition) -->
-  <path d="M 860 340 L 860 880" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#diamondF)"/>
 
   <!-- ClientLauncher -> GamepadPoller (uses) -->
   <path d="M 300 180 L 1140 180" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
@@ -400,7 +367,7 @@
   <path d="M 300 290 L 1120 290 L 1120 890 L 1140 890" fill="none" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
   <text x="700" y="284" class="edgelbl">age gate</text>
 
-  <!-- GameClient -> bomb-core marker -->
+  <!-- GameClient -> bomberman-core marker -->
   <g>
     <rect x="700" y="490" width="40" height="50" fill="#0c0f17" stroke="#3aedff" stroke-dasharray="3 3"/>
     <text x="720" y="522" class="member" text-anchor="middle" fill="#3aedff">core</text>

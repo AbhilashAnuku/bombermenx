@@ -49,7 +49,7 @@
     from { opacity: 0; transform: translateX(24px); }
     to   { opacity: 1; transform: translateX(0); }
   }
-  h1, h2, h3 { margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: "Orbitron", "Rajdhani", system-ui, sans-serif; font-weight: 700; }
+  h1, h2, h3 { margin: 0 0 16px 0; letter-spacing: 0.02em; font-family: "Orbimandala", "Rajdhani", system-ui, sans-serif; font-weight: 700; }
   h1 { font-size: 72px; color: var(--cyan); text-shadow: 0 0 24px rgba(58,237,255,0.35); }
   h2 { font-size: 44px; color: var(--cyan); }
   h3 { font-size: 22px; color: var(--amber); text-transform: uppercase; letter-spacing: 0.12em; }
@@ -121,7 +121,7 @@
   }
   .tagline { font-size: 28px; color: var(--amber); margin-top: 8px; }
   .team-line { margin-top: 28px; color: var(--muted); font-size: 20px; letter-spacing: 0.15em; }
-  .team-line strong { color: var(--text); }
+  .team-line smandalag { color: var(--text); }
   .ascii {
     font-family: "JetBrains Mono", Consolas, monospace;
     background: var(--panel);
@@ -134,7 +134,7 @@
     white-space: pre;
   }
   .kpi {
-    font-family: "Orbitron", "Rajdhani", system-ui, sans-serif;
+    font-family: "Orbimandala", "Rajdhani", system-ui, sans-serif;
     font-size: 56px;
     color: var(--cyan);
     line-height: 1;
@@ -180,9 +180,9 @@
   <section class="slide title active" aria-label="Title">
     <span class="pill">STUDENT PROJECT &middot; ZERO BUDGET</span>
     <h1>BomberMen-X</h1>
-    <div class="tagline">A server-authoritative arena bomber in Tron neon.</div>
+    <div class="tagline">A server-authoritative arena bomber in mandala (Vāyu vs Agni).</div>
     <div class="team-line">
-      Architects: <strong>AA</strong> (Delivery Lead) &nbsp;&middot;&nbsp; <strong>SK</strong> (UI/UX Director) &nbsp;&middot;&nbsp; <strong>JC</strong> (Gameplay Director)
+      Architects: <smandalag>AA</smandalag> (Delivery Lead) &nbsp;&middot;&nbsp; <smandalag>SK</smandalag> (UI/UX Director) &nbsp;&middot;&nbsp; <smandalag>JC</smandalag> (Gameplay Director)
     </div>
   </section>
 
@@ -202,7 +202,7 @@
     <h2>Vision and pillars</h2>
     <div class="grid3" style="margin-top:24px;">
       <div class="card"><h3>Server-authoritative</h3><p>Every tile, every bomb, every kill decided server-side at 60 Hz.</p></div>
-      <div class="card"><h3>Readable always</h3><p>Tron palette, AA contrast, motion you can dial down.</p></div>
+      <div class="card"><h3>Readable always</h3><p>mandala palette, AA contrast, motion you can dial down.</p></div>
       <div class="card"><h3>Zero install path</h3><p>Browser <span class="mono">play.html</span> as a first-touch surface.</p></div>
     </div>
   </section>
@@ -211,10 +211,10 @@
   <section class="slide" aria-label="Stakeholders">
     <h2>Stakeholders</h2>
     <ul>
-      <li><strong>Players</strong> — primary. Headphones, mid-tier hardware, mixed input devices.</li>
-      <li><strong>Course staff</strong> — graded on documentation, architecture, security review.</li>
-      <li><strong>Future contributors</strong> — read our code in a week, not a month.</li>
-      <li><strong>Ourselves</strong> — three architects who wanted to ship, not just plan.</li>
+      <li><smandalag>Players</smandalag> — primary. Headphones, mid-tier hardware, mixed input devices.</li>
+      <li><smandalag>Course staff</smandalag> — graded on documentation, architecture, security review.</li>
+      <li><smandalag>Future contributors</smandalag> — read our code in a week, not a month.</li>
+      <li><smandalag>Ourselves</smandalag> — three architects who wanted to ship, not just plan.</li>
     </ul>
   </section>
 
@@ -249,13 +249,13 @@
   <section class="slide" aria-label="Architecture">
     <h2>Three-module architecture</h2>
     <div class="ascii">  +-----------------+         WebSocket / JSON         +-----------------+
-  |  bomb-client    | &lt;------------------------------&gt; |   bomb-server   |
+  |  bomberman-client    | &lt;------------------------------&gt; |   bomberman-server   |
   |  (JavaFX 21)    |        60 Hz tick stream        |  (Java 21, Netty)|
   +-----------------+                                 +-----------------+
           ^                                                    |
           |  REST / static                                     v
           |                                            +-----------------+
-          +------------------------------------------- |  bomb-shared    |
+          +------------------------------------------- | bomberman-core  |
                                                        |  (wire + models)|
                                                        +-----------------+</div>
     <p class="muted" style="margin-top:20px;">Shared module = single source of truth for messages. No drift between client and server.</p>
@@ -293,10 +293,10 @@
   <section class="slide" aria-label="Matchmaker">
     <h2>Matchmaker</h2>
     <ul>
-      <li><strong>Warmup</strong> — 20 s lobby window with mode vote.</li>
-      <li><strong>Bot fill</strong> — if fewer than 4 humans, fill with bots so the match still starts.</li>
-      <li><strong>Mode vote</strong> — majority wins; ties default to FFA.</li>
-      <li><strong>Reconnection</strong> — 30 s grace window keyed by session id.</li>
+      <li><smandalag>Warmup</smandalag> — 20 s lobby window with mode vote.</li>
+      <li><smandalag>Bot fill</smandalag> — if fewer than 4 humans, fill with bots so the match still starts.</li>
+      <li><smandalag>Mode vote</smandalag> — majority wins; ties default to FFA.</li>
+      <li><smandalag>Reconnection</smandalag> — 30 s grace window keyed by session id.</li>
     </ul>
   </section>
 
@@ -315,7 +315,7 @@
   <section class="slide" aria-label="Design language">
     <h2>UI / UX design language</h2>
     <ul>
-      <li>Tron palette, roles fixed in <span class="mono">tron.css</span>: cyan primary, magenta opposing, amber warn, green success.</li>
+      <li>mandala palette, roles fixed in <span class="mono">mandala.css</span>: cyan primary, magenta opposing, amber warn, green success.</li>
       <li>Three type roles — Display / Body / Mono — with explicit JavaFX classes.</li>
       <li>4-based spacing scale, no freelance values.</li>
       <li>Motion is information: shake means a bomb, glow means urgency.</li>
@@ -325,7 +325,7 @@
 
   <!-- 13. Renderer -->
   <section class="slide" aria-label="Renderer">
-    <h2>The Tron renderer</h2>
+    <h2>The MANDALA renderer</h2>
     <ul>
       <li><span class="mono">ArenaRenderer</span> — single <span class="mono">AnimationTimer</span> at 60 FPS on a canvas.</li>
       <li>Draw order: tiles &rarr; bombs &rarr; explosions &rarr; players &rarr; particles.</li>
@@ -348,10 +348,10 @@
   <section class="slide" aria-label="Safety">
     <h2>Safety</h2>
     <ul>
-      <li><strong>Age gate</strong> — <span class="mono">AgeGate.prompt(...)</span> on first launch, answer persisted to <span class="mono">Preferences</span>.</li>
-      <li><strong>Profanity filter</strong> — applied to display names and chat, server-side.</li>
-      <li><strong>Reduce-motion</strong> — scanline opacity off / subtle / full.</li>
-      <li><strong>Default audio</strong> — conservative 60% to protect headphone users.</li>
+      <li><smandalag>Age gate</smandalag> — <span class="mono">AgeGate.prompt(...)</span> on first launch, answer persisted to <span class="mono">Preferences</span>.</li>
+      <li><smandalag>Profanity filter</smandalag> — applied to display names and chat, server-side.</li>
+      <li><smandalag>Reduce-motion</smandalag> — scanline opacity off / subtle / full.</li>
+      <li><smandalag>Default audio</smandalag> — conservative 60% to protect headphone users.</li>
     </ul>
   </section>
 
@@ -360,7 +360,7 @@
     <h2>CI/CD pipeline</h2>
     <ul>
       <li>GitHub Actions on every push: build, unit tests, integration tests.</li>
-      <li>Lint and contrast checks on <span class="mono">tron.css</span> and the <span class="mono">presentation/</span> HTML.</li>
+      <li>Lint and contrast checks on <span class="mono">mandala.css</span> and the <span class="mono">presentation/</span> HTML.</li>
       <li>Tagged release builds publish a runnable JAR and a Docker image.</li>
       <li>Deploy step gated by a manual approval — the three architects sign.</li>
     </ul>
@@ -372,7 +372,7 @@
     <table>
       <thead><tr><th>Component</th><th>Where</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>bomb-server</td><td class="mono">Cloud Run</td><td>Scale to zero. Cold start ~1.2 s.</td></tr>
+        <tr><td>bomberman-server</td><td class="mono">Cloud Run</td><td>Scale to zero. Cold start ~1.2 s.</td></tr>
         <tr><td>Rankings</td><td class="mono">Postgres (Cloud SQL)</td><td>Durable, daily backup.</td></tr>
         <tr><td>Sessions</td><td class="mono">Redis (Memorystore)</td><td>Hot, TTL'd, cheap to lose.</td></tr>
         <tr><td>Static + presentation/</td><td class="mono">Cloud Storage + CDN</td><td>Zero-install play surface.</td></tr>
@@ -384,10 +384,10 @@
   <section class="slide" aria-label="Testing">
     <h2>Testing strategy</h2>
     <ul>
-      <li><strong>Unit</strong> — pure game logic (bomb chain, scoring) covered first.</li>
-      <li><strong>Integration</strong> — headless server + scripted client harness.</li>
-      <li><strong>Determinism</strong> — replay the same inputs, assert identical world state.</li>
-      <li><strong>Manual</strong> — three of us on three laptops on the campus Wi-Fi.</li>
+      <li><smandalag>Unit</smandalag> — pure game logic (bomb chain, scoring) covered first.</li>
+      <li><smandalag>Integration</smandalag> — headless server + scripted client harness.</li>
+      <li><smandalag>Determinism</smandalag> — replay the same inputs, assert identical world state.</li>
+      <li><smandalag>Manual</smandalag> — three of us on three laptops on the campus Wi-Fi.</li>
     </ul>
   </section>
 
@@ -420,9 +420,9 @@
     <table>
       <thead><tr><th>Architect</th><th>Role</th><th>Primary surfaces</th></tr></thead>
       <tbody>
-        <tr><td><strong>AA</strong></td><td>Delivery Lead</td><td>Strategy, deployment, CI/CD, stakeholder comms.</td></tr>
-        <tr><td><strong>SK</strong></td><td>UI/UX Director</td><td><span class="mono">tron.css</span>, scenes, design language, audits.</td></tr>
-        <tr><td><strong>JC</strong></td><td>Gameplay Director</td><td>Server tick, modes, matchmaker, wire protocol.</td></tr>
+        <tr><td><smandalag>AA</smandalag></td><td>Delivery Lead</td><td>Strategy, deployment, CI/CD, stakeholder comms.</td></tr>
+        <tr><td><smandalag>SK</smandalag></td><td>UI/UX Director</td><td><span class="mono">mandala.css</span>, scenes, design language, audits.</td></tr>
+        <tr><td><smandalag>JC</smandalag></td><td>Gameplay Director</td><td>Server tick, modes, matchmaker, wire protocol.</td></tr>
       </tbody>
     </table>
   </section>
@@ -468,9 +468,9 @@
     <h1>Thank you.</h1>
     <div class="tagline">BomberMen-X — built in two weeks, on a zero-dollar budget.</div>
     <div class="team-line">
-      <strong>AA</strong> &middot; Delivery Lead &nbsp;&nbsp;|&nbsp;&nbsp;
-      <strong>SK</strong> &middot; UI/UX Director &nbsp;&nbsp;|&nbsp;&nbsp;
-      <strong>JC</strong> &middot; Gameplay Director
+      <smandalag>AA</smandalag> &middot; Delivery Lead &nbsp;&nbsp;|&nbsp;&nbsp;
+      <smandalag>SK</smandalag> &middot; UI/UX Director &nbsp;&nbsp;|&nbsp;&nbsp;
+      <smandalag>JC</smandalag> &middot; Gameplay Director
     </div>
   </section>
 

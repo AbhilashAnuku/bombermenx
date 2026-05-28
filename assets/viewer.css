@@ -170,7 +170,7 @@ a {
 }
 a:hover { text-decoration-color: var(--cyan); }
 
-strong { color: var(--ink); font-weight: 700; }
+smandalag { color: var(--ink); font-weight: 700; }
 em { color: var(--ink); font-style: italic; }
 
 hr {
@@ -426,6 +426,11 @@ html[data-theme="light"] #bmx-progress { box-shadow: 0 0 8px rgba(10,110,149,0.3
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] { opacity: 1; transform: none; transition: none; }
 }
+/* Article content (rendered from markdown by md-render.js) must always be
+   visible. md-render.js runs after portal.js's IntersectionObserver setup,
+   so the rendered prose elements never get observed. This override exempts
+   them from the reveal-on-scroll hide. */
+#content, #content * { opacity: 1 !important; transform: none !important; }
 
 /* ---------- Hero models (inline page diagrams) ----------
    Used at the top of plan and analysis pages to give a visual

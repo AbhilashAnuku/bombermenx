@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 880" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="archTitle archDesc">
   <title id="archTitle">BomberMen-X system architecture</title>
-  <desc id="archDesc">Three-tier architecture: clients (JavaFX, browser, spectator) connect over WebSocket to the bomb-server, which uses Postgres and Redis as sidecars. bomb-core is a shared library linked by both client and server.</desc>
+  <desc id="archDesc">Three-tier architecture: clients (JavaFX, browser, spectator) connect over WebSocket to the bomberman-server, which uses Postgres and Redis as sidecars. bomberman-core is a shared library linked by both client and server.</desc>
 
   <defs>
     <marker id="arrCyan" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
@@ -33,7 +33,7 @@
   <rect width="1400" height="880" fill="url(#grid)"/>
 
   <text x="700" y="44" class="lbl" font-size="22" font-weight="700" text-anchor="middle">BomberMen-X — System Architecture</text>
-  <text x="700" y="68" class="lbl sub" text-anchor="middle">Clients - WebSocket - bomb-server - sidecars. bomb-core is the shared protocol and simulation library.</text>
+  <text x="700" y="68" class="lbl sub" text-anchor="middle">Clients - WebSocket - bomberman-server - sidecars. bomberman-core is the shared protocol and simulation library.</text>
 
   <!-- CLIENT TIER -->
   <text x="60" y="120" class="grp">CLIENT TIER</text>
@@ -42,7 +42,7 @@
   <g>
     <rect x="80" y="160" width="320" height="140" rx="8" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
     <text x="100" y="190" class="lbl ttl" fill="#3affb5">JavaFX Desktop Client</text>
-    <text x="100" y="212" class="sub">bomb-client module - Tron themed UI</text>
+    <text x="100" y="212" class="sub">bomberman-client module - mandala-themed UI</text>
     <line x1="100" y1="224" x2="380" y2="224" stroke="#1f2533"/>
     <text x="100" y="248" class="edge">SceneRouter, ArenaView, HudOverlay</text>
     <text x="100" y="266" class="edge">ArenaRenderer, ParticleSystem, PostFx</text>
@@ -56,7 +56,7 @@
     <line x1="560" y1="224" x2="840" y2="224" stroke="#1f2533"/>
     <text x="560" y="248" class="edge">Static asset served by Cloud Run</text>
     <text x="560" y="266" class="edge">Same WireCodec as desktop client</text>
-    <text x="560" y="284" class="edge">Reuses bomb-core DTOs over WS</text>
+    <text x="560" y="284" class="edge">Reuses bomberman-core DTOs over WS</text>
   </g>
 
   <g>
@@ -72,8 +72,8 @@
   <!-- SHARED CORE RING -->
   <g>
     <rect x="80" y="340" width="1240" height="80" rx="8" fill="#11141c" stroke="#3aedff" stroke-width="2" stroke-dasharray="6 4"/>
-    <text x="100" y="370" class="lbl ttl" fill="#3aedff">bomb-core (shared library)</text>
-    <text x="100" y="392" class="sub">Linked by every client and by bomb-server. Contains the wire protocol and the headless simulation.</text>
+    <text x="100" y="370" class="lbl ttl" fill="#3aedff">bomberman-core (shared library)</text>
+    <text x="100" y="392" class="sub">Linked by every client and by bomberman-server. Contains the wire protocol and the headless simulation.</text>
     <text x="100" y="410" class="edge">.sim GameWorld - .entity Player Bomb Explosion PowerUpItem - .world Arena TileType - .net Envelope WireCodec - .net.dto - .input PlayerInput</text>
   </g>
 
@@ -83,7 +83,7 @@
 
   <g>
     <rect x="80" y="490" width="1240" height="220" rx="8" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
-    <text x="100" y="520" class="lbl ttl" fill="#ff3ad9">bomb-server</text>
+    <text x="100" y="520" class="lbl ttl" fill="#ff3ad9">bomberman-server</text>
     <text x="100" y="540" class="sub">Single Java process. Netty WebSocket pipeline, 60 Hz authoritative tick, match orchestration.</text>
 
     <g>

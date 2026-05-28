@@ -1,67 +1,43 @@
-# BomberMan-X — Architecture Deliverables
+# Deliverables Pack
 
-Public mirror of the reviewer-facing architecture pack for **BomberMan-X**, a
-real-time multiplayer game built in Java for the *Software Architecture and
-Development* module at **SRH University Stuttgart**.
+This is the capstone deliverables pack for **BomberMen-X**. We are in **Week 7 of 8** -- this is the **prototype** submission.
 
-- **Brief:** *Lastenheft*, Prof. Steffen Becker
-- **Authors:** Abhilash Anuku · Simranjot Kaur · Jithendra Chittimothu
-- **Live:** https://abhilashanuku.github.io/bombermenx/
+Open `index.html` in any browser to start.
 
-> The source code lives in a private repository. This mirror carries the
-> documents the team chose to share publicly.
-
-## Start here
-
-| Document | Purpose |
-|---|---|
-| [`architecture-report.html`](architecture-report.html) | 12-page Architecture Report. Open in any browser → Print → Save as PDF (A4). |
-| [`architecture-report.md`](architecture-report.md) | The same report as Markdown. Drop into Google Drive and **Open with Google Docs**. |
-| [`uml/print-each.html`](uml/print-each.html) | One A4 per UML diagram. |
-| [`presentation/slides.html`](presentation/slides.html) | Slide deck for the defence. |
-
-## Folder map
+## What is here
 
 ```
-.
-├── index.html                       portal entry — open this first
-├── architecture-report.html         12-page report — print to PDF
-├── architecture-report.md           same report as Markdown (Google Docs friendly)
-├── architecture/                    four deep-dives (protocol, sync, AI, patterns)
-├── uml/                             six UML diagrams + print-each helper
-├── diagrams/                        architecture, sequence, deployment SVGs
-├── code-explanation/                guided per-module walk-throughs
-├── plans/                           descriptive, prescriptive, sprint
-├── build/, setup/                   build and quickstarts
-├── audits/                          security, UI, clean-code
-├── report/                          long-form report in four parts (Markdown)
-├── presentation/slides.html         slide deck
-└── assets/                          banners, avatars, viewer.css, portal.js
+deliverables/
+  index.html                     portal -- open this first
+  README.md                      this file
+  architecture-report-en.html    the submission report
+
+  code-explanation/              defence pack + code walk-through
+    architecture-spec-arc42.md   arc42 architecture specification
+    requirements-traceability.md FR-01 to FR-86 mapped to Java classes
+    systems-architecture.md      twelve named systems with ownership
+    course-context.md            course context, learning outcomes
+    RUN_GUIDE.md                 build + run, step by step
+    LEARNING_GUIDE.md            night-before-defence cheatsheet
+    code-walkthrough.md          consolidated tour of all three modules
+
+  report/REPORT.md               consolidated project report
+  plans/PLANS.md                 the plan (descriptive + prescriptive + sprint)
+  build/BUILD_AND_RUN.md         how it builds and how to run it
+
+  diagrams/                      architecture, sequence, deployment (SVG + viewer)
+  uml/                           class and package diagrams (SVG + viewer)
+  presentation/slides.html       self-contained slide deck
+  exports/                       defence-pack documents as DOCX and PDF
+  assets/                        portal images and CSS / JS
 ```
 
-## How to export the PDF
+## Provenance
 
-1. Open `architecture-report.html` in any browser.
-2. `File → Print → Destination "Save as PDF"`.
-3. Paper "A4", margins "default", background graphics ON.
-4. The output is exactly 12 pages.
+Authored by the three project architects:
 
-## How to open as a Google Doc
+- **Abhilash Anuku (AA)** -- overall delivery, Delivery Lead.
+- **Simranjot Kaur (SK)** -- UI / UX direction.
+- **Jithendra Chittomothu (JC)** -- gameplay direction.
 
-1. Upload `architecture-report.md` to Google Drive.
-2. Right-click the file and pick **Open with → Google Docs**.
-3. Drive converts the Markdown into a regular Docs document.
-
-For automatic Markdown conversion on upload, turn on
-**Settings → Convert uploads** in Drive, or inside Docs go to
-**Tools → Preferences → Enable Markdown**.
-
-## License and attribution
-
-The report, deep-dives, audits, and diagrams are the team's own work and are
-released under MIT. The *Lastenheft* used as the project brief is the work
-of Prof. Steffen Becker; only the team's own reading of it is published here.
-
----
-
-*22 May 2026 — Anuku · Kaur · Chittimothu.*
+Source code lives under `../src/` (Maven modules: `bomberman-core`, `bomberman-server`, `bomberman-client`) and is licensed under MIT.

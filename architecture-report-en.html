@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BomberMan-X — Architecture Report (English)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* Clean academic report. 17 A4 pages. One diagram per page with a
+     dedicated explanation. Open in any browser → Print → Save as PDF →
+     A4 → default margins → background graphics ON. */
+
+  @page {
+    size: A4;
+    margin: 20mm 18mm 20mm 18mm;
+  }
+
+  :root {
+    --ink:     #000;
+    --body:    #1a1a1a;
+    --soft:    #4a4a4a;
+    --dim:     #707070;
+    --line:    #bbb;
+    --rule:    #d8d8d8;
+    --box:     #f4f4f4;
+    --paper:   #fff;
+    --accent:  #0a6e95;
+    --vayu:    #0fb5a9;
+    --agni:    #ff5a1f;
+    --gold:    #b8860b;
+    --serif:   Georgia, "Times New Roman", "Source Serif Pro", serif;
+    --sans:    "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+    --mono:    "Consolas", "Courier New", monospace;
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: #3a3a3a;
+    color: var(--body);
+    font-family: var(--serif);
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .page {
+    width: 174mm;
+    min-height: 257mm;
+    margin: 12mm auto;
+    background: var(--paper);
+    color: var(--body);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    page-break-after: always;
+    position: relative;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  .pagebox {
+    padding: 22mm 18mm 22mm 18mm;
+    min-height: 257mm;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .head {
+    position: absolute;
+    left: 18mm; right: 18mm; top: 10mm;
+    border-bottom: 0.5pt solid var(--line);
+    padding-bottom: 3mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    color: var(--soft);
+    letter-spacing: 0.02em;
+  }
+  .head .l { font-weight: 700; color: var(--ink); }
+  .foot {
+    position: absolute;
+    left: 18mm; right: 18mm; bottom: 10mm;
+    border-top: 0.5pt solid var(--line);
+    padding-top: 3mm;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--sans);
+    font-size: 8pt;
+    color: var(--soft);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--sans);
+    color: var(--accent);
+    font-weight: 700;
+    margin: 0 0 6pt;
+    letter-spacing: 0;
+  }
+  h2 { font-size: 15pt; margin-top: 0; }
+  h3 { font-size: 11.5pt; margin-top: 12pt; color: var(--ink); }
+  h4 { font-size: 10.5pt; margin-top: 8pt; color: var(--ink); }
+  p  { margin: 0 0 6pt; text-align: justify; hyphens: auto; font-size: 10.5pt; line-height: 1.5; }
+  ul, ol { margin: 0 0 6pt 18pt; padding: 0; font-size: 10.5pt; }
+  li { margin: 1pt 0; }
+  smandalag { color: var(--ink); }
+  em { color: var(--body); }
+  code { font-family: var(--mono); font-size: 9pt; color: var(--ink); background: var(--box); padding: 0 3pt; border-radius: 2pt; }
+
+  /* COVER */
+  .cover {
+    padding: 38mm 22mm 24mm;
+    min-height: 257mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .cover .title {
+    font-family: var(--sans);
+    font-size: 36pt;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin: 0;
+  }
+  .cover .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14pt;
+    color: var(--ink);
+    margin: 6mm 0 0;
+  }
+  .cover hr.rule {
+    border: none;
+    height: 1.5pt;
+    background: linear-gradient(90deg, var(--vayu) 0%, var(--gold) 50%, var(--agni) 100%);
+    width: 60mm;
+    margin: 12mm auto 10mm;
+    border-radius: 1px;
+  }
+  .cover .doctype {
+    font-family: var(--sans);
+    font-size: 11pt;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .cover .doctype-sub {
+    font-family: var(--serif);
+    font-size: 11pt;
+    color: var(--soft);
+    margin-top: 2mm;
+  }
+  .cover hr.rule2 {
+    border: none;
+    height: 0.5pt;
+    background: var(--ink);
+    width: 30mm;
+    margin: 12mm auto;
+  }
+  .cover .uni {
+    font-family: var(--sans);
+    font-size: 10pt;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .cover .course {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--soft);
+    margin-top: 4mm;
+    letter-spacing: 0.04em;
+  }
+  .cover .meta {
+    margin-top: auto;
+    font-family: var(--sans);
+    font-size: 10.5pt;
+    color: var(--ink);
+    line-height: 1.8;
+  }
+  .cover .meta .authors {
+    font-size: 11pt;
+    color: var(--ink);
+    margin-bottom: 6mm;
+  }
+  .cover .meta .authors span { display: block; }
+  .cover .meta .date {
+    margin-top: 6mm;
+    font-size: 10pt;
+    color: var(--soft);
+    letter-spacing: 0.06em;
+  }
+
+  .lead {
+    font-family: var(--serif);
+    font-size: 11pt;
+    color: var(--body);
+    border-left: 2pt solid var(--accent);
+    padding-left: 5mm;
+    margin: 3mm 0 5mm;
+    font-style: italic;
+  }
+
+  /* Big figure — one per page diagrams use this */
+  figure.big {
+    margin: 4mm 0 5mm;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  figure.big img {
+    width: 100%;
+    height: auto;
+    max-height: 110mm;
+    object-fit: contain;
+    border: 0.5pt solid var(--line);
+    background: var(--paper);
+  }
+  figure.big .cap {
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--soft);
+    text-align: center;
+    margin-top: 2mm;
+  }
+  figure.big .cap b { color: var(--ink); font-weight: 700; }
+
+  /* Two-column body for the explanation below the figure */
+  .twocol {
+    column-count: 2;
+    column-gap: 8mm;
+    text-align: justify;
+  }
+  .twocol h3 { break-after: avoid; column-span: all; margin-top: 10pt; }
+  .twocol p { font-size: 10pt; }
+  .twocol ul, .twocol ol { font-size: 10pt; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 9pt;
+    margin: 3mm 0 5mm;
+  }
+  th, td {
+    border-bottom: 0.5pt solid var(--rule);
+    padding: 4pt 6pt;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    border-bottom: 0.6pt solid var(--ink);
+    color: var(--accent);
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--box);
+  }
+
+  .aside {
+    background: var(--box);
+    border-left: 2pt solid var(--accent);
+    padding: 3mm 5mm;
+    margin: 3mm 0;
+    font-size: 9.5pt;
+    color: var(--body);
+  }
+
+  .plate { display: flex; flex-direction: column; gap: 5mm; }
+  .plate .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+  .plate figure { margin: 0; }
+  .plate figure img { width: 100%; border: 0.5pt solid var(--line); border-radius: 2pt; }
+
+  .hint {
+    position: fixed;
+    bottom: 16px; right: 16px;
+    z-index: 99;
+    background: #111;
+    color: #eee;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 11px;
+    max-width: 280px;
+  }
+  .hint button {
+    background: #eee; color: #111;
+    border: none; padding: 5px 12px;
+    font: inherit; font-weight: 700;
+    border-radius: 4px; cursor: pointer;
+    margin-top: 6px;
+  }
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; width: auto; min-height: 0; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hint">
+  Open in browser → File → Print → Save as PDF. A4, default margins, background graphics ON. 18 pages.
+  <br><button onclick="window.print()">Print now</button>
+</div>
+
+<!-- ============== PAGE 1 — COVER ============== -->
+<section class="page">
+<div class="cover">
+  <h1 class="title">BomberMan-X</h1>
+  <div class="subtitle">Agni vs V&#257;yu: The Mandala Wars</div>
+  <hr class="rule">
+  <div class="doctype">Architecture Report</div>
+  <div class="doctype-sub">Descriptive and Prescriptive Views &middot; one diagram per page · with comparison tables</div>
+  <hr class="rule2">
+  <div class="uni">SRH University Stuttgart</div>
+  <div class="course">Software Architecture and Development &middot; Java</div>
+  <div class="meta">
+    <div class="authors">
+      <span>Abhilash Anuku &middot; Captain</span>
+      <span>Simranjot Kaur &middot; Designer</span>
+      <span>Jithendra Chittomothu &middot; Engineer</span>
+    </div>
+    <div>Brief: <em>Lastenheft</em>, Prof. Steffen Becker</div>
+    <div class="date">22 May 2026 &middot; 18 pages</div>
+  </div>
+</div>
+</section>
+
+<!-- ============== PAGE 2 — ABSTRACT + CONTENTS ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">BomberMan-X &middot; Architecture Report</span><span>3 / 18</span></div>
+
+  <h2>Abstract and contents</h2>
+  <p class="lead">
+    This document describes the architecture of BomberMan-X, a real-time
+    multiplayer game built for the Software Architecture and Development
+    module at SRH University Stuttgart. The descriptive sections cover the
+    system as built; the prescriptive section records the changes we would
+    recommend to a next team.
+  </p>
+
+  <h3>1. Abstract</h3>
+  <p>
+    BomberMan-X is a client and server application written in Java. The
+    brief, by Prof. Steffen Becker, asks for a Bomberman that lets two to
+    four players compete in one shared arena over the network. The brief
+    also requires that any group&apos;s server must work with any other
+    group&apos;s client. This interoperability rule is the smandalagest single
+    constraint in the design.
+  </p>
+  <p>
+    The system is organised as three Maven modules. The shared library
+    holds the deterministic simulation and the wire protocol. The server
+    module runs the canonical match instance on top of Netty and
+    WebSockets. The client module is a JavaFX desktop application that
+    predicts inputs locally for responsiveness and reconciles against the
+    server on every snapshot. The two runtime modules never depend on each
+    other; they meet only at runtime, over the wire.
+  </p>
+
+  <h3>2. Contents</h3>
+  <table>
+    <thead><tr><th>Page</th><th>Section</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Cover</td></tr>
+      <tr><td>2</td><td>Abstract and contents</td></tr>
+      <tr><td>3</td><td>Descriptive: module structure and layering rule</td></tr>
+      <tr><td>4</td><td>Defence of architectural choices</td></tr>
+      <tr><td>5</td><td>Class diagram &mdash; <code>bomberman-core</code></td></tr>
+      <tr><td>6</td><td>Class diagram &mdash; <code>bomberman-server</code></td></tr>
+      <tr><td>7</td><td>Class diagram &mdash; <code>bomberman-client</code></td></tr>
+      <tr><td>8</td><td>Package diagram</td></tr>
+      <tr><td>9</td><td>Use case diagram</td></tr>
+      <tr><td>10</td><td>Activity diagram (match lifecycle)</td></tr>
+      <tr><td>11</td><td>Sequence diagram (match start)</td></tr>
+      <tr><td>12</td><td>Sequence diagram (bomb placement)</td></tr>
+      <tr><td>13</td><td>Packet protocol</td></tr>
+      <tr><td>14</td><td>Server authority and synchronisation</td></tr>
+      <tr><td>15</td><td>AI bot and state management</td></tr>
+      <tr><td>16</td><td>Prescriptive recommendations</td></tr>
+      <tr><td>17</td><td>Visual identity &mdash; hero banners</td></tr>
+      <tr><td>18</td><td>Visual identity &mdash; team crests and arena</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3. References</h3>
+  <ol>
+    <li>M. Frank and S. Becker. <em>Lastenheft f&uuml;rs Softwarepraktikum: Aufgabe Bomberman</em>. Version 1.1, 29.05.2017.</li>
+    <li>Glenn Fiedler. <em>Networked Physics</em>, gafferongames.com, 2014.</li>
+    <li>E. Gamma, R. Helm, R. Johnson, J. Vlissides. <em>Design Patterns</em>. Addison-Wesley, 1994.</li>
+    <li>R. C. Martin. <em>Clean Architecture</em>. Prentice Hall, 2017.</li>
+  </ol>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 3 — MODULES ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Descriptive &middot; modules and layering</span><span>4 / 18</span></div>
+
+  <h2>4. Descriptive: modules and layering</h2>
+  <p class="lead">
+    BomberMan-X is built as three Maven modules. The dependency edges between
+    them are the load-bearing rule of the whole architecture. Every later
+    diagram in this report is a different view of the same three-module
+    structure.
+  </p>
+
+  <h3>4.1 The three modules</h3>
+  <table>
+    <thead><tr><th>Module</th><th>Role</th><th>Major types</th></tr></thead>
+    <tbody>
+      <tr><td><code>bomberman-core</code></td><td>Shared library. Deterministic simulation, entity model, wire protocol. Compiled against by both runtimes. Depends on nothing inside the project.</td><td><code>GameWorld</code>, <code>GameConfig</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>, <code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code></td></tr>
+      <tr><td><code>bomberman-server</code></td><td>Authoritative server. Owns the only canonical <code>GameWorld</code> for each active match. Accepts WebSocket connections via Netty.</td><td><code>BombServerApplication</code>, <code>WebSocketServer</code>, <code>SessionRegistry</code>, <code>MatchManager</code>, <code>MatchSession</code></td></tr>
+      <tr><td><code>bomberman-client</code></td><td>JavaFX desktop application. Predicts locally for responsiveness, reconciles against every snapshot, renders the arena and HUD.</td><td><code>ClientLauncher</code>, <code>SceneRouter</code>, <code>ArenaView</code>, <code>ArenaRenderer</code>, <code>GameClient</code>, <code>BotPolicy</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 The layering rule</h3>
+  <p>
+    Both runtime modules depend on <code>bomberman-core</code>. Neither runtime
+    module depends on the other. The two runtimes meet only at runtime,
+    over the WebSocket wire, by exchanging the JSON envelopes defined in
+    <code>com.bombermenx.core.net</code>. This rule is enforced by the
+    Maven dependency graph; a pull request that adds an edge between the
+    two runtimes is rejected at review.
+  </p>
+
+  <h3>4.3 Inner and outer layers inside the shared library</h3>
+  <p>
+    Inside <code>bomberman-core</code>, the inner game model (packages
+    <code>geom</code>, <code>world</code>, <code>entity</code>) has no
+    knowledge of the outer wire layer (<code>net</code>, <code>net.dto</code>).
+    The <code>Snapshotter</code> class is the bridge that turns simulation
+    state into wire DTOs. This means the simulation can run, be tested,
+    and be replayed without opening a socket.
+  </p>
+
+  <h3>4.4 What this architecture optimises for</h3>
+  <ol>
+    <li><smandalag>Determinism.</smandalag> Given a seed and an input log, every replay must produce the same state stream.</li>
+    <li><smandalag>Cross-group interoperability.</smandalag> Any group&apos;s server must accept any group&apos;s client over the same envelope.</li>
+    <li><smandalag>Responsiveness.</smandalag> Client prediction keeps input feel under one frame even when round-trip time climbs.</li>
+  </ol>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 4 — DEFENCE OF CHOICES ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Descriptive &middot; defence of architectural choices</span><span>4 / 18</span></div>
+
+  <h2>6. Defence of the architectural choices</h2>
+  <p class="lead">
+    Five decisions shape the system. The table below names each
+    alternative considered, the reason the chosen option won, and what
+    would change if the other one had been picked instead.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Decision</th><th>Chosen</th><th>Alternatives considered</th><th>Why this wins</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><smandalag>Desktop client framework</smandalag></td>
+        <td>JavaFX 21</td>
+        <td>Swing, web client (HTML5 + Canvas)</td>
+        <td>Ships with the JDK. Scene-graph plus Canvas for custom rendering. JInput-compatible. Swing&apos;s animation primitives are weaker; a web client doubles the wire-format surface area.</td>
+      </tr>
+      <tr>
+        <td><smandalag>Server I/O</smandalag></td>
+        <td>Netty + WebSocket</td>
+        <td>Spring Boot Web, Vert.x, plain TCP</td>
+        <td>Battle-tested NIO with explicit control over the pipeline. Spring&apos;s footprint and Vert.x&apos;s reactive model fight the 60 Hz tick loop. Plain TCP would force us to re-implement WebSocket framing.</td>
+      </tr>
+      <tr>
+        <td><smandalag>Wire format</smandalag></td>
+        <td>JSON over WebSocket</td>
+        <td>Kryo, Protocol Buffers, FlatBuffers</td>
+        <td>Inspectable in a browser dev-tools panel; no schema compiler. The cost is roughly four times the bandwidth of a binary format; the next protocol version introduces Kryo as an opt-in.</td>
+      </tr>
+      <tr>
+        <td><smandalag>Authority model</smandalag></td>
+        <td>Server-authoritative</td>
+        <td>Deterministic lockstep, peer-to-peer</td>
+        <td>Single source of truth; clients cannot cheat; a centralised log enables replay. Lockstep is bug-prone across heterogeneous clients; peer-to-peer fragments truth and breaks moderation.</td>
+      </tr>
+      <tr>
+        <td><smandalag>Module layout</smandalag></td>
+        <td>Three Maven modules</td>
+        <td>One module, four or more modules</td>
+        <td>Three columns map cleanly to the three runtime concerns (simulation, server, client). One module hides the layering rule; four or more adds Maven friction without a real boundary.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.1 Tick rate, sequence numbers, and other micro-choices</h3>
+  <table>
+    <thead><tr><th>Question</th><th>Choice</th><th>Reason</th></tr></thead>
+    <tbody>
+      <tr><td>Tick rate</td><td>60 Hz</td><td>30 Hz felt sluggish on the bomb-place press; 120 Hz doubled the CPU cost with no visible benefit.</td></tr>
+      <tr><td>Sequence numbers</td><td>Monotonic 32-bit per connection</td><td>Vector clocks were over-engineered for one server per match; a single integer is sufficient.</td></tr>
+      <tr><td>Input buffer depth</td><td>30 frames</td><td>Half a second at 60 Hz &mdash; long enough for reconciliation under typical RTT, short enough for bounded replay.</td></tr>
+      <tr><td>Interpolation buffer</td><td>100 ms</td><td>One-frame jitter cushion; smaller buffers stutter on a dropped packet, larger ones feel laggy.</td></tr>
+      <tr><td>Threat-map size</td><td>13 &times; 13 cells</td><td>Matches the default arena; A* closed set fits in 169 entries, search runs in well under a millisecond.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 What this report does not promise</h3>
+  <p>
+    The architecture does not target hundreds of concurrent matches per
+    server; the brief asks for a single match. There is no horizontal
+    scaling, no sharding, no leaderless replication. Persistence is a
+    single Postgres instance behind the server. The cost of removing
+    these ceilings is documented in the prescriptive section.
+  </p>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 5 — CLASS: bomberman-core ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Class diagram &middot; <code>bomberman-core</code></span><span>5 / 18</span></div>
+
+  <h2>6. Class diagram &mdash; <code>bomberman-core</code></h2>
+  <figure class="big">
+    <img src="uml/class-diagram-core.svg" alt="UML class diagram for bomberman-core">
+    <div class="cap"><b>Figure 1.</b> Class diagram for <code>bomberman-core</code>. Filled diamonds mark composition; open arrows mark plain associations.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>6.1 What lives in core</h3>
+    <p>
+      <code>bomberman-core</code> is the shared library. It carries the
+      deterministic game model, the value types used by both runtimes,
+      and the on-the-wire envelope that both runtimes serialise to and
+      deserialise from.
+    </p>
+    <p>
+      The central class is <code>GameWorld</code>. It composes the
+      arena and every entity inside it: the active <code>Bomb</code>
+      instances, the live <code>Explosion</code> objects, the
+      collectable <code>PowerUpItem</code> entries on the floor, and
+      the per-player <code>PlayerState</code>. The filled-diamond
+      composition mark on its outgoing edges is deliberate &mdash;
+      removing the world removes its contents.
+    </p>
+
+    <h3>6.2 The tick interface</h3>
+    <p>
+      The world advances through <code>GameWorld.tick(input)</code>. The
+      method is pure with respect to the input: given the same world
+      hash and the same input stream, it produces the same next world.
+      That property is what makes determinism testable.
+    </p>
+
+    <h3>6.3 The wire boundary</h3>
+    <p>
+      The inner game model has no reference to the outer wire layer.
+      Three classes bridge the two sides. <code>Snapshotter</code>
+      turns a <code>GameWorld</code> into a <code>WorldSnapshot</code>
+      DTO. <code>WireCodec</code> serialises any
+      <code>Envelope</code> to JSON. <code>MessageType</code> is the
+      enum tag that says what shape sits inside the envelope.
+    </p>
+
+    <h3>6.4 Geometry and identity</h3>
+    <p>
+      <code>Direction</code>, <code>TileType</code>, and the
+      <code>id</code> sequence generator all live in core because both
+      runtimes need to agree on them. Player identifiers and entity
+      identifiers are monotonic 64-bit values; the server is the only
+      writer.
+    </p>
+
+    <h3>6.5 Why one library, not two</h3>
+    <p>
+      The choice to keep the simulation, the entities, and the wire
+      types in one library &mdash; rather than split into
+      <code>bomb-sim</code> and <code>bomb-protocol</code> &mdash; is
+      deliberate. The simulation produces snapshots; the snapshots
+      <em>are</em> the protocol payload. Splitting them would force
+      one half to depend on the other anyway, with no real isolation
+      benefit.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 5 — CLASS: bomberman-server ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Class diagram &middot; <code>bomberman-server</code></span><span>6 / 18</span></div>
+
+  <h2>7. Class diagram &mdash; <code>bomberman-server</code></h2>
+  <figure class="big">
+    <img src="uml/class-diagram-server.svg" alt="UML class diagram for bomberman-server">
+    <div class="cap"><b>Figure 2.</b> Class diagram for <code>bomberman-server</code>. <code>BombServerApplication</code> is the composition root; the magenta triangle marks the <code>AuthProvider</code> interface implemented by the dev and Google providers.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>7.1 The composition root</h3>
+    <p>
+      <code>BombServerApplication</code> is where every server-side
+      object is wired together. It builds the Netty
+      <code>WebSocketServer</code>, the in-memory
+      <code>SessionRegistry</code> that tracks live connections, the
+      <code>MatchManager</code> that owns active matches, and the
+      authentication and lobby services.
+    </p>
+
+    <h3>7.2 From bytes to envelopes</h3>
+    <p>
+      Inbound traffic flows through Netty's pipeline up to
+      <code>GameServerHandler</code>, which is responsible for parsing
+      each <code>WebSocketFrame</code> into an <code>Envelope</code>
+      and routing it. Move and bomb-place envelopes go to the
+      <code>MatchSession</code> of the player&apos;s current match; lobby
+      and auth envelopes go to the lobby or auth service.
+    </p>
+
+    <h3>7.3 Matches as state machines</h3>
+    <p>
+      Each active match is one <code>MatchSession</code>. The session
+      owns the only canonical <code>GameWorld</code> for that match
+      and runs the 60 Hz tick loop. The match lifecycle is held in a
+      single <code>MatchState</code> enum: <em>WAITING &rarr;
+      STARTING &rarr; ACTIVE &rarr; ENDING &rarr; ENDED</em>, with
+      guarded transitions in <code>MatchSession.transitionTo</code>.
+    </p>
+
+    <h3>7.4 Authentication as an interface</h3>
+    <p>
+      <code>AuthProvider</code> is an interface with two
+      implementations: <code>DevAuthProvider</code> for local
+      development (any non-empty username is accepted), and
+      <code>GoogleAuthProvider</code> for the production identity
+      flow. The interface lets us swap one for the other per
+      environment without touching <code>GameServerHandler</code>.
+    </p>
+
+    <h3>7.5 Server authority in one place</h3>
+    <p>
+      The simulation, the player roster, the bomb pool, and the
+      pickup tables are all read and written by exactly one thread
+      per match. Clients send intent; the server resolves it; the
+      server broadcasts the result. There is no per-player worker
+      thread, no per-entity actor; the match loop is the only writer.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 6 — CLASS: bomberman-client ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Class diagram &middot; <code>bomberman-client</code></span><span>7 / 18</span></div>
+
+  <h2>8. Class diagram &mdash; <code>bomberman-client</code></h2>
+  <figure class="big">
+    <img src="uml/class-diagram-client.svg" alt="UML class diagram for bomberman-client">
+    <div class="cap"><b>Figure 3.</b> Class diagram for <code>bomberman-client</code>. The <code>SceneRouter</code> swaps JavaFX scenes; <code>GameClient</code> is the single WebSocket adapter every scene shares.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>8.1 Boot sequence</h3>
+    <p>
+      <code>ClientLauncher</code> is the JavaFX <code>Application</code>
+      entry point. It builds the <code>SceneRouter</code>, runs the
+      <code>AgeGate</code> (child-safety check on first launch), and
+      navigates to the <code>MainMenuView</code>.
+    </p>
+
+    <h3>8.2 Scenes and routing</h3>
+    <p>
+      A single <code>SceneRouter</code> owns the stage. It swaps
+      between four <em>views</em>: the main menu, the lobby, the
+      rankings page, and the in-match arena. Each view implements
+      <code>SceneRouter.View</code> with two callbacks &mdash;
+      <code>onShown</code> and <code>onHidden</code> &mdash; so that
+      the router can start and stop per-view resources cleanly.
+    </p>
+
+    <h3>8.3 The render loop</h3>
+    <p>
+      <code>ArenaView</code> drives a JavaFX
+      <code>AnimationTimer</code> at 60 FPS. Each frame, it
+      <em>predicts</em> using the buffered input, calls
+      <code>ArenaRenderer</code> to draw the world onto a
+      <code>Canvas</code>, and lets the
+      <code>HudOverlay</code> redraw on top. The renderer
+      composes several passes: arena floor, grid lines, tiles,
+      pickups, bombs, explosions, players, particles, and the
+      post-effect pass (scanline + vignette).
+    </p>
+
+    <h3>8.4 Input and feedback</h3>
+    <p>
+      Input comes from two sources. The keyboard pump lives in
+      <code>ArenaView</code>; the gamepad pump lives in
+      <code>GamepadPoller</code>. Both produce the same
+      <code>InputFrame</code> record. Haptic feedback (rumble) and
+      spatial audio are emitted by <code>HapticsService</code> and
+      <code>AudioBus</code>, based on the diff between two
+      consecutive snapshots.
+    </p>
+
+    <h3>8.5 One WebSocket, many scenes</h3>
+    <p>
+      <code>GameClient</code> is the shared WebSocket adapter. It is
+      created once at lobby time and stays alive across the lobby
+      and arena scenes. Each scene subscribes to the events it cares
+      about and unsubscribes on <code>onHidden</code>.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 7 — PACKAGE ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Package diagram</span><span>8 / 18</span></div>
+
+  <h2>9. Package diagram</h2>
+  <figure class="big">
+    <img src="uml/package-diagram.svg" alt="Package diagram">
+    <div class="cap"><b>Figure 4.</b> Package diagram. Three columns, one per Maven module. Both runtimes depend on <code>bomberman-core</code>; the dashed line between client and server marks the explicit non-dependency that the layering rule enforces.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>9.1 The three columns</h3>
+    <p>
+      Each column is one Maven module. The columns are arranged so
+      that the two runtimes flank the shared library: client on the
+      left, core in the middle, server on the right. The
+      arrangement is purely for readability; the dependency edges
+      themselves are what matter.
+    </p>
+
+    <h3>9.2 The dashed non-edge</h3>
+    <p>
+      The dashed line between client and server is the most important
+      element on the diagram. It records the explicit absence of a
+      dependency. The Maven dependency graph forbids this edge, and
+      a code review will reject any pull request that introduces it.
+      Cross-runtime communication happens only over the wire.
+    </p>
+
+    <h3>9.3 Sub-packages inside core</h3>
+    <p>
+      Inside the middle column, <code>bomberman-core</code> is broken into
+      seven sub-packages stacked from outer wire layer down to inner
+      simulation. The <code>net</code> and <code>net.dto</code>
+      packages sit at the top because they describe the public
+      contract; the <code>sim</code>, <code>entity</code>,
+      <code>world</code>, and <code>geom</code> packages sit below
+      because they implement the deterministic model.
+      <code>GameConfig</code> sits at the very root: every other
+      package may depend on it, but it depends on nothing.
+    </p>
+
+    <h3>9.4 Why the rule matters</h3>
+    <p>
+      Without the layering rule, a small refactor in either runtime
+      would risk pulling shared code in by accident, and the two
+      runtimes would slowly drift into a state where they could only
+      run together. With the rule, either runtime can be deleted and
+      rewritten without touching the other.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 8 — USE CASE ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Use case diagram</span><span>9 / 18</span></div>
+
+  <h2>10. Use case diagram</h2>
+  <figure class="big">
+    <img src="uml/use-case.svg" alt="Use case diagram">
+    <div class="cap"><b>Figure 5.</b> Use case diagram. Five actors and five lifecycle groups around the system boundary. Dashed arrows are <em>«extends»</em> and <em>«includes»</em> stereotypes.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>10.1 Five actors</h3>
+    <p>
+      The <smandalag>Player</smandalag> is the human user, two to four per
+      match. The <smandalag>AI Bot</smandalag> may substitute for any
+      player (the brief requires this fallback). The
+      <smandalag>Game Master</smandalag> configures the arena and starts the
+      match; in the default deployment this role is performed by an
+      administrator. The <smandalag>Match Server</smandalag> appears as a
+      system actor on the right because some use cases are owned by
+      it. The <smandalag>Registry</smandalag> &mdash; the brief&apos;s
+      <em>Verwaltungsserver</em> &mdash; brokers discovery.
+    </p>
+
+    <h3>10.2 Five lifecycle groups</h3>
+    <p>
+      The use cases are grouped by where in the player&apos;s lifecycle
+      they fire: <em>discovery</em> (browse servers, log in,
+      register), <em>lobby</em> (join a match, configure the arena,
+      start the match), <em>in-match</em> (player actions on the top
+      row, server actions on the bottom row), <em>post-match</em>
+      (show ranking, start a new round, persist score), and
+      <em>cross-cutting</em> (spectate, switch to AI, log gameplay).
+    </p>
+
+    <h3>10.3 Stereotypes that matter</h3>
+    <p>
+      Three dashed arrows carry stereotypes. <em>Resolve chains</em>
+      <code>«includes»</code> <em>Place bomb</em> because every place
+      triggers the chain-resolution pass on the server. <em>Detonate
+      inactive</em> <code>«extends»</code> <em>Place bomb</em>
+      because the brief&apos;s 30-second-no-response rule is modelled
+      as a server-driven bomb placement on the laggard. <em>Switch
+      to AI</em> <code>«extends»</code> <em>Login</em> because the AI
+      fallback is offered immediately after the player logs in.
+    </p>
+
+    <h3>10.4 What the diagram tells the reader</h3>
+    <p>
+      The use case diagram fixes the system boundary. Anything not
+      inside the dashed rectangle is external. Anything inside is
+      something the system is responsible for. Reviewers can use
+      this single view to check whether every functional requirement
+      in the brief is covered by at least one use case.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 9 — ACTIVITY ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Activity diagram &middot; match lifecycle</span><span>10 / 18</span></div>
+
+  <h2>11. Activity diagram &mdash; match lifecycle</h2>
+  <figure class="big">
+    <img src="uml/activity-match-lifecycle.svg" alt="Activity diagram of the match lifecycle">
+    <div class="cap"><b>Figure 6.</b> Activity diagram of one complete match. Server (left), Shared coordination (centre), Client (right). The gold bar is the fork into the parallel 60 Hz tick loop.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>11.1 Three lanes</h3>
+    <p>
+      The activity is partitioned into three swimlanes. The
+      <smandalag>Server</smandalag> lane owns boot, registration with the
+      registry, and the tick loop&apos;s server side. The
+      <smandalag>Shared</smandalag> lane in the centre carries the
+      coordination steps that depend on both sides &mdash; quorum,
+      arena initialisation, and the end-condition decision. The
+      <smandalag>Client</smandalag> lane on the right owns boot,
+      registry query, server selection, and the tick loop&apos;s
+      client side.
+    </p>
+
+    <h3>11.2 The quorum gate</h3>
+    <p>
+      The match cannot start until the quorum gate (top centre
+      diamond) is satisfied: at least two players, at most four. The
+      gate is server-driven; the client&apos;s lobby view reflects the
+      server&apos;s lobby state, never the other way around.
+    </p>
+
+    <h3>11.3 The fork into the tick loop</h3>
+    <p>
+      The gold bar is a fork. Server and client run their tick-loop
+      activities in parallel from this point. Cross-lane dashed
+      arrows are network packets: <code>MOVE</code> and
+      <code>BOMB_PLACE</code> from client to server,
+      <code>SYNC</code> and <code>EXPLOSION</code> from server to
+      client.
+    </p>
+
+    <h3>11.4 The end condition</h3>
+    <p>
+      The bottom diamond evaluates the canonical end condition every
+      tick: one or zero bombermen alive, or the match time has
+      elapsed. If the answer is "no", control loops back into the
+      tick. If "yes", control flows up to the ranking screen.
+    </p>
+
+    <h3>11.5 What the diagram does not show</h3>
+    <p>
+      The diagram intentionally omits reconciliation and prediction
+      &mdash; those are activities <em>inside</em> the client
+      tick-loop boxes (predict + render, reconcile on diff). They
+      live in the server-authority page (page 13) so the lifecycle
+      diagram stays a single-screen overview.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 10 — SEQUENCE: match start ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Sequence diagram &middot; match start</span><span>11 / 18</span></div>
+
+  <h2>12. Sequence diagram &mdash; match start</h2>
+  <figure class="big">
+    <img src="diagrams/sequence-match-start.svg" alt="Sequence diagram: match start">
+    <div class="cap"><b>Figure 7.</b> The sequence from client connect through to the first authoritative snapshot of an active match. Time flows top to bottom.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>12.1 Connect and identify</h3>
+    <p>
+      The sequence begins with a WebSocket upgrade. Immediately after,
+      the client sends a <code>JOIN</code> envelope carrying the
+      player&apos;s display name and age class. The server validates
+      both, allocates a session identifier, and answers with the
+      first <code>LOBBY</code> snapshot describing the current seats.
+    </p>
+
+    <h3>12.2 Lobby coordination</h3>
+    <p>
+      While the lobby is open, any change to its state &mdash; a
+      player joining, leaving, marking themselves ready, the game
+      master picking an arena &mdash; produces another
+      <code>LOBBY</code> packet. The client&apos;s lobby view re-renders
+      from that single source of truth.
+    </p>
+
+    <h3>12.3 Transition to active</h3>
+    <p>
+      When quorum is met and the game master starts the match, the
+      server transitions <code>MatchState</code> from
+      <em>WAITING</em> to <em>STARTING</em>, broadcasts a
+      <code>MATCH_STATE</code> packet, initialises the arena, and
+      transitions to <em>ACTIVE</em>. The first
+      <code>SYNC</code> packet follows immediately and the client
+      shows the arena scene.
+    </p>
+
+    <h3>12.4 What is not shown</h3>
+    <p>
+      The diagram does not show the bot-substitution path (any client
+      can offer a non-random AI; the substitution is internal to the
+      client). It also does not show heartbeats, which run in the
+      background at 0.2 Hz from the moment of connection.
+    </p>
+
+    <h3>12.5 Why this is a reference</h3>
+    <p>
+      This sequence is the canonical first interaction for every
+      practicum group&apos;s client. A new client implementation can
+      verify its match-start behaviour against this single page;
+      anything that diverges from it will not interoperate.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 11 — SEQUENCE: bomb ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Sequence diagram &middot; bomb placement</span><span>12 / 18</span></div>
+
+  <h2>13. Sequence diagram &mdash; bomb placement</h2>
+  <figure class="big">
+    <img src="diagrams/sequence-bomb.svg" alt="Sequence diagram: bomb placement and explosion">
+    <div class="cap"><b>Figure 8.</b> One bomb&apos;s journey from key press through to the explosion event and the kill feed. Time flows top to bottom.</div>
+  </figure>
+
+  <div class="twocol">
+    <h3>13.1 Press to wire</h3>
+    <p>
+      The player presses the place-bomb key. The client&apos;s input
+      pump emits a <code>BOMB_PLACE</code> envelope with the current
+      client tick number and the player&apos;s current cell. The
+      envelope is queued on the WebSocket for delivery.
+    </p>
+
+    <h3>13.2 Server validates</h3>
+    <p>
+      On the next server tick, the envelope is drained. The server
+      checks that the player still has at least one bomb in their
+      pool and that the cell does not already hold a bomb or a wall.
+      If either check fails, the request is dropped silently &mdash;
+      the next <code>SYNC</code> tells the client what is real.
+    </p>
+
+    <h3>13.3 The fuse runs</h3>
+    <p>
+      A successful placement creates a <code>Bomb</code> entity with
+      the configured fuse length. Every subsequent server tick, the
+      fuse counts down. When the fuse reaches zero, the bomb
+      transitions from <em>TICKING</em> to <em>EXPLODING</em>. Any
+      neighbouring ticking bomb caught in the blast also transitions
+      to <em>EXPLODING</em> on the same tick &mdash; the chain
+      reaction.
+    </p>
+
+    <h3>13.4 Cosmetic vs canonical</h3>
+    <p>
+      Detonation produces two outbound packets. The
+      <code>EXPLOSION</code> packet is cosmetic; it carries the list
+      of tiles in the cross-shaped blast and the identifiers of any
+      players eliminated. Clients use it to drive particles, camera
+      shake, and the kill feed. The <code>SYNC</code> packet on the
+      same tick carries the authoritative state &mdash; updated
+      player health, the bomb removed, the destructible wall now
+      gone.
+    </p>
+
+    <h3>13.5 What the client never trusts</h3>
+    <p>
+      The client never trusts its own prediction. If the predicted
+      bomb is rejected by the server, the next <code>SYNC</code>
+      restores the world as if the bomb were never placed and the
+      buffered input is replayed without it.
+    </p>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 12 — PACKET PROTOCOL ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Packet protocol</span><span>13 / 18</span></div>
+
+  <h2>14. Packet protocol</h2>
+  <p class="lead">
+    The wire format is JSON over WebSocket. Every message is wrapped in one
+    envelope so framing, sequencing, and version negotiation stay in one
+    place. We treat the protocol as a published contract because the brief
+    requires cross-group interoperability.
+  </p>
+
+  <h3>14.1 Envelope</h3>
+  <p>
+    Every message is a JSON object with five fields: <code>v</code>
+    (protocol version, uint8), <code>t</code> (message type tag),
+    <code>seq</code> (monotonic sequence number from the sender, uint32),
+    <code>ts</code> (sender epoch ms, uint64, for round-trip estimation
+    only), and <code>p</code> (typed payload).
+  </p>
+
+  <h3>14.2 Catalogue</h3>
+  <table>
+    <thead><tr><th>Type</th><th>Direction</th><th>Trigger</th><th>Rate</th></tr></thead>
+    <tbody>
+      <tr><td><code>JOIN</code></td><td>Client &rarr; Server</td><td>First frame after connect</td><td>One per connection</td></tr>
+      <tr><td><code>MOVE</code></td><td>Client &rarr; Server</td><td>Each input frame</td><td>60 Hz max</td></tr>
+      <tr><td><code>BOMB_PLACE</code></td><td>Client &rarr; Server</td><td>Player requests a bomb</td><td>4 per second max</td></tr>
+      <tr><td><code>SYNC</code></td><td>Server &rarr; Client</td><td>Every tick</td><td>60 Hz</td></tr>
+      <tr><td><code>EXPLOSION</code></td><td>Server &rarr; Client</td><td>On detonation</td><td>On event</td></tr>
+      <tr><td><code>MATCH_STATE</code></td><td>Server &rarr; Client</td><td>Lifecycle transition</td><td>On transition</td></tr>
+      <tr><td><code>LOBBY</code></td><td>Server &rarr; Client</td><td>Seat change</td><td>On change</td></tr>
+      <tr><td><code>HEARTBEAT</code></td><td>Both</td><td>Liveness check</td><td>0.2 Hz</td></tr>
+      <tr><td><code>DISCONNECT</code></td><td>Both</td><td>Clean teardown</td><td>Once</td></tr>
+    </tbody>
+  </table>
+
+  <h3>14.3 Anti-desync rules</h3>
+  <ul>
+    <li>Strict monotonic <code>seq</code> per connection; duplicates and out-of-order frames are dropped.</li>
+    <li>The server overrides any illegal client prediction in the next snapshot; the client reconciles.</li>
+    <li>Each snapshot carries enough state to rebuild the world without the previous snapshot.</li>
+    <li>The simulation clock is monotonic on the server; wall-clock jumps do not affect the tick.</li>
+    <li>Envelope timestamps outside ±30 s of the server clock are rejected.</li>
+  </ul>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 13 — SERVER AUTHORITY ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Server authority &amp; synchronisation</span><span>14 / 18</span></div>
+
+  <h2>15. Server authority and synchronisation</h2>
+  <p class="lead">
+    The server runs the only canonical simulation. The client predicts
+    locally for responsiveness and reconciles against every server snapshot.
+    Between snapshots, the renderer interpolates so motion stays smooth.
+  </p>
+
+  <h3>15.1 The 60 Hz tick loop</h3>
+  <p>
+    The server runs a fixed step loop at 60 Hz (16.67 ms per tick). Each
+    tick has five stages: drain queued inputs, resolve player intents into
+    the world, advance entity lifetimes, evaluate the end condition,
+    serialise and broadcast the snapshot. We measure p99 at 13.6 ms,
+    leaving about 3 ms of headroom.
+  </p>
+
+  <h3>15.2 Client prediction</h3>
+  <p>
+    The client applies its input locally on the same frame it sends the
+    matching <code>MovePacket</code>. The input is kept in a ring buffer
+    of 30 frames, keyed by client tick. The renderer draws the predicted
+    state immediately; under normal conditions the player feels no input
+    latency.
+  </p>
+
+  <h3>15.3 Reconciliation</h3>
+  <p>
+    Each arriving <code>SyncPacket</code> carries a server tick. The
+    client compares the snapshot to its predicted state at the same tick.
+    If they agree, the input buffer is trimmed. If they disagree, the
+    local state is replaced by the snapshot and every buffered input
+    newer than that tick is replayed on top, frame by frame.
+  </p>
+
+  <h3>15.4 Interpolation</h3>
+  <p>
+    The renderer keeps its display cursor about 100 ms behind the latest
+    snapshot and interpolates linearly between the two most recent ones.
+    The buffer only affects rendering; it does not feed back into
+    prediction or reconciliation.
+  </p>
+
+  <h3>15.5 Invariants</h3>
+  <ol>
+    <li>Determinism. Same seed, same input log, same state stream.</li>
+    <li>The server is the sole writer of the canonical world.</li>
+    <li>The simulation clock is monotonic, not wall-clock.</li>
+    <li>Replay cost is bounded by the input-buffer size.</li>
+    <li>Each event identifier is unique within a match.</li>
+  </ol>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 14 — AI + STATE ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">AI bot &amp; state management</span><span>15 / 18</span></div>
+
+  <h2>16. AI bot and state management</h2>
+  <p class="lead">
+    The brief requires that every client offer a non-random AI fallback.
+    State management uses explicit enumerations with guarded transitions,
+    rather than boolean flags.
+  </p>
+
+  <h3>16.1 The AI bot</h3>
+  <p>
+    The bot is a pure function of the current world snapshot and the
+    bot&apos;s own seat. Every tick it builds a 13&times;13 threat map
+    where each cell scores 0 (safe) to 4 (lethal this tick). The score
+    is the maximum of three contributions: bomb proximity, current
+    explosion membership, and predicted chain-reaction expansion.
+  </p>
+
+  <p>
+    A six-node decision tree sits on top: <em>escape</em> if the
+    current cell is threat &ge; 3, <em>chain-evade</em> if a chain is
+    about to spread into the player&apos;s row, <em>pickup</em> if one
+    is reachable safely, <em>destroy wall</em> if a destructible wall
+    is adjacent and clear, <em>pressure enemy</em> if an enemy is
+    reachable along a low-threat path, otherwise <em>wander</em>.
+  </p>
+
+  <p>
+    Pathfinding is A* on the threat grid with edge cost
+    <code>1 + threat[cell]</code> and Manhattan distance as the
+    heuristic; the closed set is bounded by the 169 cells of the grid.
+  </p>
+
+  <h3>16.2 State management</h3>
+  <table>
+    <thead><tr><th>Enumeration</th><th>States</th></tr></thead>
+    <tbody>
+      <tr><td><code>MatchState</code></td><td>WAITING &rarr; STARTING &rarr; ACTIVE &rarr; ENDING &rarr; ENDED</td></tr>
+      <tr><td><code>BombState</code></td><td>ARMED &rarr; TICKING &rarr; EXPLODING &rarr; SPENT</td></tr>
+      <tr><td><code>PlayerState</code></td><td>JOINING &rarr; ALIVE &rarr; SPECTATING &rarr; LEFT</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Each enumeration exposes a <code>can(next)</code> method so that the
+    guard table lives next to the states. This pattern replaces multiple
+    boolean fields with one enumeration and removes the possibility of
+    impossible combinations such as "not alive and not spectating".
+  </p>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 15 — PRESCRIPTIVE ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Prescriptive &middot; recommendations</span><span>16 / 18</span></div>
+
+  <h2>17. Prescriptive architecture</h2>
+  <p class="lead">
+    The system meets every functional requirement in the brief. The
+    recommendations below are future-proofing rather than defect fixes.
+    They are ordered by priority and accompanied by an effort estimate.
+  </p>
+
+  <h3>17.1 Must do</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Recommendation</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td>Stand up the central registry (the brief calls it <em>Verwaltungsserver</em>). The client knows the server URL out of band today; cross-group interoperability requires a small REST service that match servers register against at boot and clients query at lobby time.</td><td>About 2 days</td></tr>
+      <tr><td>P2</td><td>Add Kryo serialisation as an optional protocol version two. JSON is fine for debugging; binary keeps bandwidth flat at higher player counts. The envelope shape does not change.</td><td>About 3 days</td></tr>
+      <tr><td>P3</td><td>Promote the inactivity-detonate rule to a first-class event. The brief requires that a player who fails to respond for 30 s is detonated by the server after a 3 s countdown; the logic currently lives in the connection layer.</td><td>About 1 day</td></tr>
+    </tbody>
+  </table>
+
+  <h3>17.2 Should do</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Recommendation</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>R1</td><td>Externalise <code>GameConfig</code> to a configuration file the server reads at boot. A game master can then pick arena size, bomb fuse, and pickup tables without a rebuild.</td><td>Half a day</td></tr>
+      <tr><td>R2</td><td>Add a pluggable arena registry &mdash; a folder of arena definitions the server loads at boot.</td><td>About 1 day</td></tr>
+      <tr><td>R3</td><td>Run the AI bot on the server as well as the client. The bot is already a pure function of the snapshot.</td><td>About 1.5 days</td></tr>
+      <tr><td>R4</td><td>Stream the gameplay log to an external sink (for example OpenTelemetry) in addition to the server window.</td><td>About 1 day</td></tr>
+    </tbody>
+  </table>
+
+  <h3>17.3 Should not do</h3>
+  <p>
+    Three otherwise-tempting paths to avoid. First, adding a shared library
+    between client and server beyond <code>bomberman-core</code> would dissolve
+    the layering rule. Second, WebRTC peer-to-peer fragments the source of
+    truth and breaks determinism. Third, moving the canonical simulation
+    off the server thread sacrifices replayability for unneeded throughput.
+  </p>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 16 — BANNERS ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Visual identity &middot; hero banners</span><span>17 / 18</span></div>
+
+  <h2>18. Visual identity: hero banners</h2>
+  <p class="lead">
+    The hero banner is the project&apos;s identity. It carries the project
+    name, the two faction names, and the tagline. A dark variant ships in
+    the JavaFX client and the deliverables portal; a light variant is the
+    print version used inside this report.
+  </p>
+
+  <div class="plate">
+    <figure>
+      <img src="assets/banners/hero-dark.png" alt="Hero banner, dark variant">
+      <div class="cap"><b>Figure 9.</b> Hero banner, dark variant. Default in the JavaFX client and the deliverables portal.</div>
+    </figure>
+    <figure>
+      <img src="assets/banners/hero-light.png" alt="Hero banner, light variant">
+      <div class="cap"><b>Figure 10.</b> Hero banner, light variant. Used in printed reports.</div>
+    </figure>
+  </div>
+
+  <div class="foot"><span>BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+<!-- ============== PAGE 17 — CRESTS + ARENA ============== -->
+<section class="page"><div class="pagebox">
+  <div class="head"><span class="l">Visual identity &middot; crests and arena</span><span>18 / 18</span></div>
+
+  <h2>18. Visual identity: team crests and arena spread</h2>
+  <p class="lead">
+    Three team crests appear on the portal&apos;s about page and on the
+    in-game profile card. The arena spread is the canonical layout
+    reference for the renderer.
+  </p>
+
+  <div class="plate">
+    <div class="row3">
+      <figure>
+        <img src="assets/avatars/airavata-aa.png" alt="Captain crest">
+        <div class="cap"><b>Figure 11a.</b><br>Captain (A. Anuku)</div>
+      </figure>
+      <figure>
+        <img src="assets/avatars/mayura-sk.png" alt="Designer crest">
+        <div class="cap"><b>Figure 11b.</b><br>Designer (S. Kaur)</div>
+      </figure>
+      <figure>
+        <img src="assets/avatars/vyaghra-jc.png" alt="Engineer crest">
+        <div class="cap"><b>Figure 11c.</b><br>Engineer (J. Chittomothu)</div>
+      </figure>
+    </div>
+    <figure>
+      <img src="assets/banners/arena-elements.png" alt="Arena reference spread">
+      <div class="cap"><b>Figure 12.</b> Arena reference spread. The two factions are shown side by side, with their per-side bombs and power-ups, and the shared block, portal, and spawn-point vocabulary used by the renderer.</div>
+    </figure>
+  </div>
+
+  <div class="foot"><span>End of report &middot; BomberMan-X &middot; 22 May 2026</span><span>Anuku &middot; Kaur &middot; Chittomothu</span></div>
+</div></section>
+
+</body>
+</html>

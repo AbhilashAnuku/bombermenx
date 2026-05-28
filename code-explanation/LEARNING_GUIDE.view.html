@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Learning Guide - BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Code Explanation</span>
+    <span class="sep">/</span>
+    <span class="title">Learning Guide</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">Exam prep</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+<main class="container">
+  <div class="meta">Source: <code>LEARNING_GUIDE.md</code></div>
+  <article id="content"></article>
+</main>
+<footer class="footer">
+  <div>Built by team BomberMan-X &middot; Driven by hunger.</div>
+  <div>AA &middot; SK &middot; JC &mdash; three M.Sc. students, no CEO.</div>
+  <div class="src">Rendered from <code>LEARNING_GUIDE.md</code></div>
+</footer>
+<script type="text/markdown" id="md-src">
+# Learning Guide — BomberMen-X for the SAD Defense
+
+This is the one document to read the night before the defense. It is
+ordered the way a student actually learns the project: first the
+brief, then the why, then the what, then the how, then the
+"if-they-ask-X-say-Y" cheat-sheet.
+
+> Course: Software Architecture and Development (SAD)
+> Programme: M.Sc. Applied Computer Science, SRH Stuttgart
+> Professor: Dr. Floriment Klinaku
+> Original brief: Lastenheft, Prof. Becker / M. Frank, TU Chemnitz, SS 17
+> Team: AA, SK, JC
+
+## 1. The brief — what was asked
+
+Two source documents form the brief:
+
+1. **Lastenheft** (Prof. Becker). A distributed Bomberman: client–
+   server, 2–4 players, central registry for server discovery, 30 s
+   no-response → 3 s countdown → auto-detonate the AFK player, AI
+   bot fallback, cross-group protocol interop, server logging,
+   tests that prove no illegal moves and that real-time works.
+2. **Bomberman Online Requirements Specification** (Dr. Klinaku).
+   A UML domain model (`GameServer`, `Client`, `Match`, `Player`,
+   `Bomberman`, `Arena`, `Tile`, `Bomb`, `Explosion`, `Bonus` +
+   FlameBonus / SpeedBonus / KickBonus / LifeBonus / ArmorBonus,
+   `Score`), 86 functional requirements (FR-01..FR-86), 12
+   non-functional requirements (NFR-01..NFR-12), use cases,
+   business rules, acceptance criteria.
+3. **arc42 Architecture Specification** (also Klinaku, third doc).
+   The shape the architecture spec must take: 22 sections, C&C
+   viewtype, Client-Server style, ADRs, runtime view, deployment,
+   quality + risks, traceability tables, glossary, an exam
+   paragraph, a submission checklist.
+
+Our prototype IS the working Java game — not a paper mock.
+
+## 2. Why SAD is the course this project lives in
+
+SAD sits between "I can write code" and "I can design a system."
+A small networked game is a deliberately good vehicle for that:
+
+- It forces honest engagement with **concurrency** — a tick loop
+  cannot be hand-waved.
+- It forces **a wire protocol** — the client cannot lie about the
+  world.
+- It forces **state authority** — somebody has to be the truth.
+- It forces **separation of responsibilities** — a god-class would
+  fall over within a week.
+- It forces **observability** — without logs/metrics a real-time
+  bug is invisible.
+- It forces **deployment thinking** — the server must run somewhere
+  reliable and cheap.
+
+If you understand WHY each of those mattered for Bomberman, you've
+understood SAD.
+
+## 3. The five architectural decisions we defend
+
+These are the four ADRs from the arc42 spec, plus one bonus we
+defend on top.
+
+| ADR | Decision | Why this and not the alternative |
+| --- | --- | --- |
+| ADR-01 | Client–Server | Peer-to-peer can't enforce one authoritative state. Microservices add latency and complexity for a 2-week MVP. |
+| ADR-02 | Server-authoritative state | Cheat-resistant. Single source of truth makes debugging deterministic. Reproducible from server logs. |
+| ADR-03 | Component separation on the server | A monolithic `MatchSession` would be unmaintainable. Managers (Match / Bomb / Explosion / Bonus / Score / Movement Validator) sit on top of one Game State Manager (`GameWorld`). |
+| ADR-04 | Event-based updates (snapshot per tick + discrete kill-feed) | Snapshots model "what changed since last tick" cheaply. Discrete events handle non-state-shaped occurrences cleanly. |
+| Bonus | Deterministic core | Same seed + same input log = same world. Replays are free; tests don't flake; cheat detection by re-simulation is possible. |
+
+## 4. The three modules — what each does and why
+
+```
+bomberman-core    │ shared library; no I/O, no network, no framework
+                  │ holds: domain entities (Player, Bomberman, Arena, Tile,
+                  │   Bomb, Explosion, Bonus, Score), the deterministic
+                  │   simulation (GameWorld), wire DTOs (Envelope,
+                  │   MessageType, WireCodec)
+
+bomberman-server  │ Netty WebSocket gateway + match runtime
+                  │ holds: WebSocketServer, MatchManager, MatchSession,
+                  │   per-tick scheduler, the bot, auth registry, /metrics
+
+bomberman-client  │ JavaFX desktop client
+                  │ holds: SceneRouter, MainMenuView, LobbyView, ArenaView,
+                  │   ArenaRenderer, MandalaTheme, MandalaArt,
+                  │   GameClient (Netty WS client), input + audio + age-gate
+```
+
+**The one rule:** `bomberman-server` and `bomberman-client` never
+depend on each other. They share `bomberman-core` (so they speak the
+same DTOs) and meet at runtime over the WebSocket. This is the
+"clients leak knowledge of server" rule — enforced by Maven and by
+PR review.
+
+## 5. The twelve named systems — terminology and code paths
+
+Memorise this table. The panel will ask "where does X happen."
+
+| # | System | What it does | Where it lives |
+| --- | --- | --- | --- |
+| 1 | Client–server architecture | clients send intents, server owns truth | `src/bomberman-server/.../net/`, `src/bomberman-client/.../net/` |
+| 2 | Server-authoritative state | only `GameWorld` mutates state | `src/bomberman-core/.../sim/GameWorld.java` |
+| 3 | Session management | per-match lifecycle, subscriber list | `src/bomberman-server/.../match/MatchSession.java`, `session/ClientSession.java` |
+| 4 | Wire protocol + envelopes | `{v, t, seq, ts, p}` JSON over WebSocket | `src/bomberman-core/.../net/Envelope.java`, `MessageType.java`, `WireCodec.java` |
+| 5 | Entity system | the domain model classes | `src/bomberman-core/.../entity/`, `.../world/` |
+| 6 | Physics + collision | tile-locked, 4-direction; raycast for explosion | `GameWorld.applyPlayerInputs`, `detonate`, `rayHits`, `Arena.isWalkable` |
+| 7 | Game-state machine | `LOBBY → COUNTDOWN → PLAYING → SUDDEN_DEATH → FINISHED` | `src/bomberman-core/.../sim/GameState.java`, `src/bomberman-server/.../match/Match.java` |
+| 8 | Input handling | keyboard + gamepad → `InputFrame` → server slot | `src/bomberman-client/.../input/`, `src/bomberman-core/.../net/dto/InputFrame.java` |
+| 9 | Rendering system | 60 FPS draw loop, particles, post-effects | `src/bomberman-client/.../render/`, `ui/ArenaView.java` |
+| 10 | UI / scene routing | menu → lobby → arena → rankings | `src/bomberman-client/.../ui/SceneRouter.java`, `MainMenuView.java`, etc. |
+| 11 | Mandala theme + visual identity | Vāyu / Agni palette + mandala backdrop | `MandalaTheme.java`, `MandalaArt.java`, `css/mandala.css` |
+| 12 | AI bot + matchmaking | bots fill empty seats; matchmaker routes | `src/bomberman-server/.../ai/BotController.java`, `match/MatchManager.java` |
+
+Cross-cutting: build + CI (Maven, GitHub Actions), tests, deployment
+(Dockerfile.server, Cloud Run).
+
+## 6. The exam paragraph (memorise this)
+
+> Bomberman Online uses the **arc42** template for architecture
+> documentation. The main viewtype is **Component-and-Connector**
+> because the system is distributed and runtime interaction matters
+> most. The architecture style is **Client–Server**: each player
+> uses a client application; the central game server owns the
+> official state. The client only sends commands (move, place bomb);
+> the server validates, updates the match, and broadcasts the result
+> to all clients. This guarantees fairness — players can't directly
+> change score, bombs, positions, or match state — and consistency,
+> because all clients render snapshots from the same authority.
+> Inside the server, the logic is split into named architectural
+> components: Match Manager, Movement Validator, Bomb Manager,
+> Explosion Manager, Bonus Manager, Score Manager — all sitting on
+> top of one Game State Manager (`GameWorld`). Event broadcasting
+> (one snapshot per tick plus discrete kill-feed and match-end
+> events) is a supporting mechanism inside the Client–Server style.
+
+That's it. 180 words. Slow + clear, it takes ninety seconds.
+
+## 7. How the prototype runs (top-down)
+
+If you're walking the panel through the code live, this is the
+order:
+
+1. Open `pom.xml` at the project root. Three modules. Java 17.
+2. Open `src/bomberman-core/src/main/java/com/bombermenx/core/`. Show
+   the `entity/` and `world/` packages — the domain.
+3. Open `GameWorld.java`. Point at `tick()`, `applyPlayerInputs()`,
+   `placeBomb()`, `detonate()`. This IS the simulation.
+4. Open `src/bomberman-server/.../BombServerApplication.java`. Show
+   how `MatchManager`, `GameServer` (facade), `WebSocketServer` are
+   wired. Three lines that boot the whole server.
+5. Open `MatchSession.java`. Show `start()` (schedules the tick),
+   `tick()` (advances, broadcasts), and `stop()`.
+6. Open `src/bomberman-client/.../ClientLauncher.java`. Boots JavaFX,
+   applies `MandalaTheme`, opens `MainMenuView`.
+7. Open `MainMenuView.java`. Show the mandala canvas backdrop and
+   the responsive layout.
+8. Open `ArenaRenderer.java`. The 60 FPS render loop.
+9. Open `requirements-traceability.md`. Show how every FR-XX in
+   Klinaku's spec maps to a class.
+10. Open `architecture-spec-arc42.md`. Section 11 is the runtime
+    view if they want to see scenarios.
+
+Total wall-clock: ten minutes if you go slow.
+
+## 8. Cheat-sheet — most likely questions and where to point
+
+| Q | A | Where |
+| --- | --- | --- |
+| "Why client–server?" | One authority makes the game fair and reproducible. Peer-to-peer can't enforce one truth. | ADR-01 in arc42 spec |
+| "Why deterministic?" | Same seed + same inputs = same world. Replays + stable tests + cheat detection by re-simulation. | arc42 §13.5 |
+| "Where is the wire protocol?" | `src/bomberman-core/src/main/java/com/bombermenx/core/net/MessageType.java` is the enum; `Envelope.java` is the framing; `WireCodec.java` is the only file touching JSON bytes. | open the three files |
+| "Show me the authoritative tick" | `GameWorld.tick()` runs at 60 Hz on the per-match thread; `MatchSession.tick()` schedules it. | `GameWorld.java` line ~170 |
+| "Where do you validate movement?" | `GameWorld.applyPlayerInputs()` — three guards: `arena.isWalkable(next)`, `!bombAt(next)`, `player.isAlive()`. | `GameWorld.java` line ~345 |
+| "Where do bombs explode?" | `GameWorld.tickBombs()` decrements fuses; `GameWorld.detonate()` does the 4-direction ray + chain reaction. | `GameWorld.java` lines ~404, ~457 |
+| "How do you stop a client from cheating?" | The server is the only writer. A client-sent position is rejected if the tile isn't walkable, has a bomb, or the player is dead. Server doesn't trust the client. | `GameWorld.applyPlayerInputs`, ADR-02 |
+| "How do you handle 4 concurrent matches?" | Each `MatchSession` has its own single-threaded scheduled executor. Matches are isolated; one match's bug can't break another. | `MatchSession.start()` |
+| "Is there a database?" | No, MVP runs in-memory. `BX_PERSISTENCE=false` by default. Postgres + Redis adapters exist behind a flag for future use. | `ServerConfig.java`, `docker-compose.yml` |
+| "How do you do CI?" | `.github/workflows/ci.yml` runs Maven build + tests + CodeQL on every push. | `.github/workflows/` |
+| "How do you deploy?" | Local: `docker compose up`. Cloud Run: `deploy-cloudrun.yml` builds the server image, pushes to Artifact Registry, deploys with 512 MiB / 1 vCPU / autoscale 0–3. | `Dockerfile.server`, `deploy-cloudrun.yml` |
+| "How do tests work?" | `mvn -B test`. 11 tests: 7 in core (`GameWorldTest`, `WireCodecTest`), 4 in server (`ProfanityFilterTest`). | run it live |
+| "Where is the mandala theme?" | Java color tokens in `MandalaTheme.java`; CSS in `mandala.css`; the mandala backdrop is drawn with JavaFX Canvas primitives in `MandalaArt.java` (no PNG/SVG assets, all Java per the Lastenheft). | client/ui/ |
+| "How is the team split?" | No CEO. Coordination rotates weekly (AA wk 1/4/7, SK 2/5/8, JC 3/6). Module ownership: bomberman-core primary JC, bomberman-server primary AA, bomberman-client primary SK. Every PR needs a non-author co-reviewer. | `coordination/roles-and-contributions.md` |
+| "Why JavaFX and not Swing or a web client?" | JavaFX is Java (satisfies the Lastenheft), has CSS theming for the mandala look, and has Canvas for the procedural backdrop. Swing's look-and-feel wouldn't carry the Indian palette as cleanly. | ADR-style note in `code-explanation/bomberman-client.md` |
+| "Why JSON on the wire and not Kryo?" | Legibility. Every message is human-readable in a debugger. Kryo is on the roadmap once `MessageType` has been stable for two weeks. | decision-log.md |
+| "How does the AI bot work?" | `BotController` runs on the same tick thread as human input — keeps the simulation deterministic. Decision tree picks: escape > chain-evade > pickup > destroy wall > pressure enemy > wander. | `BotController.java` |
+| "How does multithreading work here?" | Server: Netty I/O event loops (non-blocking), one tick thread per match (the only writer), shutdown hook. Client: JavaFX app thread (UI), AnimationTimer (60 FPS draw), Netty event loop (network), optional gamepad poll thread. Single-writer rule means no locks inside `GameWorld`. | course-context.md "Multithreading" section |
+| "What's your test strategy?" | Unit tests on `GameWorld` for determinism + rules; on `WireCodec` for protocol round-trip; on `ProfanityFilter` for moderation. Integration test (manual): launch server + 2 clients + bots, play a full match. Soak: `scripts/loadtest.py` runs 256 synthetic bots overnight. | `docs/TESTING.md` |
+| "What's not done yet?" | A central Verwaltungsserver (server registry for cross-host discovery) — listed in `prescriptive-plan.md` as the next item. Persistent rankings — sidecars wired but flag-off. | `prescriptive-plan.md` |
+| "Where can the architecture grow next?" | (1) Verwaltungsserver discovery. (2) Binary wire codec (Kryo). (3) Spectator mode reusing the snapshot stream. (4) Stats panel reading Postgres. | `prescriptive-plan.md` §future |
+
+## 9. The seven design patterns we actually used
+
+If the panel asks "what design patterns are in here":
+
+| Pattern | Where in our code |
+| --- | --- |
+| Factory | `Bonus.of(PowerUpType)` returns the matching typed subclass |
+| Strategy | `BotController` decision tree per game mode |
+| Observer | `MatchSession.broadcast` pushes snapshots to every subscribed `ClientSession` |
+| State machine | `GameState` (LOBBY → ... → FINISHED) and `Match.Status` (WAITING → RUNNING → FINISHED) |
+| Adapter | `WireCodec` translates Java DTOs ↔ JSON bytes; the rest never sees bytes |
+| Façade | `GameServer` wraps `MatchManager`, `WebSocketServer`, `SessionRegistry` so callers query one object |
+| Delegation | `Player` keeps a stable API but routes pawn-state to `Bomberman` and score-state to `Score` |
+
+## 10. Quality scenarios — say one per quality
+
+If they grill you on NFRs, here's the one-line answer per attribute.
+
+- **Performance:** 60 Hz tick + sub-100 ms round-trip on LAN.
+- **Consistency:** one authoritative state, all clients render from
+  the same snapshot.
+- **Fairness:** server validates every intent; invalid → no-op.
+- **Reliability:** one client disconnecting doesn't stop the match.
+- **Maintainability:** new Bonus = one file (`SpeedBonus.java`-style).
+- **Testability:** 11 unit tests; everything important lives in
+  `bomberman-core` which has no I/O.
+- **Extensibility:** new `MessageType` value + DTO record + handler
+  arm — no new sockets, no new threads.
+
+## 11. Risks we acknowledge
+
+- **Network latency.** Mitigation: small snapshots, client
+  interpolation between commits.
+- **State drift.** Server is the only writer; clients re-snapshot on
+  reconnect.
+- **Server SPOF.** One server process per match. Future: replicate
+  matches across instances behind the Verwaltungsserver.
+- **Test thinness.** 11 tests is enough for the MVP but slim for
+  production. `clean-code-audit.md` lists this as the top
+  post-beta item.
+
+## 12. The honest "what slipped" list
+
+Things we cut so we could ship:
+
+- Central registry (Verwaltungsserver) — present in the brief, not
+  yet stood up. Hooks exist; deployment is the missing piece.
+- Cross-group protocol contract tests — JSON schema validation in
+  CI is on the prescriptive plan.
+- Persistent leaderboard — sidecars wired, flag is off.
+- Native binary wire codec (Kryo) — deferred until `MessageType` is
+  stable for two more weeks.
+
+We list these honestly in `coordination/decision-log.md`. The panel
+appreciates honesty more than overclaim.
+
+## 13. If anything goes wrong on demo day
+
+- **Server won't start.** Port collision (Docker holds 8080 on the
+  dev machine). Use 9090.
+- **Client can't connect.** Wrong URL in the SERVER field. Should
+  be `ws://<host>:<port>/ws`.
+- **No bots show up.** Warmup hasn't elapsed (8 s default).
+- **Build fails.** `mvn -B -pl bomberman-core -am -DskipTests
+  install` then re-try.
+- **JavaFX won't launch.** JDK 17 must be on PATH. Check
+  `java -version`. Use the portable Maven if `mvn` isn't found.
+
+All of these are in `RUN_GUIDE.md` Section A.6.
+
+That's the learning guide. Pair it with `RUN_GUIDE.md` (the run
+commands + wiring) and `architecture-spec-arc42.md` (the formal
+22-section spec) and you have everything needed to defend the
+project end to end.
+
+</script>
+</body>
+</html>

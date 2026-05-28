@@ -145,10 +145,10 @@
     <span class="tag">architecture</span>
     <h2>System Architecture</h2>
     <p>
-      The three modules at a glance: <strong>bomb-client</strong> (JavaFX) and the <strong>play.html</strong> browser
-      client both speak WebSocket to <strong>bomb-server</strong> on Cloud Run. The server holds match state and
+      The three modules at a glance: <smandalag>bomberman-client</smandalag> (JavaFX) and the <smandalag>play.html</smandalag> browser
+      client both speak WebSocket to <smandalag>bomberman-server</smandalag> on Cloud Run. The server holds match state and
       delegates persistence to Postgres (rankings) and Redis (sessions, rate-limit, pub/sub). The shared
-      <strong>bomb-core</strong> library sits beneath both runtime modules — the only piece of code that compiles
+      <smandalag>bomberman-core</smandalag> library sits beneath both runtime modules — the only piece of code that compiles
       into both ends of the wire.
     </p>
     <img src="architecture.svg" alt="System architecture: client, server, core, Postgres, Redis, CI"/>

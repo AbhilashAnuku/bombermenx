@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="seqTitle seqDesc">
   <title id="seqTitle">Sequence — match start</title>
   <desc id="seqDesc">From client launch to the first authoritative snapshot: ClientLauncher authenticates, joins the lobby, the matchmaker forms a session, MatchManager seeds an Arena, and Snapshotter pushes the first state.</desc>
@@ -31,7 +31,7 @@
   <g>
     <rect x="80" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#3affb5" stroke-width="2"/>
     <text x="140" y="91" class="lbl head" text-anchor="middle" fill="#3affb5">ClientLauncher</text>
-    <text x="140" y="106" class="sub" text-anchor="middle">bomb-client</text>
+    <text x="140" y="106" class="sub" text-anchor="middle">bomberman-client</text>
   </g>
   <g>
     <rect x="300" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#ff3ad9" stroke-width="2"/>
@@ -51,7 +51,7 @@
   <g>
     <rect x="960" y="70" width="120" height="44" rx="6" fill="#11141c" stroke="#3aedff" stroke-width="2"/>
     <text x="1020" y="91" class="lbl head" text-anchor="middle" fill="#3aedff">GameWorld</text>
-    <text x="1020" y="106" class="sub" text-anchor="middle">bomb-core .sim</text>
+    <text x="1020" y="106" class="sub" text-anchor="middle">bomberman-core .sim</text>
   </g>
 
   <!-- Lifelines -->

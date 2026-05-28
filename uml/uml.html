@@ -145,8 +145,8 @@
   <div class="rule">
     <h2>Layering rule</h2>
     <p>
-      <strong>bomb-core</strong> is the shared library — both bomb-client and bomb-server compile against it.
-      bomb-client and bomb-server <strong>never</strong> depend on each other. They only meet at runtime, across
+      <smandalag>bomberman-core</smandalag> is the shared library — both bomberman-client and bomberman-server compile against it.
+      bomberman-client and bomberman-server <smandalag>never</smandalag> depend on each other. They only meet at runtime, across
       the WebSocket wire, exchanging the JSON envelopes defined in <code>com.bombermenx.core.net</code>. Inside
       core, the inner game model (geom, world, entity) has no knowledge of the outer wire layer (net, net.dto);
       the <code>Snapshotter</code> is the bridge that turns simulation state into DTOs.
@@ -155,7 +155,7 @@
 
   <article>
     <span class="tag">core</span>
-    <h2>bomb-core — Class Diagram</h2>
+    <h2>bomberman-core — Class Diagram</h2>
     <p>
       The simulation classes around <code>GameWorld</code>, the tile/arena model, the entity classes
       (<code>Player</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>), and the wire
@@ -163,12 +163,12 @@
       composition — <code>GameWorld</code> owns the lifecycle of its entities — while open arrows show plain
       associations.
     </p>
-    <img src="class-diagram-core.svg" alt="UML class diagram for bomb-core"/>
+    <img src="class-diagram-core.svg" alt="UML class diagram for bomberman-core"/>
   </article>
 
   <article>
     <span class="tag server">server</span>
-    <h2>bomb-server — Class Diagram</h2>
+    <h2>bomberman-server — Class Diagram</h2>
     <p>
       <code>BombServerApplication</code> is the composition root: it builds the <code>WebSocketServer</code>,
       the <code>SessionRegistry</code>, the <code>MatchManager</code>, the <code>AuthRegistry</code>,
@@ -177,12 +177,12 @@
       <code>DevAuthProvider</code> and <code>GoogleAuthProvider</code> indicates they implement the
       <code>AuthProvider</code> interface.
     </p>
-    <img src="class-diagram-server.svg" alt="UML class diagram for bomb-server"/>
+    <img src="class-diagram-server.svg" alt="UML class diagram for bomberman-server"/>
   </article>
 
   <article>
     <span class="tag client">client</span>
-    <h2>bomb-client — Class Diagram</h2>
+    <h2>bomberman-client — Class Diagram</h2>
     <p>
       The JavaFX side. <code>ClientLauncher</code> bootstraps the <code>AgeGate</code> and the
       <code>SceneRouter</code>, which then swaps between <code>MainMenuView</code>, <code>LobbyView</code>,
@@ -192,7 +192,7 @@
       <code>GamepadPoller</code>, sending feedback via <code>HapticsService</code>. <code>GameClient</code> is the
       single WebSocket adapter that every scene shares.
     </p>
-    <img src="class-diagram-client.svg" alt="UML class diagram for bomb-client"/>
+    <img src="class-diagram-client.svg" alt="UML class diagram for bomberman-client"/>
   </article>
 
   <article>
@@ -200,8 +200,8 @@
     <h2>Package Diagram</h2>
     <p>
       Three columns — one per Gradle module — with the dependency edges between them. Both runtime modules
-      depend on bomb-core; the dashed line between client and server shows the explicit
-      non-dependency that the layering rule enforces. Inside bomb-core the sub-packages are stacked from net
+      depend on bomberman-core; the dashed line between client and server shows the explicit
+      non-dependency that the layering rule enforces. Inside bomberman-core the sub-packages are stacked from net
       and net.dto at the top down through sim, entity, world, geom and input, with <code>GameConfig</code> at
       the root.
     </p>

@@ -77,7 +77,7 @@
     padding-left: 12px;
   }
   p { color: var(--muted); font-size: 14px; max-width: 1000px; }
-  p strong { color: var(--text); }
+  p smandalag { color: var(--text); }
   code, .mono {
     font-family: "Menlo", "Consolas", monospace;
     color: var(--cyan);
@@ -114,7 +114,7 @@
 <body>
 <header>
   <h1>BomberMen-X — System Architecture</h1>
-  <p>Three-module capstone: JavaFX desktop client, browser play.html, Cloud Run server, shared bomb-core library, Postgres and Redis sidecars.</p>
+  <p>Three-module capstone: JavaFX desktop client, browser play.html, Cloud Run server, shared bomberman-core library, Postgres and Redis sidecars.</p>
   <div class="legend">
     <span class="l-cy">client to server</span>
     <span class="l-mg">server to client</span>
@@ -136,22 +136,22 @@
 
   <h2>The three modules</h2>
   <p>
-    <strong>bomb-core</strong> is a pure Java 17 library with no I/O. It holds the game model
+    <smandalag>bomberman-core</smandalag> is a pure Java 17 library with no I/O. It holds the game model
     (<code>Arena</code>, <code>Player</code>, <code>Bomb</code>, <code>Explosion</code>, <code>PowerUpItem</code>),
     the deterministic simulation (<code>GameWorld</code>, <code>Snapshotter</code>),
     and the wire protocol (<code>Envelope</code>, <code>MessageType</code>, <code>WireCodec</code> plus roughly twenty-five DTOs).
     Both runtime modules import it; nothing in core imports back.
   </p>
   <p>
-    <strong>bomb-server</strong> is a small Netty WebSocket server that runs as a single Cloud Run container.
+    <smandalag>bomberman-server</smandalag> is a small Netty WebSocket server that runs as a single Cloud Run container.
     <code>BombServerApplication</code> composes <code>WebSocketServer</code>, <code>SessionRegistry</code>,
     <code>MatchManager</code>, <code>AuthRegistry</code>, <code>LobbyService</code>, <code>ChatRouter</code>,
     and <code>ServerConfig</code>. The handler <code>GameServerHandler</code> routes every inbound envelope to one of those
-    services. Each <code>MatchSession</code> owns a <code>GameWorld</code> from bomb-core and steps it at 60 Hz.
+    services. Each <code>MatchSession</code> owns a <code>GameWorld</code> from bomberman-core and steps it at 60 Hz.
   </p>
   <p>
-    <strong>bomb-client</strong> is a JavaFX 21 desktop application: <code>ClientLauncher</code> bootstraps the
-    <code>AgeGate</code>, then a <code>SceneRouter</code> wired with <code>TronTheme</code> swaps between
+    <smandalag>bomberman-client</smandalag> is a JavaFX 21 desktop application: <code>ClientLauncher</code> bootstraps the
+    <code>AgeGate</code>, then a <code>SceneRouter</code> wired with <code>MandalaTheme</code> swaps between
     <code>MainMenuView</code>, <code>LobbyView</code>, <code>RankingsView</code>, and the in-game
     <code>ArenaView</code> with its <code>HudOverlay</code>. <code>GameClient</code> is the single WebSocket adapter
     every scene shares. The <code>presentation/play.html</code> page is a second, browser-based client that speaks
@@ -169,9 +169,9 @@
 
   <h2>Where data lives</h2>
   <p>
-    <strong>Postgres 16</strong> (Cloud SQL or self-hosted) stores ranked match history, player profiles, and
-    cosmetic ownership. It is reached over JDBC from <code>bomb-server</code> only — clients never speak to the
-    database directly. <strong>Redis 7</strong> (Memorystore or co-located in the Compose stack) holds short-lived
+    <smandalag>Postgres 16</smandalag> (Cloud SQL or self-hosted) stores ranked match history, player profiles, and
+    cosmetic ownership. It is reached over JDBC from <code>bomberman-server</code> only — clients never speak to the
+    database directly. <smandalag>Redis 7</smandalag> (Memorystore or co-located in the Compose stack) holds short-lived
     session state, per-IP rate-limit counters, and a pub/sub channel that lets multiple server instances coordinate
     if we ever scale beyond one. Both sidecars are amber on the diagram to signal they are infrastructure, not part
     of the gameplay contract.

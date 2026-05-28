@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plans - BomberMen-X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/viewer.css">
+<script defer src="../assets/portal.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">&larr; Deliverables</a>
+  <div class="crumb">
+    <span class="section">Plans</span>
+    <span class="sep">/</span>
+    <span class="title">Plans</span>
+  </div>
+  <div class="toolbar">
+    <span class="badge">Plan</span>
+    <button type="button" onclick="window.print()">Print to PDF</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="meta">Source: <code>PLANS.md</code></div>
+
+  <section class="hero-model" data-reveal>
+    <p class="title">What landed, week by week</p>
+    <p class="caption">An eight-week programme with a six-week build window. As of today we are halfway through and the foundations are all set.</p>
+    <div class="hm-weeks">
+      <div class="cell done"><div class="w">W1</div><div class="label">Brief &amp; scaffolding</div></div>
+      <div class="cell done"><div class="w">W2</div><div class="label">Core &amp; Maven</div></div>
+      <div class="cell done"><div class="w">W3</div><div class="label">Server &amp; protocol</div></div>
+      <div class="cell done"><div class="w">W4</div><div class="label">Client &amp; renderer</div></div>
+      <div class="cell now"><div class="w">W5 · now</div><div class="label">Polish &amp; audits</div></div>
+      <div class="cell"><div class="w">W6</div><div class="label">Deploy &amp; hardening</div></div>
+      <div class="cell"><div class="w">W7</div><div class="label">Playtesting</div></div>
+      <div class="cell"><div class="w">W8</div><div class="label">Report &amp; defence</div></div>
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background: linear-gradient(180deg, rgba(58,255,181,0.5), transparent); border: 1px solid rgba(58,255,181,0.4);"></span> Done</span>
+      <span><span class="swatch" style="background: var(--amber);"></span> Current</span>
+      <span><span class="swatch" style="background: var(--bg); border: 1px solid var(--line);"></span> Upcoming</span>
+    </div>
+  </section>
+
+  <article id="content"></article>
+</main>
+
+<footer class="footer">
+  <div>Team &mdash; <span class="team">Abhilash Anuku (AA)</span> &middot; <span class="team">Simranjot Kaur (SK)</span> &middot; <span class="team">Jithendra Chittomothu (JC)</span></div>
+  <div class="src">Rendered from <code>PLANS.md</code></div>
+</footer>
+
+<script type="text/markdown" id="md-src">
+# Plans
+
+> Our plan for BomberMen-X. We are in **Week 7 of 8** and currently **building the prototype**.
+
+## Programme shape
+
+The programme is 8 weeks. The build window inside it is 6 weeks (W2 to W7). Week 1 was analysis and planning; Week 8 is reserved for defence preparation and the final write-up.
+
+| Week | Focus |
+|---|---|
+| 1 | Analysis, planning, project poster, repo scaffolding |
+| 2 to 3 | Multi-module Maven layout, Docker stack, CI skeleton |
+| 4 to 5 | Deterministic 60 Hz core; Netty WebSocket server; wire protocol |
+| 6 | JavaFX client + mandala HUD; bot AI; pickups |
+| **7 (now)** | **Prototype hardening; deliverables pack; tests; security scan** |
+| 8 | Defence preparation, final report, presentation |
+
+## Team
+
+Three architects, each carrying a lane. All three sign off on every cross-module change.
+
+- **Abhilash Anuku (AA)** -- delivery, planning, architecture spec.
+- **Simranjot Kaur (SK)** -- UI / UX, gameplay engine.
+- **Jithendra Chittomothu (JC)** -- networking, deployment.
+
+## Scope at Week 7
+
+**In the prototype:** deterministic 60 Hz simulation, Netty WebSocket server, JavaFX desktop client with the mandala renderer, gamepad support, bot AI with 3 personality profiles, FFA + KING_OF_GRID + LEVELS + TEAMS game modes, 6 power-ups (EXTRA_BOMB, BOMB_POWER, SPEED, KICK, THROW, SHIELD), age gate, profanity filter, CI on GitHub Actions, Docker images, Cloud Run deploy workflow.
+
+**Deferred:** Android Unity client; Kryo binary wire format (JSON for now); persistent ranking math (real-time data only); spectator mode polish; replay viewer UI (the deterministic seed-plus-inputs guarantee is in place; no UI consumes it yet).
+
+## Rituals
+
+- 15-minute morning standup; three questions; no shared screens.
+- Async decision log in the repository -- every architectural call landed there before the code.
+- Single GitHub Projects board; every issue has an owner, a module label, and a week label.
+- Docker Compose stack stays up on every architect laptop.
+
+## Next (Week 7 to Week 8)
+
+- Close the remaining bugs found in playtests.
+- Finalise the six defence-pack documents (linked from the portal).
+- Rehearse the defence against the requirements-traceability matrix (FR-01 to FR-86).
+- Write up the final report.
+
+</script>
+<script src="../assets/md-render.js"></script>
+<script>
+  document.getElementById('content').innerHTML =
+    window.renderMarkdown(document.getElementById('md-src').textContent);
+</script>
+</body>
+</html>

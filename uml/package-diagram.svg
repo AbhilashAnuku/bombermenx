@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="pkgTitle pkgDesc">
   <title id="pkgTitle">UML package diagram</title>
-  <desc id="pkgDesc">bomb-client (left) and bomb-server (right) both depend on bomb-core (centre). bomb-core contains shared packages including .sim, .entity, .world, .geom, .input, .net, and .net.dto. The two outer modules do not depend on each other.</desc>
+  <desc id="pkgDesc">bomberman-client (left) and bomberman-server (right) both depend on bomberman-core (centre). bomberman-core contains shared packages including .sim, .entity, .world, .geom, .input, .net, and .net.dto. The two outer modules do not depend on each other.</desc>
 
   <defs>
     <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto">
@@ -26,13 +26,13 @@
   <rect width="1200" height="800" fill="url(#grid)"/>
 
   <text x="600" y="36" class="lbl ttl" text-anchor="middle">UML — Package and Module Layering</text>
-  <text x="600" y="58" class="lbl sub" text-anchor="middle">bomb-client and bomb-server both depend on bomb-core; they never depend on each other.</text>
+  <text x="600" y="58" class="lbl sub" text-anchor="middle">bomberman-client and bomberman-server both depend on bomberman-core; they never depend on each other.</text>
 
-  <!-- Module: bomb-client -->
+  <!-- Module: bomberman-client -->
   <g>
     <!-- folder tab -->
     <path d="M 40 100 L 200 100 L 220 120 L 320 120 L 320 680 L 40 680 z" fill="#0c0f17" stroke="#3affb5" stroke-width="2"/>
-    <text x="60" y="146" class="lbl modTtl" fill="#3affb5">bomb-client</text>
+    <text x="60" y="146" class="lbl modTtl" fill="#3affb5">bomberman-client</text>
     <text x="60" y="166" class="lbl sub">JavaFX desktop client module</text>
 
     <g>
@@ -43,7 +43,7 @@
     <g>
       <rect x="60" y="262" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
       <text x="74" y="282" class="lbl pkgTtl" fill="#3affb5">.ui</text>
-      <text x="74" y="304" class="member">SceneRouter, TronTheme, *View</text>
+      <text x="74" y="304" class="member">SceneRouter, MandalaTheme, *View</text>
     </g>
     <g>
       <rect x="60" y="334" width="240" height="60" rx="4" fill="#11141c" stroke="#3affb5"/>
@@ -72,10 +72,10 @@
     </g>
   </g>
 
-  <!-- Module: bomb-core (centre) -->
+  <!-- Module: bomberman-core (centre) -->
   <g>
     <path d="M 400 100 L 600 100 L 620 120 L 800 120 L 800 720 L 400 720 z" fill="#0c0f17" stroke="#3aedff" stroke-width="2.5"/>
-    <text x="420" y="146" class="lbl modTtl" fill="#3aedff">bomb-core</text>
+    <text x="420" y="146" class="lbl modTtl" fill="#3aedff">bomberman-core</text>
     <text x="420" y="166" class="lbl sub">Shared library: protocol + simulation</text>
 
     <g>
@@ -120,10 +120,10 @@
     </g>
   </g>
 
-  <!-- Module: bomb-server (right) -->
+  <!-- Module: bomberman-server (right) -->
   <g>
     <path d="M 880 100 L 1040 100 L 1060 120 L 1160 120 L 1160 720 L 880 720 z" fill="#0c0f17" stroke="#ff3ad9" stroke-width="2"/>
-    <text x="900" y="146" class="lbl modTtl" fill="#ff3ad9">bomb-server</text>
+    <text x="900" y="146" class="lbl modTtl" fill="#ff3ad9">bomberman-server</text>
     <text x="900" y="166" class="lbl sub">Headless Java server</text>
 
     <g>
@@ -192,6 +192,6 @@
   <g>
     <rect x="40" y="730" width="1120" height="48" rx="6" fill="#0c0f17" stroke="#1f2533"/>
     <text x="60" y="752" class="lbl pkgTtl" fill="#3aedff">Layering rule</text>
-    <text x="60" y="770" class="member">bomb-client and bomb-server do not depend on each other. Both link bomb-core. The wire protocol is therefore symmetric and single-sourced.</text>
+    <text x="60" y="770" class="member">bomberman-client and bomberman-server do not depend on each other. Both link bomberman-core. The wire protocol is therefore symmetric and single-sourced.</text>
   </g>
 </svg>

@@ -1,0 +1,1176 @@
+# Code Walk-through
+
+> One consolidated tour of the codebase. Read this together with the defense pack listed on the portal.
+
+
+
+---
+
+## Codebase map
+
+## Codebase Overview — Read This First
+
+This is the entry point for anyone reading the Bomber Man X source for the first time. The codebase is small enough to fit in a single afternoon of reading, but the order matters. Read in the sequence below and the rest of the project will explain itself.
+
+## Three-module layout
+
+Bomber Man X is a Maven multi-module project. There are three modules and one parent. Sizes are approximate and refer to source files, not lines.
+
+- `bomberman-core` — approximately 30 source files. Pure Java 17, no I/O, no frameworks. Holds the deterministic simulation, the game configuration constants, the wire-message type registry, and the data types shared between server and client. Nothing in this module touches the network, the disk, or the screen. It is the only module with a hard "no dependencies outside the JDK" rule.
+- `bomberman-server` — approximately 20 source files. Java 17, Netty, WebSockets, Postgres via JDBC, Redis via Lettuce. Boots from `BombServerApplication`, accepts WebSocket connections through `WebSocketServer`, hands them to `MatchManager`, and runs each match inside a `MatchSession`. This is the authoritative tick loop at 60 Hz.
+- `bomberman-client` — approximately 20 source files. JavaFX 21, JInput for gamepad, a small custom particle pipeline, and the mandala-styled HUD. Boots from `ClientLauncher`, navigates scenes through `SceneRouter`, and renders the arena through `ArenaRenderer`. The age gate sits between launch and the first network connection.
+
+## Top-level project structure
+
+```
+Bomber Man X/
+├── pom.xml                 # Parent POM. Pins Java 17 (and JavaFX 21 in the client module).
+├── docker-compose.yml      # Dev stack: server, Postgres, Redis.
+├── .github/workflows/      # ci.yml, release.yml, deploy-cloudrun.yml, nightly.yml, codeql.yml.
+├── src/bomberman-core/              # Deterministic simulation, GameConfig, MessageType, shared types.
+│   └── src/main/java/.../sim/GameWorld.java
+├── src/bomberman-server/            # Netty + WebSocket server, match lifecycle, persistence.
+│   └── src/main/java/.../BombServerApplication.java
+├── src/bomberman-client/            # JavaFX desktop client, HUD, gamepad, age gate.
+│   └── src/main/java/.../ClientLauncher.java
+├── loadtest.py             # 256-bot soak harness used by the nightly workflow.
+├── share-link              # Script that produces a one-line invite for the web client.
+└── deliverables/
+    ├── plans/              # descriptive-plan.md, prescriptive-plan.md, sprint-plan.md
+    ├── code-explanation/   # overview.md (this file), bomberman-client.md, and per-module walks
+    ├── presentation/       # Poster, demo deck, war-room dashboard assets
+    ├── diagrams/           # Architecture and sequence diagrams
+    ├── uml/                # Class and component UML
+    ├── audits/             # CodeQL exports, dependency reports
+    ├── coordination/       # Decision log, meeting notes
+    └── report/             # The capstone report bundle
+```
+
+## Reading order
+
+The single best path through the source, for someone who has never opened it before, is the path below. It is not a tour of every file — it is the smallest set of reads that produces a working mental model.
+
+1. `bomberman-core` — `GameConfig`. Read this first. It is the constants table for the entire project. Grid size, tick rate, bomb timer, blast radius defaults, pickup spawn weights, match length, player count. Every other file references something from here. Twenty minutes of reading saves an hour later.
+2. `bomberman-core` — `MessageType`. The enum that pins the wire protocol. Every WebSocket frame is one of these. If you know the values in this enum, you know the surface area between server and client.
+3. `src/bomberman-core/sim/GameWorld`. The deterministic tick loop. Takes a seed and a stream of player inputs and produces a stream of world states. No randomness outside the seed. No I/O. This is where the "replay from seed plus inputs" guarantee lives. If you change anything in this file, run the replay test before you commit.
+4. `src/bomberman-server/BombServerApplication`. The `main` method of the server. Wires the Netty bootstrap, the Postgres connection pool, and the Redis client. Short file. Read it for the lifecycle.
+5. `src/bomberman-server/WebSocketServer`. The connection accept loop. Decodes incoming frames into `MessageType` instances and hands them upstream.
+6. `src/bomberman-server/MatchManager`. The router. Decides which `MatchSession` an incoming player belongs to. Spins up new sessions when needed. Tears down idle ones.
+7. `src/bomberman-server/MatchSession`. The per-match container. Owns one `GameWorld`, one input queue, and one outbound broadcast channel. The 60 Hz tick runs here.
+8. `src/bomberman-client/ClientLauncher`. The `main` method of the client. Boots JavaFX, instantiates `SceneRouter`, gates entry behind the age gate.
+9. `src/bomberman-client/SceneRouter`. The scene state machine. Menu, lobby, arena, post-match. Holds the active WebSocket connection.
+10. `src/bomberman-client/ArenaRenderer`. The 60 FPS render loop. Reads world state from the network, draws the grid, the players, the bombs, the particles, the scanlines, and the HUD.
+
+That is the full path. Ten files. Read in that order, the rest of the codebase is annotations on this skeleton.
+
+## Companion documents
+
+- [`bomberman-client.md`](./bomberman-client.md) — deeper walk of the JavaFX client: scene routing, age gate, HUD layers, gamepad mapping, particle pipeline.
+- `bomberman-core.md` — deeper walk of the deterministic simulation, the `MessageType` enum, the `GameConfig` constants, and the replay guarantee.
+- `bomberman-server.md` — deeper walk of the Netty bootstrap, match lifecycle, persistence path, and the rate-limiting layer.
+- `wire-protocol.md` — the message-by-message reference for the WebSocket frames.
+- `deploy.md` — the Cloud Run deployment notes that accompany `deploy-cloudrun.yml`.
+
+If a companion document is not yet present, the overview above is the canonical reference until it lands.
+
+## Common questions
+
+**Where does a match start?** A client opens a WebSocket to the server. `WebSocketServer` accepts the connection. `MatchManager` either places the player in an existing `MatchSession` or creates a new one. Once enough players are seated, `MatchSession` constructs a `GameWorld` with a fresh seed and starts the 60 Hz tick.
+
+**Where does a bomb explode?** Inside `GameWorld`, on the tick where the bomb's fuse expires. The explosion mutates the world state, schedules chained bombs, and emits events that the server broadcasts to every client in the match. No client-side authority on this — the server is the source of truth.
+
+**How is the simulation deterministic?** `GameWorld` takes a seed at construction and threads it through every randomness call. Given the same seed and the same ordered input log, the same world states come out. This is the property the (planned) replay viewer leans on.
+
+**Where does the age gate live?** In `src/bomberman-client/ClientLauncher` before `SceneRouter` is constructed. The gate refuses to advance until a date-of-birth check passes. There is no server-side enforcement today — see the prescriptive plan for the COPPA and Play Console follow-ups.
+
+**Where does Postgres get used?** Inside `bomberman-server`, for the (currently stubbed) leaderboard reads and for the audit log on match completion. The connection pool is configured in `BombServerApplication`.
+
+**Where does Redis get used?** Inside `bomberman-server`, for the match-discovery cache and for rate-limiting on new-connection floods. Lettuce is the client.
+
+**Why JSON on the wire?** Debuggability. The decision log records that a binary protocol (Kryo) is on the roadmap once `MessageType` has been stable for two weeks.
+
+**Where do I run the tests?** `mvn verify` at the repository root runs everything. Inside a single module, `mvn -pl bomberman-core verify`.
+
+**Where is the deployment configured?** `.github/workflows/deploy-cloudrun.yml`. The release-signing trust chain is in `release.yml`. The nightly soak is in `nightly.yml`. The CodeQL scan is in `codeql.yml`.
+
+**What runs in Docker locally?** `docker compose up` starts the server, Postgres, and Redis. The JavaFX client runs on the host, not in a container.
+
+**Who do I ask?** The three architects: AA, SK, JC. Cross-module changes need approval from all three. Single-module changes need one.
+
+
+
+---
+
+## bomberman-core
+
+## bomberman-core: a walk through the module
+
+Author: Jithendra Chittomothu (JC), Gameplay Director, BomberMen-X
+Audience: anyone new to the codebase who needs to know where a rule lives before they touch it.
+
+I keep saying this in stand-ups: bomberman-core is the only piece of BomberMen-X that the server, the headless tests, and the desktop client all agree on. If a rule is not in bomberman-core, it does not exist. The renderer can draw a particle wherever it likes, but the truth of the match -- who is alive on tick 1734, who owns the King node, which tile just turned into a SOLID because Sudden Death is closing in -- lives here, in plain Java, with no Swing, no Netty, no Gradle plugin magic. This document walks the module package by package the way I would walk a new teammate through it on a whiteboard.
+
+## Package layout
+
+Top of the tree is `com.bombermenx.core`. Underneath:
+
+- `com.bombermenx.core` -- `GameConfig` lives here at the root. It is the only place tick rate, arena size, player cap, default fuse, default power, default speed, default density, and default token drop chance are defined. Anywhere else in the codebase that hard-codes one of those numbers is a bug.
+- `com.bombermenx.core.geom` -- `Direction`, `TilePos`.
+- `com.bombermenx.core.world` -- `Arena`, `Tile`, `TileType`, `PowerUpType`, `ArenaTheme`, `Bonus` (+ `FlameBonus`, `SpeedBonus`, `KickBonus`, `LifeBonus`, `ArmorBonus`, `ExtraBombBonus`, `ThrowBonus`).
+- `com.bombermenx.core.entity` -- `Player`, `Bomberman`, `Bomb`, `Explosion`, `PowerUpItem`, `Score`.
+- `com.bombermenx.core.input` -- `PlayerInput`.
+- `com.bombermenx.core.sim` -- `GameWorld`, `GameMode`, `GameState`, `Snapshotter`.
+- `com.bombermenx.core.net` -- `Envelope`, `MessageType`, `WireCodec`.
+- `com.bombermenx.core.net.dto` -- every wire payload type.
+
+The dependency direction is strict: `sim` depends on `entity`, `world`, `geom`, `input`, `core`. `net` depends on `sim`, `entity`, `world`, `geom`. Nothing in `entity`/`world`/`geom` ever imports `net` or `sim`. That rule is what lets me run 10,000 deterministic ticks in a JUnit test without spinning up a server.
+
+## Geometry
+
+`Direction` is the smallest enum in the codebase but it shows up everywhere:
+
+```java
+public enum Direction {
+    NONE(0, 0), UP(0, -1), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
+    public final int dx, dy;
+    Direction(int dx, int dy) { this.dx = dx; this.dy = dy; }
+}
+```
+
+`UP` is `dy = -1` because the arena's origin is top-left; row 0 is the top wall. The renderer is allowed to flip its Y axis if it wants; the simulation does not care.
+
+`TilePos` is a value type holding `int x, int y`. It is written record-style with `equals`/`hashCode` based on both fields, because we use it as a map key during explosion ray computation and during pickup collection. Constructing one allocates -- which is why hot paths inside `GameWorld.tickBombs` read `bomb.x`/`bomb.y` directly and only build a `TilePos` when reporting an event.
+
+## World
+
+`Arena` is a 2D `TileType[][]` plus a list of spawn `TilePos` (one per corner, up to 8 for the big map) and a `PowerUpType[][]` overlay for visible pickup items. The arena does not know what time it is; it is pure state.
+
+`new Arena(int width, int height)` sizes the grid; `Arena.generate(long seed, float destructibleDensity[, int playerCount])` fills it. It is fully deterministic: same `(width, height, seed, density)` produces byte-identical layouts. The themed density is computed by the caller as `DEFAULT_DESTRUCTIBLE_DENSITY * theme.densityMul`. The algorithm:
+
+1. Fill the perimeter with `SOLID`.
+2. Lay the classic Bomberman grid: every cell where `x % 2 == 0 && y % 2 == 0` (interior) becomes `SOLID`. Those are the indestructible pillars.
+3. Walk every remaining `FLOOR` cell. If it is within 2 Chebyshev steps of a spawn corner, leave it as `FLOOR` so nobody dies on tick 1. Otherwise, roll the seeded RNG: if `rng.nextFloat() < density`, place a `DESTRUCTIBLE`.
+4. `density = GameConfig.DEFAULT_DESTRUCTIBLE_DENSITY * theme.densityMul`.
+
+`Arena.suddenDeathStep(int stepIndex)` returns the next `TilePos` on the inward spiral. The spiral starts at `(1, 1)` and walks right across the top, down the right edge, left across the bottom, up the left edge, then steps inward by one and repeats. I keep a small table of `(dx, dy, runLength)` legs and a counter so `stepIndex N` is computable in O(N) without storing the whole path. We could memoize but Sudden Death only fires every 30 ticks; the cost is invisible.
+
+`ArenaTheme` is an enum with three multipliers:
+
+```java
+public enum ArenaTheme {
+    NEON_GRID   (0.40f, 1.00f, 1.00f),
+    INFERNO     (0.55f, 0.75f, 1.30f),
+    CRYO_VAULT  (0.28f, 1.30f, 1.00f),
+    JUNGLE_GRID (0.62f, 1.00f, 1.00f),
+    REACTOR_CORE(0.32f, 0.70f, 1.10f),
+    VOID_MAZE   (0.42f, 1.20f, 0.85f);
+
+    public final float densityMul, fuseMul, powerMul;
+    ArenaTheme(float densityMul, float fuseMul, float powerMul) {
+        this.densityMul = densityMul; this.fuseMul = fuseMul; this.powerMul = powerMul;
+    }
+}
+```
+
+INFERNO trades open space for denser walls and snappier, bigger bombs. CRYO_VAULT is the opposite -- sparse, longer fuses, normal rays for open-arena duels. REACTOR_CORE is the showstopper: 70 % fuse means ~1.75 s instead of 2.5 s, which is why I tell SK to lock that theme behind the "Veteran" lobby filter.
+
+`TileType` has three values: `FLOOR`, `SOLID`, `DESTRUCTIBLE`. `blocksExplosion()` returns `true` for `SOLID` and `DESTRUCTIBLE`. Explosion rays use that one method; they do not branch per type.
+
+`PowerUpType` is the canonical list: `EXTRA_BOMB`, `BOMB_POWER`, `SPEED`, `KICK`, `THROW`, `SHIELD`. The super-ability token economy is rolled separately (see "two-roll pickup drop" in the simulation doc).
+
+## Entities
+
+`Player` is the account/identity entity. It carries `id`, `name`, `team`, `boolean alive`, super-ability token/cooldown state (`tokens`, `abilityXCooldownTicks`, `abilityYCooldownTicks`), and -- critically -- it *owns* exactly one `Bomberman` (`getBomberman()`) and one `Score` (`getScoreEntity()`). The in-arena pawn state lives on `Bomberman`: `TilePos pos`, `Direction facing`, `maxBombs`, `activeBombs`, `bombRange`, `speed`, `lives`, `canKick`, `canThrow`, `shielded`, `stepCooldownTicks`. `Player` keeps stable getters (`getPos`, `getBombPower`, `canKick`, ...) that delegate to the owned Bomberman/Score. `applyPowerUp(PowerUpType)` is a `switch` -- EXTRA_BOMB bumps max bombs, BOMB_POWER bumps range, SPEED raises speed, KICK/THROW/SHIELD flip the matching ability flag on the Bomberman. No event bus, no listeners; the simulation writes the field, the snapshotter reads it on the same tick.
+
+`Bomb` holds the owner, tile position, `int fuseTicks`, `int power`, and detonation state. The fuse is set at place-time from `theme.fuseMul * GameConfig.DEFAULT_BOMB_FUSE_TICKS` and stored as an int -- no floats inside the tick loop.
+
+`Explosion` is `List<TilePos> tiles` plus `int ttl` (counted in ticks, initialized to `DEFAULT_EXPLOSION_LIFETIME_TICKS = 36`). We never lengthen an explosion; we let the renderer fade it on its own timer.
+
+`PowerUpItem` is `(TilePos pos, PowerUpType type)`. The world stores them in a `Map<TilePos, PowerUpItem>` for O(1) pickup lookup.
+
+## Input
+
+`PlayerInput` is the structure the netcode rebuilds on the server from the latest `INPUT` envelope, or that the AI bot writes directly:
+
+```java
+public final class PlayerInput {
+    private Direction movement = Direction.NONE;
+    private boolean placeBomb = false;
+    private boolean detonateRemote = false;   // one-shot, cleared by clearOneShots()
+    private long sequence = 0L;
+    private long clientTickMs = 0L;
+    // ... getters/setters + clearOneShots()
+}
+```
+
+`movement` is the desired step direction. `placeBomb` and `detonateRemote` are one-shot -- the server checks them on the tick the input arrived and `clearOneShots()` resets them so a replayed input does not repeat-place. Abilities arrive on the separate `ABILITY` path so we can rate-limit them cheaply.
+
+## Simulation
+
+`GameWorld` is the heart. It owns `Arena arena`, `List<Player> players`, `List<Bomb> bombs`, `List<Explosion> explosions`, `Map<TilePos,PowerUpItem> pickups`, `GameMode mode`, `GameState state`, `int currentTick`, `long seed`, and an internal `java.util.Random rng` seeded from `seed`. The RNG is used for power-up roll order and the King teleport pick -- deterministic.
+
+`GameWorld.tick(Map<Integer,PlayerInput> inputs)` runs the seven steps in this exact order:
+
+1. **applyPlayerInputs** -- per player, decrement `stepCooldownTicks`. If the player has a desired `move != NONE` and the cooldown reached zero and the destination tile is walkable and not occupied by a non-kickable bomb, move them one tile and reset `stepCooldownTicks = max(4, round(TICK_HZ / max(1, moveSpeed)))`. Set `facing` from `move` (or keep last facing if `NONE`). If `placeBomb` and `activeBombs < maxBombs` and no bomb is already on that tile, add a bomb.
+2. **tickAbilityCooldowns** -- for every player, decrement `nukeCooldownTicks` and `dashCooldownTicks` to zero. This runs unconditionally so the cooldown clock advances even on the tick the player presses the button.
+3. **tickBombs** -- decrement each bomb's `fuseTicks`. A bomb with `fuseTicks <= 0` is marked primed. Then run a chain-reaction sweep: any bomb whose tile lies inside the (computed-but-not-yet-applied) ray of a primed bomb is also primed; loop until no new primings happen. Then, for each primed bomb in order, compute its four rays (stopping at `blocksExplosion()` tiles, breaking the first `DESTRUCTIBLE` it hits unless `pierce`), kill players on those tiles unless `hasShield` (consumed) or unless friendly-fire is OFF for the same non-negative team in `TEAMS`, and emit an `Explosion` with `ttl = 36`.
+4. **tickExplosions** -- decrement `ttl`, drop entries at zero.
+5. **collectPickups** -- for every alive player, if `pickups.containsKey(player.pos)`, call `player.applyPowerUp(item.type)` and remove the pickup.
+6. **advanceSuddenDeath** -- only in the `SUDDEN_DEATH` state and only when the phase tick hits the 30-tick cadence. Take the next spiral cell (`arena.suddenDeathStep`), set it to `SOLID`, kill any player standing there.
+7. **tickKingOfGrid** -- only in `KING_OF_GRID`. If 20 s have passed since the last placement, teleport the node to a random walkable cell; otherwise, find the player on the node tile (if any) and, every 60 ticks, `controlPoints++`.
+
+After step 7: `currentTick++`, then check end-of-match (last player standing in DM/TEAMS, `controlPoints >= 30` in KOG, or `currentTick` past the configured cap).
+
+`Snapshotter.snapshot(GameWorld)` builds a `WorldSnapshot` DTO -- one `PlayerSnapshot` per player, one `BombSnapshot` per bomb, one `ExplosionSnapshot` per active explosion, one `PickupSnapshot` per pickup, plus `currentTick`, `state`, and the arena tile diff since the last keyframe. We send keyframes every 30 ticks and diffs in between.
+
+## Networking subpackage
+
+`Envelope` is the wrapper for every wire message: `MessageType type`, `long seq`, `long ts` (sender wall-clock ms at send time), `Object payload`. The payload is loosely typed; callers re-decode it into the concrete record for the `type` via `WireCodec.decodePayload`.
+
+`MessageType` is the enum: `HELLO, AUTH, JOIN_LOBBY, LEAVE_LOBBY, READY, INPUT, ABILITY, CHAT, VOICE_FRAME, PING, WELCOME, AUTH_RESULT, LOBBY_STATE, MATCH_START, SNAPSHOT, EVENT, KILL_FEED, HAPTIC, MATCH_END, PONG, ERROR, LOBBY_HELLO, LOBBY_MOVE, LOBBY_BUY, LOBBY_EQUIP, LOBBY_WELCOME, LOBBY_SNAPSHOT, LOBBY_ERROR`.
+
+`WireCodec` is the Jackson (JSON) layer -- a single shared `ObjectMapper` plus static `encode(Envelope)`/`decode(String)`:
+
+```java
+private static final ObjectMapper MAPPER = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+```
+
+`FAIL_ON_UNKNOWN_PROPERTIES` is off on purpose: it means I can add a field to `KillFeedEntry` server-side and old clients ignore it instead of dropping the connection. Jackson is fine for lobby chatter and the once-a-second control messages. For the per-tick `SNAPSHOT` path we will swap to Kryo when the in-match codec branch lands -- the envelope shape stays, only the payload bytes change.
+
+The DTO catalogue under `com.bombermenx.core.net.dto`:
+
+- Handshake: `Hello`, `Welcome`, `AuthRequest`, `AuthResult`.
+- Lobby: `LobbyHello`, `LobbyWelcome`, `LobbyMove`, `LobbyBuy`, `LobbyEquip`, `LobbyPlayerEntry`, `LobbySnapshot`, `LobbyError`, `LobbyState`.
+- Match flow: `MatchStart`, `MatchEnd`.
+- In-match state: `InputFrame`, `AbilityRequest`, `WorldSnapshot`, `PlayerSnapshot`, `BombSnapshot`, `ExplosionSnapshot`, `PickupSnapshot`.
+- Feedback: `GameEvent`, `KillFeedEntry`, `HapticCue`, `ChatMessage`, `VoiceFrame`.
+
+Every DTO is written record-style with public final fields, no setters, no Lombok. Jackson handles them through `@JsonCreator` plus matching constructor parameters.
+
+## How to add a new game rule
+
+Say SK wants a "Bounce Bomb" power-up that makes thrown bombs travel an extra tile. The path is the same every time:
+
+1. Add `BOUNCE_BOMB` to `PowerUpType`.
+2. Add an `int extraBounceTiles` field on `Player`, default 0, with an `applyPowerUp` branch that increments it.
+3. Add `extraBounceTiles` to `PlayerSnapshot` so the renderer can show the badge.
+4. If the rule affects the simulation -- in this case, kicked-bomb travel inside `tickBombs` -- modify that step and only that step. Do not sprinkle the new behavior across three packages.
+5. Add a test in `GameWorldTest` that sets up a player with `extraBounceTiles = 1`, kicks a bomb, and asserts the bomb ends up one tile further than the baseline. Same seed, same inputs, exact tile equality.
+6. Add a token cost or drop weight in `GameConfig`. Never inline a magic number in `GameWorld`.
+
+If a rule cannot be expressed by editing one of those seven tick steps, it does not belong in the simulation -- it belongs in the renderer or in a lobby toggle. That single discipline is what keeps bomberman-core small enough to read in one sitting.
+
+
+
+---
+
+## bomberman-server
+
+﻿# bomberman-server module — code walkthrough
+
+Author: Abhilash Anuku (AA), Architect, Delivery Lead
+
+This is a top-to-bottom walk of the authoritative game server. Every file path below is absolute. The module's purpose is single: own the truth of the game world and the lobby, accept WebSocket connections, and broadcast snapshots at 60 Hz.
+
+## Module entry points
+
+- Maven module: `F:\Bomber Man X\BomberMan-X\src\bomberman-server`
+- Bootstrap class: `F:\Bomber Man X\BomberMan-X\src\bomberman-server\src\main\java\com\bombermenx\server\BombServerApplication.java`
+- Default port: 8080 (configurable via `BX_PORT`)
+- WebSocket path: `/ws` (configurable via `BX_WS_PATH`)
+
+## 1. Bootstrap — `BombServerApplication`
+
+`main()` reads `ServerConfig.fromEnv()` and then builds the dependency graph in a fixed order: `MatchManager`, `ProfanityFilter`, `SessionRegistry`, `ChatRouter`, `AuthRegistry` (with `DevAuthProvider` and `GoogleAuthProvider`), `LobbyService`, and finally `WebSocketServer`. A shutdown hook drains the WS server, the lobby tick, and the matchmaker.
+
+```java
+MatchManager matchManager = new MatchManager(cfg);
+matchManager.start();
+
+ProfanityFilter profanity = new ProfanityFilter();
+SessionRegistry sessions = new SessionRegistry();
+ChatRouter chatRouter = new ChatRouter(sessions, profanity);
+
+AuthRegistry auth = new AuthRegistry();
+auth.register(new DevAuthProvider());
+auth.register(new GoogleAuthProvider(System.getenv().getOrDefault("GOOGLE_CLIENT_ID", "")));
+
+LobbyService lobby = new LobbyService(new CosmeticsCatalog(), profanity);
+lobby.start();
+```
+
+Key design choice: every collaborator is constructor-injected. There is no static state, no service locator, no Spring. This keeps the unit-test boundary tight and the startup cost minimal — important for Cloud Run cold start.
+
+## 2. Netty pipeline — `WebSocketServer`
+
+`WebSocketServer.start()` builds a `ServerBootstrap` with one boss event loop and a default-sized worker event loop. Each accepted connection gets this pipeline:
+
+```java
+ch.pipeline()
+    .addLast(new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS))
+    .addLast(new HttpServerCodec())
+    .addLast(new HttpObjectAggregator(64 * 1024))
+    .addLast(new MetricsHandler(sessions, matchManager))
+    .addLast(new WebSocketServerCompressionHandler())
+    .addLast(new WebSocketServerProtocolHandler(
+            cfg.websocketPath(), null, true,
+            128 * 1024, false, true))
+    .addLast(new GameServerHandler(sessions, matchManager, chatRouter, auth, profanity, lobby));
+```
+
+Notes:
+
+- The 60-second idle handler closes silent connections so we do not accumulate zombies during long beta sessions.
+- The `HttpObjectAggregator` cap is 64 KiB. This matters for the security audit — the WS frame is capped further by `WebSocketServerProtocolHandler` at 128 KiB.
+- `MetricsHandler` answers `/metrics`, `/health`, `/version`, and `/` before the WS upgrade handler. WS upgrade requests on `cfg.websocketPath()` fall through.
+- `WebSocketServerCompressionHandler` enables per-message deflate. Snapshots compress well; we measured ~4x reduction on FFA.
+
+## 3. Session model — `SessionRegistry` and `ClientSession`
+
+`SessionRegistry` is a thin `ConcurrentHashMap<String, ClientSession>` keyed by session id, with a Netty `AttributeKey<ClientSession>` so a `Channel` can find its session in O(1). The registry is the single source of truth for `/metrics`'s `connections` count.
+
+```java
+public ClientSession register(Channel ch) {
+    ClientSession s = new ClientSession(ch);
+    sessions.put(s.getSessionId(), s);
+    ch.attr(SESSION_KEY).set(s);
+    return s;
+}
+```
+
+`ClientSession` carries player id, display name, current lobby id, current match id, requested mode, requested level, and a write helper that envelope-encodes and flushes. A session can be in the matchmaking queue, in a match, in the 3D lobby, or none of the above; the lifecycle transitions are driven by the matchmaker.
+
+## 4. Matchmaking — `MatchManager`
+
+This is the busiest single file in the module. `MatchManager` runs one scheduled-executor thread (`bx-matchmaker`) at 1 Hz. Each tick computes one of three paths:
+
+- **Path A — full queue starts instantly.** If `queue.size() >= cfg.maxPlayersPerMatch()`, take the top N humans and start a match with zero bots.
+- **Path B — warmup elapsed with bot fill.** If `warmupStartedAtMs > 0` and `System.currentTimeMillis() - warmupStartedAtMs >= cfg.warmupSeconds() * 1000`, start a match with the humans we have and pad with bots. Solo human gets 3 bots (4-player arena), otherwise the cap is humans + 1 bot, never more than 8 total.
+- **Path C — countdown broadcast.** While the warmup is running, every tick broadcasts a `LOBBY_STATE` envelope with `countdownTicks` so the client can render "t-Ns" without polling.
+
+```java
+if (queue.size() >= cfg.maxPlayersPerMatch()) {
+    List<ClientSession> humans = takeFromQueue(cfg.maxPlayersPerMatch());
+    warmupStartedAtMs = 0L;
+    startMatch(humans, 0);
+} else if (warmupStartedAtMs > 0L
+        && System.currentTimeMillis() - warmupStartedAtMs >= cfg.warmupSeconds() * 1000L
+        && queue.size() >= cfg.minPlayersToStart()) {
+    // bot-fill branch
+}
+```
+
+Mode selection in `startMatch` is a plurality vote among the queued humans:
+
+```java
+Map<String, Integer> votes = new HashMap<>();
+for (ClientSession s : humans) votes.merge(s.getRequestedMode(), 1, Integer::sum);
+String winningMode = votes.entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(Map.Entry::getKey).orElse("FFA");
+```
+
+LEVELS mode adds one extra bot per level above 1, capped so humans + bots never exceeds 8. The level itself is the highest requested by any queued human.
+
+## 5. Match lifecycle — `MatchSession`
+
+A `MatchSession` owns one running match. It instantiates a fresh `GameWorld` from `bomberman-core` with a deterministic seed (`System.nanoTime()`), wires the `BotController`s for any bot players, and drives a fixed-rate scheduled executor at `cfg.tickHz()` Hz. Each tick: apply queued inputs and bot decisions, step the world, broadcast a snapshot envelope to all subscribers, and check for terminal conditions. When the match finishes, `MatchManager` reaps it during the next 1 Hz matchmaker tick.
+
+The arena dimensions and theme are deterministic per seed; the level number scales arena size in LEVELS mode through `Arena.dimensionsForLevel(totalPlayers, level)`.
+
+## 6. Chat — `ChatRouter` and `ProfanityFilter`
+
+`ChatRouter.onChat` server-stamps the player id and display name (clients can never claim a different id), redacts the text through `ProfanityFilter.redact`, drops the message if it is blank after redaction, and broadcasts in scope (`lobby`, `match`, `team`, `all`).
+
+```java
+String redacted = profanity.redact(incoming.text());
+if (redacted == null || redacted.isBlank()) return;
+
+ChatMessage stamped = new ChatMessage(
+        scope, sender.getPlayerId(), sender.getDisplayName(),
+        redacted, System.currentTimeMillis());
+Envelope env = Envelope.of(MessageType.CHAT, stamped);
+broadcastInScope(sender, scope, env);
+```
+
+`ChatRouter.onVoiceFrame` relays voice frames opaquely — the server does not decode Opus. This is a known moderation gap and is called out in the security audit.
+
+`ProfanityFilter` keeps two compiled patterns: a word-boundary pattern for chat redaction and a loose pattern for display-name sanitisation. The display-name path also enforces a 24-character cap and falls back to "Player####" if the name still matches the loose pattern.
+
+## 7. Auth — `AuthRegistry`, `DevAuthProvider`, `GoogleAuthProvider`
+
+`AuthRegistry` is a `HashMap<String, AuthProvider>` keyed by provider name. `verify()` returns an `AuthResult` carrying `ok`, `playerId`, `displayName`, `provider`, optional `email`, `isMinor`, and a `reason` string. Two providers are registered today:
+
+- `DevAuthProvider` — accepts any non-blank token, hashes it to a stable id, returns `isMinor=false`. Never registered in production.
+- `GoogleAuthProvider` — stub. Real implementation will fetch Google's signing keys, validate JWS signature, check `iss=https://accounts.google.com` and `aud=<GOOGLE_CLIENT_ID>`, and map `sub` to a stable `playerId`. The stub refuses by design so we do not accidentally trust unverified tokens.
+
+## 8. 3D persistent lobby — `LobbyService`
+
+`LobbyService` is one singleton per JVM. It runs a single-threaded executor at 10 Hz that broadcasts a `LOBBY_SNAPSHOT` to every connected lobby player. Coin grants run on the same executor at 8 s intervals: every seated player gains one coin. Cosmetic purchases (`onBuy`) check ownership, deduct coins atomically via `LobbyPlayer.trySpend`, and equip the new item on success.
+
+The single-threaded design is deliberate. Lobby occupancy is small (≤ 64 players) and the per-tick work is a snapshot copy plus broadcast — running everything on one thread eliminates the "two purchases at once" race without measurable cost.
+
+## 9. Metrics endpoint — `MetricsHandler`
+
+`MetricsHandler` answers `GET /metrics`, `GET /health`, `GET /version`, and `GET /`. It is a `SimpleChannelInboundHandler<FullHttpRequest>` whose `acceptInboundMessage` returns `true` only for those URIs; WS upgrade requests on `/ws` pass through.
+
+```java
+m.put("ts", System.currentTimeMillis());
+m.put("uptimeMs", uptimeMs());
+m.put("tickHz", matches.tickHz());
+m.put("connections", sessions.size());
+m.put("activeMatches", matches.activeMatchCount());
+m.put("queueSize", matches.queueSize());
+```
+
+The JSON is serialised via `WireCodec.mapper()` — same Jackson configuration as the wire protocol, so the poster page `presentation\poster.html` can refresh from `/metrics` every 1.5 s with no extra adapter. CORS is wide open by design because the poster may be opened over `file://`.
+
+## How to add a new MessageType server-side
+
+This is the recipe we use for every new wire message. It takes about 15 minutes end to end.
+
+1. Add the enum constant in `F:\Bomber Man X\BomberMan-X\src\bomberman-core\src\main\java\com\bombermenx\core\net\MessageType.java`. Never reorder existing constants — the values are stable.
+2. Add the DTO record under `src\bomberman-core\src\main\java\com\bombermenx\core\net\dto`. Use a Java record with constructor-validated fields. Jackson will pick it up automatically because `WireCodec.mapper()` is configured for record support.
+3. If the message is client→server, add a branch in `GameServerHandler`'s `onTextFrame` dispatch that routes the typed payload to the correct collaborator (`MatchManager`, `ChatRouter`, `LobbyService`, or `AuthRegistry`).
+4. If the message is server→client, build it via `Envelope.of(MessageType.YOUR_TYPE, payload)` and send via `ClientSession.send(env)` or `LobbyService.sendTo(...)`. Both code paths schedule the write on the channel's own event loop so Netty's pipeline ordering is preserved.
+5. Add a `WireCodecTest` case asserting round-trip encode/decode.
+6. Update the wire-protocol section of `docs/ARCHITECTURE.md`. The three-architect rule applies because adding a message type touches `bomberman-core` and at minimum `bomberman-server`.
+
+Done. The new message is on the wire, visible in `/metrics` traffic counters once we add per-type counters, and replayable through `presentation\play.html`.
+
+
+
+---
+
+## bomberman-client
+
+## bomberman-client — Code Walkthrough
+
+Author: Simranjot Kaur (SK), Architect & UI/UX Director, BomberMen-X
+Module: `bomberman-client` (JavaFX 21)
+Audience: Anyone joining the team mid-sprint who needs to read, extend, or debug the desktop client without spelunking through the whole tree.
+
+This is the desktop JavaFX client. It owns everything the player sees and hears: the menu, the lobby, the arena, the HUD, particles, camera shake, scanlines, audio, and gamepad rumble. It does **not** own game rules — those live server-side in `bomberman-server`. The client is, by design, a thin, fast, opinionated presentation layer wired around a single router.
+
+---
+
+## 1. Entry — `ClientLauncher` and the age gate
+
+The launch path is intentionally short. `ClientLauncher` extends `javafx.application.Application`. It builds the `SceneRouter`, applies the mandala theme to the scene, shows the stage, and routes to the main menu. On first launch only (when no stored answer exists) it runs the `AgeGate` consent prompt.
+
+```java
+public final class ClientLauncher extends Application {
+    @Override public void start(Stage stage) {
+        SceneRouter router = new SceneRouter(stage);
+        Scene scene = new Scene(router.getRoot(), 1280, 800);
+        MandalaTheme.apply(scene);
+        stage.setTitle("BomberMen-X — A mandala-themed Multiplayer Arena");
+        stage.setScene(scene);
+        stage.show();
+        if (AgeGate.loadStored() == null) AgeGate.prompt();
+        router.show(new MainMenuView(router));
+    }
+}
+```
+
+`AgeGate` persists the answer to `~/.bombermenx/age-class.txt`, so subsequent launches skip the prompt (`AgeGate.loadStored()` returns non-null). The age class surfaces back to the server in `HELLO` so moderation rules apply with the right strictness.
+
+---
+
+## 2. Scene routing — `SceneRouter`
+
+`SceneRouter` owns the root `StackPane` and swaps between top-level views. A view is any `SceneRouter.View` — `getRoot()` plus optional `onShown()`/`onHidden()` lifecycle hooks. Views are instantiated on demand and disposed when navigated away from; we never preload the arena before the player has entered a lobby, because the arena pulls in the renderer, particle pool, and audio buffers.
+
+```java
+public final class SceneRouter {
+    public interface View {
+        Parent getRoot();
+        default void onShown() {}
+        default void onHidden() {}
+    }
+
+    private final Stage stage;
+    private final StackPane root = new StackPane();
+    private View current;
+
+    public void show(View view) {
+        if (current != null) current.onHidden();
+        current = view;
+        root.getChildren().setAll(view.getRoot());
+        view.onShown();   // wakes GamepadPoller, haptics, audio bus, etc.
+    }
+}
+```
+
+`onShown()`/`onHidden()` are the seam where scene-show side effects live (gamepad rescan, audio focus, HUD reset) — each view manages its own. Keeping the router to a single `show(View)` call means it stays declarative.
+
+---
+
+## 3. Main menu — `MainMenuView`
+
+`MainMenuView` is a `VBox` with two text fields and three buttons:
+
+- **DISPLAY NAME** — `TextField`, 1–16 chars, validated on focus loss.
+- **SERVER URL** — `TextField`, defaults to `wss://bombermen-x.run.app/ws`, accepts `ws://` for LAN.
+- Buttons: **JOIN LOBBY**, **RANKINGS**, **QUIT**.
+
+CSS classes from `mandala.css` drive the neon look: `.mandala-field`, `.mandala-button`, `.mandala-button--primary`. Focus rings are cyan (`#3aedff`), error state flips the border to magenta (`#ff3ad9`). The DISPLAY NAME field announces its constraints via a `Label` directly below it, not just a tooltip, so keyboard-only players don't have to hover anything.
+
+---
+
+## 4. Lobby — `LobbyView`
+
+`LobbyView` subscribes to the wire message `LOBBY_STATE`, which streams the current roster and the countdown integer (seconds remaining until match start). Renders as a two-column layout: roster table on the left, mode-vote and countdown card on the right.
+
+The countdown is a `Label` styled `.mandala-countdown` with a 1.2 s glow-pulse animation defined in CSS. We deliberately drive the value from server messages — not a local timer — so reconnecting clients see the truth. If the player is idle in the lobby and a `LOBBY_STATE` shows the match has already started, we route directly into `ArenaView`.
+
+---
+
+## 5. Arena — `ArenaView` + `HudOverlay`
+
+`ArenaView` is a `StackPane` whose two layers are:
+
+1. A `Canvas` driven by `ArenaRenderer`.
+2. A `HudOverlay` (transparent `Pane`) layered on top: kill feed top-right, score bar top-left, ability icons bottom-centre.
+
+The HUD is **not** drawn on the canvas. Keeping it as real nodes means CSS, focus, and accessibility tooling continue to work, and the renderer doesn't have to know about text layout.
+
+```java
+public final class ArenaView implements SceneRouter.View {
+    private final Canvas canvas = new Canvas(1024, 720);
+    private final HudOverlay hud = new HudOverlay();
+    private final ArenaRenderer renderer = new ArenaRenderer();
+    private final AtomicReference<WorldSnapshot> latest = new AtomicReference<>();
+    private AnimationTimer renderLoop;
+
+    @Override public void onShown() {
+        renderLoop = new AnimationTimer() {
+            @Override public void handle(long now) {
+                WorldSnapshot snap = latest.get();
+                if (snap != null) renderer.render(canvas, snap, client.getPlayerId());
+            }
+        };
+        renderLoop.start();
+    }
+}
+```
+
+`ArenaView` (not the renderer) owns the `AnimationTimer`. Each frame it
+reads the latest server `WorldSnapshot` and hands it to
+`ArenaRenderer.render(canvas, snapshot, playerId)`. The renderer is
+stateless per call — there is no client-side prediction or
+interpolation; it draws exactly what the server last sent.
+
+---
+
+## 6. Renderer — `ArenaRenderer`, `ParticleSystem`, `CameraShake`, `PostFx`
+
+`ArenaRenderer` exposes a single `render(Canvas, WorldSnapshot, playerId)` method that the `ArenaView` `AnimationTimer` calls at 60 FPS. Each call draws in a fixed order: **background → arena floor/grid → tiles → pickups → bombs → explosions → players → particles → frame → post-FX**. The order matters: bombs sit on tiles, explosions sit on bombs, players sit on top so the player can always read their character.
+
+```java
+public void render(Canvas canvas, WorldSnapshot snap, String myPlayerId) {
+    GraphicsContext g = canvas.getGraphicsContext2D();
+    emitFromEvents(snap, dt);
+    particles.update(dt);
+    shake.update(dt);
+    drawBackground(g, w, h);
+    drawTiles(g, offX, offY, snap);
+    drawBombs(g, offX, offY, snap.bombs(), now);
+    drawExplosions(g, offX, offY, snap.explosions());
+    drawPlayers(g, offX, offY, snap.players(), myPlayerId, now);
+    particles.draw(g);
+    postFx.draw(g, w, h); // scanlines + vignette
+}
+```
+
+- `ParticleSystem` is a particle pool fed by sparks from bomb fuses and haloes from pickups.
+- `CameraShake` kicks an offset on explosion events and decays it over time.
+- `PostFx` overlays CRT scanlines and a vignette — small enough to read as "mandala", subtle enough to not exhaust the eye.
+
+---
+
+## 7. Audio — `AudioBus` + `SpatialAudio`
+
+`AudioBus` is the master mixer: one gain stage, ducking when the menu opens. `SpatialAudio` attenuates by 2D distance from the local player and pans left/right based on relative X. Bomb thumps are routed through a low-pass-flavoured buffer; pickup pings sit high. Defaults at first launch are intentionally conservative — 60% master — so we don't blow out players on headphones.
+
+---
+
+## 8. Input — `GamepadPoller` + `HapticsService`
+
+`GamepadPoller` wraps JInput. It is **not** polled every frame: a view starts it from `onShown()` (e.g. `ArenaView` calls `gamepad.start()`), and it samples on a dedicated daemon thread rather than inside the render loop, avoiding the JInput cold-start stutter. Buttons are mapped Xbox-style: A bombs, B menus, left stick moves. PS X maps to A.
+
+`HapticsService` drives a decaying gamepad rumble. The arena emits named cues — `ArenaView` diffs each `WorldSnapshot` against the last and calls `haptics.pulseFor(pattern)` for explosions, kills, deaths, and pickups. The pattern strings match the server's `HapticCue` DTO, so the same vocabulary works whether the cue is derived locally or arrives over the wire. It gracefully no-ops when no rumbler is present, so keyboard-only players are unaffected.
+
+```java
+public final class HapticsService implements AutoCloseable {
+    public void pulse(double magnitude, int durationMs) { /* schedule + decay */ }
+    public void pulseFor(String pattern) {
+        switch (pattern) {
+            case "explosion_close" -> pulse(0.95, 320);
+            case "death"           -> pulse(1.00, 500);
+            // bomb_place, explosion_far, kill, pickup, match_start, sudden_death ...
+        }
+    }
+}
+```
+
+---
+
+## How to add a new scene
+
+1. Create a new view class in `com.bombermenx.client.ui` implementing `SceneRouter.View` (its `getRoot()` usually returns a `VBox` / `StackPane`).
+2. Style with classes from `mandala.css`. If you need a new class, add it to `mandala.css` rather than inlining.
+3. If the scene needs gamepad input or audio focus, start it in `onShown()` and tear it down in `onHidden()` — do not poll JInput from your render code.
+4. Navigate to it from the main menu: `router.show(new SettingsView(router));`.
+
+That's the whole client in one pass. Read this file first, then open `ArenaRenderer` — that's where the visible character of the game lives.
+
+
+
+---
+
+## Wire protocol
+
+## BomberMen-X Wire Protocol Reference
+
+Author: Jithendra Chittomothu (JC), Gameplay Director, BomberMen-X
+Scope: every byte that moves between a BomberMen-X client and the match server, plus every byte that moves between a client and the lobby/store service.
+
+I get asked weekly: "What does the server actually send over the wire?" The answer fits on one page if you accept three rules. Every message is wrapped in an `Envelope`. Every envelope has a `MessageType` discriminator. The payload class is fixed by that discriminator. Below is the long version.
+
+## Transport
+
+In production the connection is `wss://` -- WebSocket over TLS, terminated at the edge by our reverse proxy. In dev I run `ws://` against `localhost:8787`. The HTTP upgrade goes through this Netty pipeline:
+
+1. `HttpServerCodec` -- raw HTTP framing.
+2. `HttpObjectAggregator(64 * 1024)` -- a 64 KiB cap on the upgrade request and on any subsequent frames the aggregator sees. This is also our hard upper bound on a single wire envelope.
+3. `MetricsHandler` -- counts bytes in/out, request rate, and tags failures (handshake, codec, idle timeout). It is the first place I look when a client cannot connect.
+4. `WebSocketServerProtocolHandler` -- mounted on `/ws/match` for match traffic, `/ws/lobby` for lobby/store traffic. The path is configurable; default is the two I just named.
+5. `EnvelopeFrameHandler` -- our code. It reads each `TextWebSocketFrame` (or `BinaryWebSocketFrame` once Kryo ships), hands the bytes to `WireCodec.decode`, and dispatches the resulting `Envelope` to the right service.
+
+After the upgrade, every WebSocket frame must be a complete envelope. We do not split envelopes across frames. If a payload is bigger than 64 KiB it is a bug -- the only candidates would be a fat `WorldSnapshot` on the biggest arena, and even there we are at most around 6 KiB JSON for a full keyframe.
+
+## Frame budget
+
+The hard limit is roughly 64 KiB per envelope, enforced by `HttpObjectAggregator`. The soft limit I actually budget against is 8 KiB for a `SNAPSHOT` and 256 B for everything else. At 60 Hz that gives ~480 KiB/s downstream from the server per client at the worst case, which fits a residential uplink with room to spare. When we switch the SNAPSHOT path to Kryo I expect a 4x to 6x reduction; the budget shrinks to match.
+
+## Encoding
+
+Today every envelope is JSON, encoded by `WireCodec` using a single Jackson `ObjectMapper`. The mapper registers `JavaTimeModule` (so `Instant` and `Duration` round-trip without surprises), disables `WRITE_DATES_AS_TIMESTAMPS` (we want ISO-8601 strings so they are eyeball-friendly in logs), and disables `FAIL_ON_UNKNOWN_PROPERTIES` (so a v1.3 server can talk to a v1.2 client without an exception). Field names are camelCase. `Instant` fields render as ISO-8601 UTC strings.
+
+The plan, already speced and partially prototyped, is to keep the JSON path for everything except `SNAPSHOT`. `SNAPSHOT` is the only message in the per-tick hot loop, so it is the only one that benefits from a binary codec. We will route `MessageType.SNAPSHOT` through a Kryo encoder behind the same `WireCodec` facade. Clients negotiate this in `Hello`/`Welcome` with a `snapshotCodec` string field (`"json"` or `"kryo"`); a client that does not advertise `"kryo"` stays on JSON.
+
+## Envelope shape
+
+```java
+public final class Envelope {
+    public MessageType type;
+    public long seq;     // monotonic per sender per connection
+    public long t;       // server tick for in-match, epoch ms otherwise
+    public Object payload; // resolved by type via WireCodec
+}
+```
+
+`seq` lets the receiver detect drops and reorderings -- the match server uses it on the client INPUT stream to discard out-of-order frames. `t` is overloaded: for `INPUT`, `SNAPSHOT`, `EVENT`, `KILL_FEED`, `MATCH_END`, `MATCH_START`, `ABILITY` it carries the server tick (a `long`, monotonically increasing from 0 at match start). For lobby and handshake messages it carries epoch milliseconds.
+
+## MessageType reference table
+
+| Name | Direction | Payload | Summary |
+|------|-----------|---------|---------|
+| HELLO | C→S | Hello | First message after WS upgrade. Carries protocol version, build id, requested snapshot codec. |
+| AUTH | C→S | AuthRequest | Bearer token (signed lobby ticket) plus optional re-auth nonce. |
+| JOIN_LOBBY | C→S | LobbyHello | Client requests a lobby slot for a given mode/map. |
+| LEAVE_LOBBY | C→S | (empty) | Client leaves the lobby it last joined. |
+| READY | C→S | (empty) | Client signals it is ready for match start. |
+| INPUT | C→S | InputFrame | Per-tick movement + bomb intent. Sent at 60 Hz. |
+| ABILITY | C→S | AbilityRequest | One-shot NUKE or DASH trigger with target facing. |
+| CHAT | C↔S | ChatMessage | Lobby/match text chat. Server fans out. |
+| VOICE_FRAME | C↔S | VoiceFrame | Opus packet plus speaker id. Server fans out, never decodes. |
+| PING | C→S | (empty payload, `t` is client send time ms) | RTT probe. |
+| WELCOME | S→C | Welcome | Server acks HELLO. Carries assigned client id, server build, snapshotCodec actually in use. |
+| AUTH_RESULT | S→C | AuthResult | Token verification verdict. |
+| LOBBY_STATE | S→C | LobbyState | Pre-match lobby roster, ready flags, selected map. |
+| MATCH_START | S→C | MatchStart | Tick 0 begins. Carries seed, arena dimensions, theme, mode, player slot table. |
+| SNAPSHOT | S→C | WorldSnapshot | Full or diff snapshot at server tick `t`. |
+| EVENT | S→C | GameEvent | One-off gameplay events (bomb placed, explosion started, pickup collected). |
+| KILL_FEED | S→C | KillFeedEntry | A kill happened -- shows up in the corner UI. |
+| HAPTIC | S→C | HapticCue | Rumble/light cue for a specific client. |
+| MATCH_END | S→C | MatchEnd | Winner(s), final scores, MMR delta, tokens awarded. |
+| PONG | S→C | (empty payload, `t` echoes the client's send time) | Reply to PING. |
+| ERROR | S→C | (string payload) | Soft protocol error; connection stays open. |
+| LOBBY_HELLO | C→S | LobbyHello | Same shape as JOIN_LOBBY but for the lobby-only socket. |
+| LOBBY_MOVE | C→S | LobbyMove | Move the avatar around the lobby room. |
+| LOBBY_BUY | C→S | LobbyBuy | Purchase a cosmetic or token bundle. |
+| LOBBY_EQUIP | C→S | LobbyEquip | Equip an owned cosmetic. |
+| LOBBY_WELCOME | S→C | LobbyWelcome | Lobby socket welcome with player id and balance. |
+| LOBBY_SNAPSHOT | S→C | LobbySnapshot | Lobby room state -- positions, presence, listings. |
+| LOBBY_ERROR | S→C | LobbyError | Lobby-specific soft error with a code/message. |
+
+## Lobby family
+
+Lobby traffic goes to the lobby socket (`/ws/lobby` by default), not the match socket. The match server does not know about purchases.
+
+- `LOBBY_HELLO` { protocolVersion, buildId, clientId? } -- client opens the socket.
+- `LOBBY_WELCOME` { playerId, displayName, tokenBalance, ownedCosmeticIds } -- server replies once the auth ticket is validated.
+- `LOBBY_MOVE` { x, y, facing } -- avatar walk in the social hub. The lobby server runs a much lighter step model (no bombs, no kills).
+- `LOBBY_BUY` { sku, expectedPrice } -- buy a SKU; server rejects with `LOBBY_ERROR` if price drifted.
+- `LOBBY_EQUIP` { slot, cosmeticId } -- equip an owned item.
+- `LOBBY_SNAPSHOT` { tick, players: [LobbyPlayerEntry], featuredSkus } -- broadcast at 10 Hz to everyone in the same room.
+- `LOBBY_ERROR` { code, message } -- e.g. `INSUFFICIENT_TOKENS`, `SKU_UNAVAILABLE`, `RATE_LIMITED`.
+
+## Match family
+
+Match traffic is on `/ws/match`. The match server only ever holds one match per WebSocket.
+
+- `HELLO` { protocolVersion, buildId, snapshotCodec } -- producer: client. Trigger: connection established.
+- `AUTH` { ticket, nonce? } -- producer: client. Trigger: after `WELCOME`.
+- `JOIN_LOBBY` { mode, mapPreference } -- producer: client. Trigger: user presses "Find Match".
+- `LEAVE_LOBBY` -- producer: client. Trigger: user backs out of matchmaking.
+- `READY` -- producer: client. Trigger: lobby countdown hits "ready up".
+- `INPUT` { tick, move, placeBomb, triggerNuke, triggerDash } -- producer: client, every tick. Consumer: `GameWorld.applyPlayerInputs`. Trigger: 60 Hz local sample.
+- `ABILITY` { kind: NUKE|DASH, facing } -- producer: client. Consumer: `GameWorld.triggerAbility`. Trigger: hotkey/button press. Note: we still also set the `triggerNuke`/`triggerDash` bits in `INPUT` on the same tick; `ABILITY` is the authoritative path and `INPUT` is the fallback.
+- `CHAT` { senderId, text, channel } -- producer: client or server. Consumer: chat UI.
+- `VOICE_FRAME` { senderId, opusBytes, sampleSeq } -- producer: client. Consumer: every other client in the match (server fans out blindly).
+- `PING` -- producer: client. Server replies with `PONG` immediately on the IO thread.
+- `WELCOME` { clientId, serverBuild, snapshotCodec } -- producer: server. Trigger: HELLO received.
+- `AUTH_RESULT` { ok, playerId?, reason? } -- producer: server. Trigger: AUTH validated.
+- `LOBBY_STATE` { players, readyFlags, map, mode, secondsToStart } -- producer: server. Trigger: lobby change or 1 Hz heartbeat.
+- `MATCH_START` { seed, width, height, theme, mode, players: [PlayerSnapshot], startTick } -- producer: server. Trigger: all players READY or lobby timer expired.
+- `SNAPSHOT` { tick, fullKeyframe, players, bombs, explosions, pickups, arenaDiff } -- producer: server. Trigger: every tick (diff) and every 30 ticks (keyframe).
+- `EVENT` { kind, tile, ownerId?, victimId? } -- producer: server. Trigger: bomb placed, explosion ignited, pickup collected, ability fired.
+- `KILL_FEED` { tick, killerId, victimId, weapon } -- producer: server. Trigger: a player died.
+- `HAPTIC` { clientId, kind, intensity, durationMs } -- producer: server. Trigger: nearby explosion, took damage, picked up token.
+- `MATCH_END` { winnerIds, scores, tokensAwarded, mmrDelta } -- producer: server. Trigger: end-of-match check returns true.
+- `PONG` -- producer: server. Trigger: PING received.
+- `ERROR` { code, message } -- producer: server. Trigger: any recoverable protocol slip.
+
+## Example envelopes
+
+INPUT (client to server, tick 1342):
+
+```json
+{
+  "type": "INPUT",
+  "seq": 1342,
+  "t": 1342,
+  "payload": {
+    "tick": 1342,
+    "move": "RIGHT",
+    "placeBomb": false,
+    "triggerNuke": false,
+    "triggerDash": false
+  }
+}
+```
+
+SNAPSHOT (server to client, diff at tick 1740):
+
+```json
+{
+  "type": "SNAPSHOT",
+  "seq": 1740,
+  "t": 1740,
+  "payload": {
+    "tick": 1740,
+    "fullKeyframe": false,
+    "players": [
+      {"id": 1, "x": 5, "y": 7, "facing": "UP",    "alive": true,  "power": 3, "maxBombs": 2, "tokens": 4},
+      {"id": 2, "x": 9, "y": 3, "facing": "LEFT",  "alive": true,  "power": 4, "maxBombs": 1, "tokens": 1},
+      {"id": 3, "x": 1, "y": 11,"facing": "DOWN",  "alive": false, "power": 3, "maxBombs": 1, "tokens": 0}
+    ],
+    "bombs": [
+      {"ownerId": 1, "x": 5, "y": 6, "fuseTicks": 90,  "power": 3, "pierce": false}
+    ],
+    "explosions": [
+      {"tiles": [{"x":9,"y":3},{"x":9,"y":4},{"x":9,"y":2}], "ttl": 22}
+    ],
+    "pickups": [
+      {"x": 7, "y": 5, "type": "BOMB_POWER"}
+    ],
+    "arenaDiff": [
+      {"x": 9, "y": 5, "tile": "FLOOR"}
+    ]
+  }
+}
+```
+
+KILL_FEED (server to client):
+
+```json
+{
+  "type": "KILL_FEED",
+  "seq": 873,
+  "t": 1740,
+  "payload": {
+    "tick": 1740,
+    "killerId": 1,
+    "victimId": 3,
+    "weapon": "BOMB"
+  }
+}
+```
+
+MATCH_END (server to client):
+
+```json
+{
+  "type": "MATCH_END",
+  "seq": 9001,
+  "t": 5400,
+  "payload": {
+    "winnerIds": [1],
+    "scores": [
+      {"playerId": 1, "kills": 4, "deaths": 1, "controlPoints": 0, "score": 1200},
+      {"playerId": 2, "kills": 2, "deaths": 2, "controlPoints": 0, "score": 600},
+      {"playerId": 3, "kills": 0, "deaths": 3, "controlPoints": 0, "score": 80}
+    ],
+    "tokensAwarded": [
+      {"playerId": 1, "tokens": 35},
+      {"playerId": 2, "tokens": 18},
+      {"playerId": 3, "tokens": 6}
+    ],
+    "mmrDelta": [
+      {"playerId": 1, "delta":  +24},
+      {"playerId": 2, "delta":  -4},
+      {"playerId": 3, "delta": -20}
+    ]
+  }
+}
+```
+
+LOBBY_SNAPSHOT (lobby server to client):
+
+```json
+{
+  "type": "LOBBY_SNAPSHOT",
+  "seq": 412,
+  "t": 1716412900123,
+  "payload": {
+    "tick": 412,
+    "players": [
+      {"playerId": 1, "displayName": "JC",  "x": 12.4, "y": 7.1,  "facing": "RIGHT", "equipped": ["skin_inferno_jc"]},
+      {"playerId": 7, "displayName": "AA",  "x":  3.0, "y": 4.5,  "facing": "DOWN",  "equipped": ["skin_default"]},
+      {"playerId": 9, "displayName": "SK",  "x":  8.2, "y": 2.0,  "facing": "LEFT",  "equipped": ["skin_cryo_sk", "hat_visor"]}
+    ],
+    "featuredSkus": [
+      {"sku": "skin_reactor_v1", "priceTokens": 250, "limitedUntil": "2026-06-01T00:00:00Z"},
+      {"sku": "emote_taunt_01",  "priceTokens":  60, "limitedUntil": null}
+    ]
+  }
+}
+```
+
+That is the whole protocol. Everything else in the codebase is just a producer or a consumer of one of those rows.
+
+
+
+---
+
+## Gameplay simulation
+
+﻿# GameWorld: the deep dive
+
+Author: Jithendra Chittomothu (JC), Gameplay Director, BomberMen-X
+Subject: `com.bombermenx.core.sim.GameWorld` -- how a BomberMen-X match actually advances, why every number is the number it is, and what we test to keep it honest.
+
+I have rewritten this class three times. Every rewrite shrank the surface. What is in the codebase today is the one I am willing to ship. If you change a tick step, you change this document.
+
+## Determinism contract
+
+The first and only commandment: `(seed, sequence of InputFrames) -> byte-identical GameWorld state on every machine`. That is the contract. It is the reason the simulation is in `bomberman-core` instead of being scattered through the renderer. It is the reason `Random` is constructed from `seed` in the `GameWorld` constructor and never reseeded, never replaced. It is the reason fuses are integer ticks, not float seconds. It is the reason `Arena.generate` walks cells in a fixed row-major order and consumes RNG draws in a fixed sequence. It is the reason `Snapshotter` reads fields and never mutates them.
+
+Three corollaries:
+
+- The server is authoritative but it is not magic. A correctly-implemented replay client, fed the same seed and the same input stream, will produce the same end state. Our test harness does exactly that.
+- The renderer cannot affect the simulation. We pass it a read-only view of the world. If a designer wants to add screen shake when a NUKE fires, the screen shake lives in the client. The simulation only knows that 9 tiles were just set on fire.
+- Floating-point operations are forbidden inside the tick loop. We compute step cooldowns in ticks (ints). We compute spiral indices in ints. The only float anywhere in the simulation is the multipliers on `ArenaTheme`, and they are folded into ints at arena-generation time before the first tick.
+
+## Tick budget
+
+The clock runs at 60 Hz. `GameConfig.TICK_HZ = 60`, `GameConfig.TICK_MS = 1000.0 / 60.0`. That gives 16.666... ms per tick. On the server I budget the seven steps as follows on a 15x13 arena with eight players: step 1 (inputs) under 100 microseconds, step 2 (cooldowns) under 10 microseconds, step 3 (bombs) the fat one at up to 500 microseconds in a worst-case chain, step 4 (explosions) under 50 microseconds, step 5 (pickups) under 20 microseconds, steps 6 and 7 (mode-specific) under 20 microseconds combined. Total in the millisecond range. The encode/send pass dominates, not the simulation. If a profile ever shows a tick spike above 4 ms inside `GameWorld.tick`, that is a regression and we revert.
+
+## Tap-to-step movement
+
+Movement is grid-locked. You do not slide between tiles; you step from one tile to the next, and there is a cooldown between steps. The cooldown is what gives the game a *feel* -- a SPEED power-up should feel snappier without breaking the grid. The formula:
+
+```java
+int cd = Math.max(4, Math.round((float) GameConfig.TICK_HZ / Math.max(1, moveSpeed)));
+```
+
+At `DEFAULT_MOVE_SPEED = 12` tiles/s, `cd = max(4, round(60/12)) = max(4, 5) = 5` ticks per tile, i.e. 12 tiles/s as advertised. SPEED raises the effective `moveSpeed` to 15, 18, 24, capping at 30. At 30 tiles/s the math wants `cd = 2`, but I clamp at 4 because anything faster than that breaks two invariants: (a) the bomb-placement gate cannot reliably block double-placements within human reaction time, and (b) the snapshot diff stops representing motion as one-tile transitions and starts skipping cells, which the client cannot render cleanly. Four is the floor. It is the right floor. Treat it as a magic number that the rest of the system trusts.
+
+Direction handling: the input's `move` direction sets `facing` if it is non-NONE, but the cooldown only resets when the player actually steps. Holding RIGHT into a wall keeps `facing = RIGHT` and does not advance the cooldown timer, so the moment the wall opens the player steps immediately. This matters for DASH targeting.
+
+## Bomb placement
+
+`canPlaceBomb(player)` returns true iff:
+
+1. `player.alive` is true.
+2. `player.activeBombs < player.maxBombs`.
+3. No existing bomb already occupies `player.pos`.
+
+Note what is NOT checked: we do not care if a power-up is on the tile (the bomb sits on top, the player picks up the power-up when they step off). We do not care if another player is on the tile (you can drop a bomb on top of an opponent's head, which is a legitimate trap-kick play with KICK). We do not deduct a fuse, a token, or anything else. The bomb is added with `fuseTicks = round(DEFAULT_BOMB_FUSE_TICKS * theme.fuseMul)`, `power = max(1, round(player.power * theme.powerMul))`, `pierce = player.hasPierce`, and `player.activeBombs++` so the limit is enforced.
+
+## Chain reactions
+
+The chain-reaction loop is the part most newcomers get wrong, because it is tempting to write it recursively. We do not. We do it iteratively, with a "did anything change this iteration" flag:
+
+```java
+boolean changed = true;
+while (changed) {
+    changed = false;
+    for (Bomb b : bombs) {
+        if (b.fuseTicks > 0 && !b.detonated) continue;
+        b.detonated = true;
+        // compute its 4-ray tile set (with current arena), without yet breaking walls
+        for (Bomb other : bombs) {
+            if (other.detonated) continue;
+            if (rayTiles.contains(other.pos())) {
+                other.fuseTicks = 0;
+                changed = true;
+            }
+        }
+    }
+}
+```
+
+Why this terminates: every iteration that does anything strictly increases the count of detonated bombs, and the count is bounded by `bombs.size()`. So the loop runs at most `bombs.size()` times. Why iterative beats recursive: stack depth on a wild chain (eight players each with three bombs and a long line of destructibles linking them) can hit 24+; we are not going to blow the JVM stack, but iterative is also simpler to step through in a debugger and trivial to reason about for determinism. Order matters: we iterate `bombs` in insertion order, which is the order players placed them. That is deterministic and stable.
+
+Only after every chain-primed bomb is identified do we *apply* the explosions: break the first DESTRUCTIBLE on each ray (or all of them, if `pierce`), roll the pickup drop, kill the players on the tiles, emit the `Explosion` entry.
+
+## Friendly fire
+
+In `FFA` and `KING_OF_GRID`, every player is on team `-1`; friendly fire is meaningless because everybody is hostile. In `TEAMS`, players carry a non-negative `team` integer. The kill check inside the explosion application:
+
+```java
+if (victim.team >= 0 && victim.team == owner.team) continue; // FF off
+```
+
+A shielded player consumes their shield even on a friendly-team explosion -- the shield is a possession state, not a damage event, so it pops anyway. That is by design; SK pushed back on it once, I held.
+
+## Sudden-death geometry
+
+In the `SUDDEN_DEATH` state, every 30 ticks (half a second), `advanceSuddenDeath` drops one `SOLID` wall on the next cell of the inward spiral (`arena.suddenDeathStep(...)`). The spiral starts at `(1, 1)`, runs right to `(width-2, 1)`, down to `(width-2, height-2)`, left to `(1, height-2)`, up to `(2, height-2)`... and then steps inward and repeats. On a 15x13 arena that is 11+11+11+9 = 42 cells in the first lap, 9+9+9+7 = 34 in the second, and so on -- about 134 cells before the spiral collapses on the center pillar. At 30 ticks per step, that is ~67 seconds of pressure, which on top of an already-running match enforces a hard cap. Any player on the cell when the block lands dies, no shield save -- the block crushes, it does not explode.
+
+## King-of-the-Grid
+
+The node is a virtual marker, not a tile. It teleports to a random walkable cell every 20 seconds (1200 ticks). The pick uses the same `Random` as power-up rolls -- deterministic. Every 60 ticks (1 second), if exactly one alive player is on the node tile, their `controlPoints` increments by 1. Two players on the same tile means contested -- no point. The win condition is `controlPoints >= 30`. Kills still add to `score` and still register in the kill feed but they do not add control points; if you spend the whole match camping with a shield you can win without a single kill, and if you top the leaderboard on kills but never sit on the node you can still lose. That is the entire design intent.
+
+## Super-abilities
+
+NUKE: 3x3 instant explosion centered on the player. Costs 3 tokens. Cooldown is 12 seconds (720 ticks). The player is immune to their own NUKE -- the explosion application skips the owner. Everyone else on those 9 tiles dies subject to shield/team-FF rules. Destructibles in the 3x3 all break and all roll pickups; this is the highest expected-value play in the game and is intentionally token-gated.
+
+DASH: teleport up to 3 tiles in `facing`, stopping at the first non-walkable tile (SOLID, DESTRUCTIBLE) or the first bomb. Costs 1 token. Cooldown is 6 seconds (360 ticks). DASH does not move through a sudden-death `SOLID` wall -- it stops the dash one tile short. DASH also does not pick up power-ups passed over; only the landing tile counts. The reason: I do not want a SPEED+DASH stacking exploit where one button press hoovers a row of pickups.
+
+Both abilities check `tokens >= cost` and `cooldown == 0` before firing. If either fails, the trigger is silently dropped server-side and the client gets a `HAPTIC` cue of kind `ABILITY_FAILED` -- no `ERROR` envelope, no state delta.
+
+## Power-ups and the two-roll pickup drop
+
+When a DESTRUCTIBLE breaks, the simulation does two independent RNG rolls:
+
+1. First roll: `rng.nextFloat() < POWERUP_DROP_RATE` (0.40). If true, a power-up of some kind drops. If false, nothing drops, ever -- not even a token.
+2. Second roll (only if the first hit): `rng.nextFloat() < CORE_TOKEN_DROP_RATE` (0.06). If true, the drop is a `CORE_TOKEN`. Otherwise it is a regular power-up, chosen by weighted draw from the non-token entries of `PowerUpType`.
+
+Two rolls, not one. That is what guarantees that token rate stays around 6% of *drops*, not 6% of broken walls. If I made it one roll into a flat table the rate would slide with the table size every time SK adds a new cosmetic-only pickup tier. Two rolls keeps the economy stable across content updates.
+
+## Theme tuning
+
+The three multipliers on `ArenaTheme` are folded into the simulation at three distinct points:
+
+- `densityMul` -- applied once, at `Arena.generate`. Never re-read after match start.
+- `fuseMul` -- applied at every bomb-placement, as `round(DEFAULT_BOMB_FUSE_TICKS * fuseMul)`.
+- `powerMul` -- applied at every bomb-placement, as `max(1, round(player.power * powerMul))`. The `max(1)` clamp is there because VOID_MAZE's 0.85 multiplier on a player with `power = 1` would round to 1 anyway, but I never want a 0-tile bomb -- that is a degenerate explosion with no tiles and unclear semantics.
+
+Concretely (the six `ArenaTheme` values, `densityMul / fuseMul / powerMul`):
+
+- NEON_GRID -- 0.40 / 1.00 / 1.00. The balanced baseline; cyan/purple/amber lattice.
+- INFERNO -- 0.55 / 0.75 (~112 ticks, ~1.87 s) / 1.30. Denser walls, faster fuse, bigger blast. Aggressive map.
+- CRYO_VAULT -- 0.28 / 1.30 (~195 ticks, ~3.25 s) / 1.00. Sparse, slow bombs, normal rays. Open-arena duels.
+- JUNGLE_GRID -- 0.62 / 1.00 / 1.00. Dense destructibles, normal pacing, lots of breakable cover.
+- REACTOR_CORE -- 0.32 / 0.70 (~105 ticks, ~1.75 s) / 1.10. Sparse and snappy; every bomb is a panic timer. This is the theme I gate behind the Veteran filter.
+- VOID_MAZE -- 0.42 / 1.20 (~180 ticks, ~3.0 s) / 0.85. Medium density, longer fuse, smaller blast. Stealthy.
+
+## Real constants table
+
+| Constant | Value | Where |
+|---|---|---|
+| `TICK_HZ` | 60 | `GameConfig` |
+| `TICK_MS` | 1000.0 / 60.0 | `GameConfig` |
+| `DEFAULT_ARENA_WIDTH` | 15 | `GameConfig` |
+| `DEFAULT_ARENA_HEIGHT` | 13 | `GameConfig` |
+| `MAX_PLAYERS` | 8 | `GameConfig` |
+| `DEFAULT_BOMB_FUSE_TICKS` | 150 (2.5 s) | `GameConfig` |
+| `DEFAULT_EXPLOSION_LIFETIME_TICKS` | 36 (0.6 s) | `GameConfig` |
+| `DEFAULT_BOMB_POWER` | 3 | `GameConfig` |
+| `DEFAULT_MOVE_SPEED` | 12 tiles/s | `GameConfig` |
+| `DEFAULT_DESTRUCTIBLE_DENSITY` | 0.40 | `GameConfig` |
+| `POWERUP_DROP_RATE` | 0.40 | `GameConfig` |
+| `CORE_TOKEN_DROP_RATE` | 0.06 | `GameConfig` |
+| `DEFAULT_MAX_BOMBS` | 1 | `GameConfig` |
+| Step cooldown floor | 4 ticks | `GameWorld.applyPlayerInputs` |
+| Sudden Death cadence | 30 ticks | `GameWorld.advanceSuddenDeath` |
+| King teleport interval | 1200 ticks (20 s) | `GameWorld.tickKingOfGrid` |
+| King point cadence | 60 ticks (1 s) | `GameWorld.tickKingOfGrid` |
+| King win threshold | 30 control points | `GameWorld.tickKingOfGrid` |
+| NUKE cost / cooldown | 3 tokens / 720 ticks | `GameWorld.triggerAbility` |
+| DASH cost / cooldown | 1 token / 360 ticks | `GameWorld.triggerAbility` |
+| Explosion TTL | 36 ticks | `GameWorld.tickBombs` |
+
+## Things tested
+
+The build runs **11 unit tests** (7 in `bomberman-core`, 4 in `bomberman-server`). The simulation is covered by `GameWorldTest` and the wire layer by `WireCodecTest`:
+
+**`GameWorldTest`** (`src/bomberman-core/src/test/java/com/bombermenx/core/sim/GameWorldTest.java`):
+
+- `deterministicGenerationWithSameSeed` -- the same seed produces byte-identical arena tiles across two independent constructions.
+- `playerMovesAtMoveSpeedNotPerTick` -- movement commits at the move-speed cooldown, not once per tick.
+- `bombDetonatesAfterFuseAndKillsExposedPlayer` -- a bomb explodes when its fuse reaches zero and eliminates a player standing on an explosion tile.
+- `explosionRespectsSolidWalls` -- an explosion ray stops at the first SOLID tile.
+- `chainReactionDetonatesAdjacentBomb` -- a bomb caught in another bomb's blast detonates in the same tick.
+
+**`WireCodecTest`** (`src/bomberman-core/src/test/java/com/bombermenx/core/net/WireCodecTest.java`):
+
+- `roundTripsHelloEnvelope` -- a HELLO envelope survives encode → decode unchanged.
+- `roundTripsInputFrame` -- an INPUT frame survives the JSON round-trip.
+
+`bomberman-server` adds `ProfanityFilterTest` (4 tests) covering name/chat moderation.
+
+If a rule in this document drifts from the tests, the tests win and this document is wrong. That is the right order of authority.
+
+
+
+---
+
+## Design language
+
+## BomberMen-X Design Language
+
+Author: Simranjot Kaur (SK), UI/UX Director, BomberMen-X
+Scope: Visual, motion, and audio direction for `bomberman-client` and the browser artefacts under `presentation/`.
+Stylesheet of record: `src/main/resources/css/mandala.css`.
+
+This is not a mood board. It is the working style guide our small team uses to keep the menu, the lobby, the arena, the HUD, and the browser artefacts visually coherent. If something on screen does not match what is written here, the thing on screen is wrong.
+
+---
+
+## 1. Palette
+
+mandala-themed, high contrast on near-black. Each colour has a deliberate role. Do not invent new neon shades — extend roles only when this table no longer covers a case.
+
+| Token            | Hex       | Role                                                                 |
+|------------------|-----------|----------------------------------------------------------------------|
+| `--ink`          | `#08090d` | Page background. Canvas clear colour in `ArenaRenderer`.             |
+| `--panel`        | `#11141c` | Cards, chips, modal surfaces, HUD plates.                            |
+| `--line`         | `#1f2533` | Grid lines, dividers, table rules. Decoration only — never text.     |
+| `--cyan`         | `#3aedff` | Primary action, focus rings, default player team, headings.         |
+| `--magenta`      | `#ff3ad9` | Secondary accent, opposing team, error states.                       |
+| `--amber`        | `#ffb53a` | Warnings, bombs, fuses, "attention required".                        |
+| `--green`        | `#3affb5` | Success, pickups, health-gained events.                              |
+| `--text`         | `#ffffff` | Body text on `--ink` and `--panel`.                                  |
+
+Use rules:
+- Body copy is white. Coloured text is reserved for status and emphasis.
+- The four neons are role-bound. Cyan is not interchangeable with green just because they are both light.
+- Magenta and red-orange tones never sit directly on cyan as text — see Don'ts.
+
+---
+
+## 2. Type system
+
+We define three type roles in `mandala.css`. The JavaFX side uses CSS classes; the web artefacts in `presentation/` use the same names with a matching font stack.
+
+| Role      | JavaFX class       | Web font stack                                                   | Use                              |
+|-----------|--------------------|------------------------------------------------------------------|----------------------------------|
+| Display   | `.mandala-display`    | `"Orbimandala", "Rajdhani", system-ui, sans-serif`                  | Scene titles, slide headings.    |
+| Body      | `.mandala-body`       | `"Inter", "Segoe UI", system-ui, sans-serif`                     | All readable copy.               |
+| Mono      | `.mandala-mono`       | `"JetBrains Mono", "Consolas", ui-monospace, monospace`          | Server URL, ping, code, counters.|
+
+Sizes:
+- Display: 32–56 px, letter-spacing +1%.
+- Body: 16 px default, **14 px floor** (see Accessibility).
+- Mono: 14 px default; numbers tabular.
+
+Headings use H1–H3 ranks in the DOM and the slide deck so screen readers and the outline view stay legible.
+
+---
+
+## 3. Spacing scale
+
+A 4-based scale. Pick the smallest step that solves the layout problem; do not freelance.
+
+```
+4   |  8   |  12  |  16  |  24  |  32
+xs  |  s   |  m   |  l   |  xl  |  xxl
+```
+
+Where each step lives:
+- `4` — icon padding inside chips, focus-ring offset.
+- `8` — gap between a label and its field, vertical rhythm inside a chip.
+- `12` — gap between sibling controls in a row.
+- `16` — default form row spacing in `MainMenuView`.
+- `24` — section spacing between cards in the lobby.
+- `32` — outer padding of full scenes.
+
+No step `20`. No step `28`. If a layout looks like it wants one of those, the structure is wrong, not the spacing.
+
+---
+
+## 4. Motion
+
+Motion in this game is information, not decoration. Three rules across the client:
+
+1. **Glow pulse — 1.2 s ease-in-out, infinite alternate.** Used on the lobby countdown number and on the primary CTA in the main menu while it is the only valid action. Anything pulsing on screen should be the most important thing on that scene; if two things pulse, kill one.
+2. **Camera shake — 6 px amplitude, 200 ms decay.** Applied by `CameraShake` on explosion events. Never used for cosmetic events. A shake means something blew up; a player learns that contract in their first match.
+3. **Particle TTL — 600 ms.** `ParticleSystem` pre-allocates ~512 particles in a ring. Anything that needs to last longer than 600 ms is not a particle — it is a sprite. Sparks fly from bomb fuses; glow puffs from pickups.
+
+Default `AnimationTimer` rate is 60 FPS. We do not run the renderer slower to save battery; we let the JVM downclock its own thread if it has to.
+
+---
+
+## 5. Sound design intent
+
+We ship `AudioBus` + `SpatialAudio` because the game reads better with sound, not because we want a soundtrack. Two intentional bands:
+
+- **Low-frequency thump — bomb detonation.** A short, fat hit centred around 80–120 Hz, ducked through the master bus so it never overwhelms voice or UI. This is the spatialised channel: a bomb behind you sounds behind you.
+- **High-frequency ping — pickups and UI confirms.** Centred around 2–4 kHz, very short envelope (<120 ms), un-spatialised, fixed master. UI sounds always pan centre.
+
+We deliberately leave the mid-band quieter so that voice (future feature) has room to sit. First-launch master is **60%**, not 100%, because we know players use headphones.
+
+---
+
+## 6. Accessibility rules
+
+Non-negotiable rules. If a PR breaks one of these, it does not ship.
+
+- **Body text minimum 14 px** in `bomberman-client` and across all `presentation/` HTML.
+- **4.5:1 contrast** for body text, **3:1 for large text and non-text UI** (focus rings, icon glyphs, chart strokes). The mandala palette passes against `--ink` and `--panel`; see `ui-audit.md` for the contrast table.
+- **Reduce-motion toggle planned** in Settings, with three levels: Off (no scanlines, no shake), Reduced (scanlines off, shake at 50%), Full. Default is Full for new installs but the toggle must be reachable from the main menu, not buried.
+- **Focus is always visible.** Every interactive control declares `setFocusTraversable(true)` in JavaFX and renders a 2 px cyan ring on `:focused`.
+- **Keyboard reaches every action.** Mouse-only flows are bugs.
+- **Sound is never the only signal.** A kill is a kill feed entry, a haptic pulse, and a sound — not just a sound.
+- **Age gate copy** must say the answer is saved on this computer.
+
+---
+
+## 7. Don'ts
+
+A list we keep on the wall:
+
+- **No full-screen flashes faster than 3 Hz.** This is a photosensitivity rule, not a taste rule.
+- **No scanline opacity above 0.4.** At 0.4+ the playfield becomes hard to read for everyone, not just sensitive players. Default sits at 0.25; "Subtle" sits at 0.15.
+- **No pure red (`#ff0000`) on pure black.** It vibrates. If you need red, desaturate toward magenta `#ff3ad9` or pull it warmer toward amber `#ffb53a`, and place it on `--panel`, not `--ink`.
+- **No coloured text on a coloured chip.** White text on a coloured chip, or coloured text on a `--panel` chip. Never coloured-on-coloured.
+- **No drop shadows under text** to fake legibility. Fix the colour pair instead.
+- **No more than two motion elements on screen at once,** outside the arena. The arena is its own world; menus are not.
+- **No tooltips as the only way to discover a constraint.** Keyboard-only and touch users never see a tooltip. Use a sibling label.
+- **No icon-only buttons** in menus. Always pair with a text label. The arena HUD ability icons are the exception, and they have a key glyph next to them.
+- **No animation on the rankings table.** People read rankings. Reading and motion do not mix.
+- **No autoplay audio** on the first launch of any `presentation/` artefact. Players control when sound starts.
+
+---
+
+If this document and the code disagree, fix the code. If this document and a stakeholder disagree, talk to me — I would rather change the rule once, in writing, than have three slightly different cyans across three scenes.
+

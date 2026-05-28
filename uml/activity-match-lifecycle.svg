@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="-apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" role="img" aria-label="BomberMen-X Activity Diagram — Match Lifecycle">
   <title>BomberMen-X — Activity Diagram (Match Lifecycle)</title>
   <desc>Swimlane activity diagram of a single match from server boot through ranking, with parallel client and server lanes during the tick loop.</desc>
@@ -54,11 +54,11 @@
   <rect class="lane lane-client" x="680" y="80" width="320" height="780"/>
 
   <text class="lane-head" x="60" y="105">SERVER</text>
-  <text class="lane-sub"  x="60" y="120">bomb-server · authoritative simulation</text>
+  <text class="lane-sub"  x="60" y="120">bomberman-server · authoritative simulation</text>
   <text class="lane-head" x="380" y="105">SHARED</text>
   <text class="lane-sub"  x="380" y="120">coordination &amp; gating</text>
   <text class="lane-head" x="700" y="105">CLIENT</text>
-  <text class="lane-sub"  x="700" y="120">bomb-client · JavaFX renderer</text>
+  <text class="lane-sub"  x="700" y="120">bomberman-client · JavaFX renderer</text>
 
   <!-- ============ START NODES ============ -->
   <circle class="start" cx="200" cy="155" r="9"/>
