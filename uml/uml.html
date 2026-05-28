@@ -125,7 +125,15 @@
     color: var(--muted);
     font-size: 12px;
   }
-</style>
+
+    /* 3D depth on every embedded diagram */
+    img, object, svg, .frame img, main img, figure img {
+      filter: drop-shadow(4px 6px 9px rgba(0,0,0,0.55))
+              drop-shadow(0 0 12px rgba(218,165,32,0.18));
+    }
+    figure { transition: transform .25s ease; }
+    figure:hover { transform: translateY(-2px); }
+  </style>
 </head>
 <body>
 <header>

@@ -456,6 +456,44 @@ html[data-theme="light"] #bmx-progress { box-shadow: 0 0 8px rgba(10,110,149,0.3
   min-height: 60px;
 }
 
+/* 3D depth — every diagram shape gets a soft drop-shadow + a faint warm
+   glow so it lifts off the dark aubergine background. Applied to Mermaid
+   nodes/actors/clusters/tasks (rendered as SVG inside .mermaid) and to
+   embedded <img> SVG diagrams in the viewer pages. */
+#content .mermaid svg .node rect,
+#content .mermaid svg .node circle,
+#content .mermaid svg .node ellipse,
+#content .mermaid svg .node polygon,
+#content .mermaid svg .actor,
+#content .mermaid svg .actor-line,
+#content .mermaid svg .cluster rect,
+#content .mermaid svg g.task,
+#content .mermaid svg g.task rect,
+#content .mermaid svg .section0,
+#content .mermaid svg .section1,
+#content .mermaid svg .section2,
+#content .mermaid svg .section3,
+#content .mermaid svg .mindmap-node {
+  filter: drop-shadow(2px 4px 5px rgba(0,0,0,0.65))
+          drop-shadow(0 0 6px rgba(218,165,32,0.22));
+}
+#content .mermaid svg .messageLine0,
+#content .mermaid svg .messageLine1,
+#content .mermaid svg .edgePath path,
+#content .mermaid svg .flowchart-link {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.55));
+}
+
+/* Embedded SVG images (diagrams/*.svg loaded via <img>) — float them. */
+#content img,
+.frame img,
+main img,
+img.diagram,
+img[src$=".svg"] {
+  filter: drop-shadow(4px 6px 8px rgba(0,0,0,0.55))
+          drop-shadow(0 0 10px rgba(218,165,32,0.18));
+}
+
 /* ---------- Hero models (inline page diagrams) ----------
    Used at the top of plan and analysis pages to give a visual
    anchor before the prose. Lightweight, no JS framework. */

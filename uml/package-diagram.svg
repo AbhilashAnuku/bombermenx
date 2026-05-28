@@ -1,5 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="pkgTitle pkgDesc">
+  <style>
+    rect, polygon, ellipse {
+      filter: drop-shadow(3px 4px 5px rgba(0,0,0,0.65))
+              drop-shadow(0 0 6px rgba(218,165,32,0.22));
+    }
+    circle { filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.55)); }
+    text { filter: drop-shadow(0 1px 2px rgba(0,0,0,0.65)); }
+    path, line { filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  </style>
   <title id="pkgTitle">UML package diagram</title>
   <desc id="pkgDesc">bomberman-client (left) and bomberman-server (right) both depend on bomberman-core (centre). bomberman-core contains shared packages including .sim, .entity, .world, .geom, .input, .net, and .net.dto. The two outer modules do not depend on each other.</desc>
 
