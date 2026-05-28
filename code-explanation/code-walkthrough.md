@@ -133,9 +133,9 @@ The server module hosts the Netty endpoint, the lobby, the match runner, the aut
 - **`Match`** — the metadata record for a match (id, start time, mode, slot list).
 - **`MatchSession`** — the per-match runner that owns a `GameWorld`, a tick scheduler, and a session-local input queue.
 
-### 2.6 AI package
+### 2.6 Bot AI package (`com.bombermenx.server.ai`)
 
-- **`BotController`** — one instance per bot; reads snapshots, decides intent, writes `PlayerInput` into the match's input path.
+- **`BotController`** — one instance per bot; reads snapshots, decides intent, writes `PlayerInput` into the match's input path. Implements three difficulty presets (Easy / Normal / Hard) with reaction-delay and decision-interval knobs, and a BFS escape routine over the danger-tile map so bots don't blow themselves up.
 
 ### 2.7 Chat and moderation
 

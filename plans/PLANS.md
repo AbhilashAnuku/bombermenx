@@ -14,7 +14,8 @@
 gantt
     title BomberMen-X — 8-Week Capstone Roadmap
     dateFormat  YYYY-MM-DD
-    axisFormat  W%V
+    axisFormat  %d %b
+    todayMarker stroke:#ffc107,stroke-width:3px,opacity:0.9
 
     section Bootstrapping
     Maven 3-module reactor                :done,   b1, 2026-04-13, 7d
