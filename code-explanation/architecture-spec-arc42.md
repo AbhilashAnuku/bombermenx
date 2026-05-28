@@ -55,64 +55,205 @@ The architecture is a server-authoritative client-server system with an event-dr
 
 ## 5. Building Block View
 
-### 5.1 Level 1 — System overview
+This section follows the arc42 convention of progressive zoom: §5.1 shows the **whole system at level 1** (which top-level building blocks exist and how they depend on each other); §5.2–§5.4 zoom into the three Maven modules at **level 2** (which packages each module contains and what each package is responsible for); §5.5 zooms into the **simulation core at level 3** because that block carries most of the architectural risk and is the most-asked block in the viva.
 
-The three Maven modules form three building blocks. `bomberman-core` is the shared library that defines the domain entities and wire types. `bomberman-server` depends on `core` and adds the Netty WebSocket endpoint, the match manager, the authentication providers, and the bot AI. `bomberman-client` depends on `core` and adds the JavaFX scene graph, the renderer, the audio bus, the gamepad poller, and the haptics service.
+### 5.1 Level 1 — Whitebox of the overall system
+
+At the top level the system is exactly three building blocks plus two optional sidecars. The arrows are strictly one-directional: `bomberman-server` and `bomberman-client` both depend on `bomberman-core`; nothing depends on either of them at compile time. The client and server only meet at runtime over the WebSocket wire.
 
 ```mermaid
-classDiagram
-    class BombermanCore {
-        +GameWorld
-        +Snapshotter
-        +WireCodec
-        +Envelope
-        +MessageType
-        +PlayerInput
-        +Bomberman
-        +Bomb
-        +Explosion
-        +Arena
-        +PowerUpItem
-    }
-    class BombermanServer {
-        +BombServerApplication
-        +GameServer
-        +WebSocketServer
-        +GameServerHandler
-        +MatchManager
-        +LobbyService
-        +AuthRegistry
-        +BotController
-        +ChatRouter
-        +SessionRegistry
-    }
-    class BombermanClient {
-        +ClientLauncher
-        +SceneRouter
-        +ArenaView
-        +ArenaRenderer
-        +GameClient
-        +HudOverlay
-        +GamepadPoller
-        +AudioBus
-        +MandalaTheme
-    }
-    BombermanServer --> BombermanCore : depends on
-    BombermanClient --> BombermanCore : depends on
-    BombermanServer ..> BombermanClient : wire protocol
+flowchart LR
+    subgraph CLIENT_TIER["CLIENT TIER (host machine)"]
+        CL["<b>bomberman-client</b><br/>JavaFX desktop"]
+    end
+
+    subgraph SHARED["SHARED CONTRACT"]
+        CO["<b>bomberman-core</b><br/>domain + wire DTOs<br/>+ headless sim"]
+    end
+
+    subgraph SERVER_TIER["SERVER TIER (single JVM process)"]
+        SV["<b>bomberman-server</b><br/>Netty + match orchestration"]
+        PG["postgres<br/>(v0.3 sidecar)"]
+        RD["redis<br/>(v0.3 sidecar)"]
+    end
+
+    CL -- "compile-time dep" --> CO
+    SV -- "compile-time dep" --> CO
+    CL <== "WebSocket /ws<br/>JSON Envelope" ==> SV
+    SV -. "JDBC (deferred)" .-> PG
+    SV -. "RESP (deferred)" .-> RD
 ```
 
-### 5.2 Level 2 — Core module decomposition
+| Block | Purpose | Key contents | Owner |
+|---|---|---|---|
+| **bomberman-core** | Single source of truth for domain entities and the on-wire DTOs. Linked by both client and server, so a DTO drift is structurally impossible. | `entity/`, `world/`, `sim/`, `net/`, `input/`, `geom/` | AA + SK |
+| **bomberman-server** | Hosts the only mutable `GameWorld`, terminates WebSocket connections, runs the 60 Hz tick, fills empty slots with bots, exposes a metrics endpoint. | `net/`, `lobby/`, `match/`, `auth/`, `session/`, `ai/`, `chat/`, `moderation/`, `config/` | JC |
+| **bomberman-client** | JavaFX desktop UI. Renders snapshots, collects input, plays sound, applies haptics. Holds no authoritative state. | `ui/`, `render/`, `net/`, `audio/`, `input/`, `safety/` | SK |
+| postgres (v0.3) | Persistent ranking and account metadata. Optional sidecar; the prototype runs without it. | — | — |
+| redis (v0.3) | Match-state cache for crash recovery. Optional. | — | — |
 
-`bomberman-core` contains four logical packages. The **domain** package holds `Bomberman`, `Player`, `Bomb`, `Explosion`, `Score`, `PowerUpItem`, `Arena`, `Tile`, and the `Bonus` hierarchy (`ArmorBonus`, `ExtraBombBonus`, `FlameBonus`, `KickBonus`, `LifeBonus`, `SpeedBonus`, `ThrowBonus`). The **simulation** package holds `GameWorld` (the tick loop) and `Snapshotter` (the function that walks the world and produces a `WorldSnapshot`). The **wire** package holds the DTOs (`PlayerSnapshot`, `BombSnapshot`, `ExplosionSnapshot`, `WorldSnapshot`, `MatchStart`, `MatchEnd`, `Hello`, `Welcome`, `AuthRequest`, `AuthResult`, `ChatMessage`, `KillFeedEntry`, `GameEvent`, `InputFrame`, `AbilityRequest`, `HapticCue`, `VoiceFrame`, lobby messages, `PickupSnapshot`, `LobbyPlayerEntry`) together with `Envelope`, `MessageType`, and `WireCodec`. The **input** package holds `PlayerInput`, `TilePos`, `Direction`, `GameMode`, `GameState`, and `ArenaTheme`.
+**Interfaces at level 1.** `bomberman-core` exposes a Java API consumed by both the client and the server at compile time (entities, DTO records, `WireCodec`). The client talks to the server over exactly one runtime interface — a WebSocket at `/ws` carrying JSON `Envelope` objects discriminated by `MessageType`. The metrics interface (`/metrics`) is separate, scraped by Prometheus, and never used by the client.
 
-### 5.3 Level 2 — Server module decomposition
+---
 
-`BombServerApplication` is the entry point. It constructs `GameServer`, which wires `WebSocketServer` to `GameServerHandler`. The handler delegates to `SessionRegistry`, `AuthRegistry` (containing `DevAuthProvider` and `GoogleAuthProvider`), `LobbyService` (which itself owns `CosmeticsCatalog` and `LobbyPlayer`/`Cosmetic` records), and `MatchManager` (which spawns `MatchSession` instances each containing a `Match`). `BotController` runs alongside any `MatchSession` that has fewer human players than slots. `ChatRouter` consumes `ChatMessage` envelopes and applies `ProfanityFilter`. `MetricsHandler` exposes Prometheus-style counters over a separate HTTP path. `ServerConfig` holds the externalised configuration.
+### 5.2 Level 2 — Whitebox of `bomberman-core`
 
-### 5.4 Level 2 — Client module decomposition
+`bomberman-core` is the shared contract. It has no I/O, no threads, no logging — it is a pure-Java domain library that can be unit-tested in milliseconds. Six packages.
 
-`ClientLauncher` boots JavaFX and constructs `SceneRouter`. The router holds references to `MainMenuView`, `LobbyView`, `ArenaView`, and `RankingsView`. `ArenaView` embeds `ArenaRenderer` (the tile/sprite drawer), `ParticleSystem` (explosion debris, mandala dust), `PostFx` (bloom, vignette), `CameraShake`, and `HudOverlay`. `MandalaArt` and `MandalaTheme` supply the symmetrical motif resources. `GameClient` is the network façade. `AudioBus` mixes effects through `SpatialAudio`. `GamepadPoller` reads JInput and pushes `PlayerInput` updates; `HapticsService` applies rumble cues from `HapticCue` envelopes received from the server. `AgeGate` gates the launch on a confirmation dialog.
+```mermaid
+flowchart TB
+    subgraph CORE["bomberman-core"]
+        ENT["<b>entity</b><br/>Bomberman · Player · Score<br/>Bomb · Explosion · PowerUpItem"]
+        WLD["<b>world</b><br/>Arena · Tile · TileType<br/>ArenaTheme · Bonus + 7 subclasses<br/>PowerUpType"]
+        SIM["<b>sim</b><br/>GameWorld · Snapshotter<br/>GameMode · GameState"]
+        NET["<b>net</b><br/>Envelope · MessageType<br/>WireCodec<br/>net/dto/* (~30 DTOs)"]
+        INP["<b>input</b><br/>PlayerInput"]
+        GEO["<b>geom</b><br/>TilePos · Direction"]
+    end
+
+    SIM --> ENT
+    SIM --> WLD
+    SIM --> INP
+    SIM --> GEO
+    ENT --> WLD
+    ENT --> GEO
+    NET --> ENT
+    NET --> WLD
+    NET --> INP
+```
+
+| Package | Responsibility | Notable classes | Tested by |
+|---|---|---|---|
+| `entity/` | Mutable game entities that live inside a `GameWorld`. | `Bomberman` (pos, range, lives, speed, kick), `Player` (owns `Bomberman` + `Score`), `Bomb` (fuse, owner), `Explosion`, `PowerUpItem`, `Score`. | indirect via `GameWorldTest` |
+| `world/` | The grid and the bonus hierarchy. | `Arena` (`Tile[][]`), `Tile`, `TileType` (Wall/Block/Floor/Spawn), abstract `Bonus` + 7 concrete subclasses (`Armor·ExtraBomb·Flame·Kick·Life·Speed·Throw`), `PowerUpType`, `ArenaTheme`. | indirect |
+| `sim/` | The deterministic tick loop and the snapshot producer. | `GameWorld.tick()`, `Snapshotter.snapshot()`, `GameMode`, `GameState`. | `GameWorldTest` (5 tests) |
+| `net/` | Wire format. Single choke point through which all JSON crosses. | `Envelope`, `MessageType` (24 kinds), `WireCodec`, plus `net/dto/*` (~30 record DTOs — `PlayerSnapshot`, `BombSnapshot`, `WorldSnapshot`, `MatchStart`, `MatchEnd`, `Hello`, `Welcome`, `AuthRequest`, `AuthResult`, `InputFrame`, `ChatMessage`, `KillFeedEntry`, lobby messages, …). | `WireCodecTest` (2 tests) |
+| `input/` | Input model shared by both sides. | `PlayerInput` (4 directional bits + place + throw). | covered by `GameWorldTest` |
+| `geom/` | Tiny value types so signatures stay readable. | `TilePos`, `Direction`. | — |
+
+**Why no cycles.** `entity/` and `world/` are leaf packages; `sim/` pulls them together; `net/` only references them to embed snapshot fields. The Maven build refuses any reverse arrow at compile time.
+
+---
+
+### 5.3 Level 2 — Whitebox of `bomberman-server`
+
+The server is a single JVM process. Its responsibility split is: **accept connections** (`net/`), **place players** (`lobby/`), **run matches** (`match/`), **authenticate** (`auth/`), **track sessions** (`session/`), **moderate chat** (`chat/`, `moderation/`), **fill empty slots** (`ai/`), and **stay configurable** (`config/`).
+
+```mermaid
+flowchart TB
+    APP["<b>BombServerApplication</b><br/>JVM entrypoint"]
+    APP --> GS["<b>GameServer</b><br/>composition root"]
+    GS --> NET
+    GS --> CFG
+
+    subgraph NET["net/"]
+        WS["WebSocketServer<br/>(Netty pipeline)"]
+        HND["GameServerHandler<br/>(message router)"]
+        MET["MetricsHandler<br/>(/metrics)"]
+        WS --> HND
+    end
+
+    HND --> SES["session/<br/>SessionRegistry · ClientSession"]
+    HND --> AUTH["auth/<br/>AuthRegistry · AuthProvider SPI<br/>(DevAuthProvider · GoogleAuthProvider)"]
+    HND --> LOB["lobby/<br/>LobbyService · CosmeticsCatalog<br/>LobbyPlayer · Cosmetic"]
+    HND --> MM["match/<br/>MatchManager · Match · MatchSession"]
+
+    MM --> AI["ai/<br/>BotController"]
+    MM --> CH["chat/<br/>ChatRouter"]
+    CH --> MOD["moderation/<br/>ProfanityFilter"]
+
+    MM -. "owns 1 per match" .-> SIM[("sim.GameWorld<br/>from bomberman-core")]
+    CFG["config/<br/>ServerConfig"]
+```
+
+| Package | Responsibility | Key classes | Listens / emits |
+|---|---|---|---|
+| `net/` | Netty WebSocket pipeline on port 8080; routes frames by `MessageType`; serves `/metrics` on a separate path. | `WebSocketServer`, `GameServerHandler`, `MetricsHandler` | inbound `Envelope`, outbound snapshots + events |
+| `session/` | Tracks every live WebSocket as a `ClientSession`; provides lookup by player id. | `SessionRegistry`, `ClientSession` | — |
+| `auth/` | Pluggable provider SPI. Dev provider issues offline UUIDs; Google provider is a stub for OAuth in v0.3. | `AuthRegistry`, `AuthProvider`, `DevAuthProvider`, `GoogleAuthProvider` | accepts `AuthRequest`, returns `AuthResult` |
+| `lobby/` | Pre-match flow: queue, ready-check, cosmetic equip. | `LobbyService`, `CosmeticsCatalog`, `LobbyPlayer`, `Cosmetic` | `LobbySnapshot`, `LobbyState` |
+| `match/` | Owns the authoritative `GameWorld` per match and drives the 60 Hz tick. | `MatchManager`, `Match`, `MatchSession` | `MatchStart`, `WorldSnapshot`, `MatchEnd` |
+| `ai/` | Fills empty player slots; three difficulty presets; BFS escape from danger tiles. | `BotController` | indistinguishable from a human `InputFrame` upstream |
+| `chat/` | Routes `ChatMessage` envelopes inside a lobby or match. | `ChatRouter` | — |
+| `moderation/` | Per-token profanity replacement; covered by `ProfanityFilterTest`. | `ProfanityFilter` | — |
+| `config/` | Externalised configuration (env-var first, file fallback). | `ServerConfig` | — |
+
+**Composition root.** Everything is wired in `GameServer`. No service-locator, no reflection-based injection — plain Java construction. This makes the dependency graph readable in `git diff` and trivial to unit-test.
+
+---
+
+### 5.4 Level 2 — Whitebox of `bomberman-client`
+
+The client renders snapshots and ships input. It holds **no authoritative state**. Six packages.
+
+```mermaid
+flowchart TB
+    LCH["<b>ClientLauncher</b><br/>JavaFX Application"]
+    LCH --> ROUTER["ui/SceneRouter"]
+
+    subgraph UI["ui/"]
+        ROUTER --> MM["MainMenuView"]
+        ROUTER --> LV["LobbyView"]
+        ROUTER --> AV["ArenaView"]
+        ROUTER --> RV["RankingsView"]
+        MART["MandalaArt · MandalaTheme"]
+        HUD["HudOverlay"]
+    end
+
+    AV --> RND["render/<br/>ArenaRenderer · ParticleSystem<br/>PostFx · CameraShake"]
+    AV --> HUD
+    AV --> AUD["audio/<br/>AudioBus · SpatialAudio"]
+    AV --> INP["input/<br/>GamepadPoller · HapticsService"]
+    AV --> NETC["net/<br/>GameClient (WebSocket façade)"]
+    LCH --> SAF["safety/<br/>AgeGate"]
+
+    NETC -. "WebSocket" .-> SRV[("bomberman-server")]
+    MM -.-> MART
+    LV -.-> MART
+```
+
+| Package | Responsibility | Key classes | Talks to |
+|---|---|---|---|
+| `ui/` | Scene graph, the four named views, mandala backdrop, HUD overlay. | `SceneRouter`, `MainMenuView`, `LobbyView`, `ArenaView`, `RankingsView`, `MandalaArt`, `MandalaTheme`, `HudOverlay` | `render/`, `audio/`, `net/` |
+| `render/` | Paints the tile grid, players, bombs, explosions, pickups onto a single JavaFX `Canvas`. | `ArenaRenderer`, `ParticleSystem`, `PostFx`, `CameraShake` | reads `WorldSnapshot` |
+| `net/` | Wraps `java.net.http.WebSocket`; uses the same `WireCodec` as the server. | `GameClient` | server `/ws` |
+| `audio/` | Spatial sound bus — pan and gain computed per emitter–listener pair. | `AudioBus`, `SpatialAudio` | sfx files |
+| `input/` | Reads JInput controllers; applies haptic cues from `HapticCue` envelopes. | `GamepadPoller`, `HapticsService` | OS gamepad API |
+| `safety/` | First-launch confirmation dialog. | `AgeGate` | — |
+
+**No state on the client.** `ArenaView` repaints every 16 ms from the latest `WorldSnapshot`. Input goes the other way as `InputFrame` records. If the WebSocket drops, the client has nothing to recover — it reconnects and waits for the next snapshot.
+
+---
+
+### 5.5 Level 3 — Whitebox of `sim/GameWorld`
+
+`GameWorld` carries most of the architectural risk because it is the only place mutable game state exists. It runs on a single thread (the match tick scheduler) — no locks, no `synchronized`, no `volatile`. Concurrency is avoided structurally.
+
+```mermaid
+flowchart LR
+    INQ[/"input queue<br/>(InputFrame per session)"/]
+    INQ --> SAMPLE["1. sample inputs"]
+    SAMPLE --> MOVE["2. resolve movement<br/>(against Arena tiles)"]
+    MOVE --> BOMB["3. tick bomb fuses<br/>spawn Explosions"]
+    BOMB --> DMG["4. apply explosion damage<br/>kill players · destroy blocks"]
+    DMG --> PICK["5. award pickups<br/>(Bonus subclasses)"]
+    PICK --> SCORE["6. update Score"]
+    SCORE --> SNAP["7. Snapshotter →<br/>WorldSnapshot"]
+    SNAP --> OUT[/"outbound queue<br/>(per session)"/]
+    SNAP --> SAMPLE
+```
+
+| Step | Code | Invariant it preserves |
+|---|---|---|
+| 1 sample | `MatchSession.drainInputs()` | every frame consumes inputs *received before this tick* — late ones wait for the next tick (no skew) |
+| 2 move | `Bomberman.tryMove(Direction, Arena)` | a player cannot pass through Wall or unbroken Block |
+| 3 fuse | `Bomb.tickFuse()` | a bomb detonates on the tick its fuse reaches 0, not earlier and not later |
+| 4 damage | `Explosion.affectedTiles(Arena)` | blast radius is cropped at the first Wall in each direction (Bomberman rules) |
+| 5 pickup | `PowerUpItem.collectedBy(Player)` | each item is consumed at most once even with simultaneous overlaps (deterministic ordering by player id) |
+| 6 score | `Score.recordPlayerKilled(...)` | per-player counters never decrement |
+| 7 snapshot | `Snapshotter.snapshot(GameWorld)` | the snapshot is a value object (immutable record); the server can send it to every session without copying |
+
+**Why this is single-threaded.** The tick is bounded at 16.67 ms; the work above empirically completes in ~0.4 ms for four players on a laptop. Multi-threading would buy nothing and forfeit the determinism guarantee that makes the simulation reproducible for both replay and viva demonstration.
 
 ## 6. Runtime View
 
